@@ -3,33 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cervecería Tierra Grande</title>
+<title>Cervecería El Origen</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root{
-  /* TR-808 Roland palette */
-  --bg1:#1a1a1a;
-  --bg2:#0e0e0e;
-  --card:#252525;
-  --card-soft:#2e2e2e;
-  --copper:#FF6200;
-  --copper-light:#FF8533;
-  --ink:#E8E8E8;
-  --muted:#8a8a8a;
-  --green:#3ecf4a;
-  --green-dark:#2a9e36;
-  --red:#E6392B;
-  --line:#404040;
-  --panel:#1f1f1f;
-  --silver:#b0b0b0;
+  --bg1:#241a15;
+  --bg2:#160d09;
+  --card:#f3e9d2;
+  --card-soft:#ece0c4;
+  --copper:#b5652d;
+  --copper-light:#d4923f;
+  --ink:#2a1d13;
+  --muted:#7a6650;
+  --green:#4f7a52;
+  --green-dark:#345a37;
+  --red:#a8442f;
+  --line:#d9c9a3;
 }
 *{box-sizing:border-box;}
 body{
   margin:0;
   min-height:100vh;
   background:linear-gradient(160deg,var(--bg1),var(--bg2));
-  font-family:'Rajdhani',sans-serif;
+  font-family:'Inter',sans-serif;
   color:var(--ink);
   padding-bottom:60px;
 }
@@ -37,20 +34,19 @@ body{
 
 header.top{text-align:center;margin-bottom:22px;}
 header.top h1{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-weight:700;
   font-size:2.1em;
-  color:var(--copper);
+  color:var(--card);
   margin:0 0 4px;
-  letter-spacing:2px;
-  text-transform:uppercase;
+  letter-spacing:0.5px;
 }
 header.top p{
-  color:var(--silver);
+  color:var(--copper-light);
   font-size:0.92em;
   margin:0;
-  font-family:'Share Tech Mono',monospace;
-  letter-spacing:2px;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:1px;
   text-transform:uppercase;
 }
 
@@ -62,78 +58,73 @@ nav.tabs{
   margin-bottom:24px;
 }
 nav.tabs button{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Inter',sans-serif;
   font-weight:600;
   font-size:0.9em;
   padding:10px 20px;
-  border-radius:4px;
-  border:1.5px solid #3a3a3a;
-  background:var(--panel);
-  color:var(--silver);
+  border-radius:8px;
+  border:1.5px solid rgba(212,146,63,0.35);
+  background:rgba(255,255,255,0.04);
+  color:var(--copper-light);
   cursor:pointer;
   transition:all 0.15s ease;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
 }
-nav.tabs button:hover{background:#333;border-color:var(--copper);color:var(--copper-light);}
+nav.tabs button:hover{background:rgba(212,146,63,0.12);}
 nav.tabs button.active{
   background:var(--copper);
   border-color:var(--copper);
-  color:#111;
+  color:#fff8ec;
 }
 
 .card{
   background:var(--card);
-  border-radius:6px;
+  border-radius:12px;
   padding:20px 22px;
   margin-bottom:16px;
-  box-shadow:0 4px 16px rgba(0,0,0,0.4);
-  border:1px solid var(--line);
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  border:1px solid rgba(0,0,0,0.05);
 }
 .card h2{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-size:1.3em;
   margin:0 0 6px;
   color:var(--ink);
-  letter-spacing:1px;
-  text-transform:uppercase;
 }
 .card h3{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-size:1.05em;
   margin:16px 0 8px;
   color:var(--copper);
-  letter-spacing:0.5px;
 }
 .muted{color:var(--muted);font-size:0.88em;}
 .badge{
   display:inline-block;
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.72em;
   padding:2px 8px;
-  border-radius:3px;
+  border-radius:20px;
   font-weight:600;
 }
-.badge.fresh{background:#3a3520;color:#e8c84a;}
-.badge.green{background:#1a3320;color:var(--green);}
-.badge.red{background:#3a1a18;color:var(--red);}
-.badge.copper{background:#3a2208;color:var(--copper-light);}
+.badge.fresh{background:#e4d7b0;color:#7a5a1f;}
+.badge.green{background:#e1ead9;color:var(--green-dark);}
+.badge.red{background:#f2ddd6;color:var(--red);}
+.badge.copper{background:#f0ddc7;color:var(--copper);}
 
 .grid-recetas{display:grid;grid-template-columns:1fr;gap:16px;}
 .receta-card{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:18px 20px;
   border:1px solid var(--line);
 }
 .receta-card h3{margin-top:0;}
 .receta-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
 .receta-desc{font-size:0.88em;color:var(--muted);margin-bottom:10px;line-height:1.4;}
-.ing-list{list-style:none;padding:0;margin:0 0 12px;font-family:'Share Tech Mono',monospace;font-size:0.8em;}
+.ing-list{list-style:none;padding:0;margin:0 0 12px;font-family:'IBM Plex Mono',monospace;font-size:0.8em;}
 .ing-list li{padding:3px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;gap:8px;}
 .ing-list li:last-child{border-bottom:none;}
 .proc-title{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-size:0.95em;
   color:var(--copper);
   margin:12px 0 6px;
@@ -155,7 +146,7 @@ nav.tabs button.active{
 }
 .proc-list li:last-child{border-bottom:none;}
 .proc-num{
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-weight:600;
   color:var(--copper);
   font-size:0.9em;
@@ -172,27 +163,27 @@ nav.tabs button.active{
   flex-wrap:wrap;
   gap:8px;
   margin:8px 0 4px;
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.75em;
 }
 .params span{
-  background:var(--panel);
+  background:#fff;
   border:1px solid var(--line);
-  border-radius:3px;
+  border-radius:6px;
   padding:3px 8px;
-  color:var(--silver);
+  color:var(--muted);
 }
 
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0;}
 .stat-box{
-  background:var(--panel);
-  border-radius:6px;
+  background:#fff;
+  border-radius:10px;
   padding:14px;
   text-align:center;
   border:1px solid var(--line);
 }
 .stat-box .num{
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-weight:600;
   font-size:1.5em;
   color:var(--copper);
@@ -201,7 +192,7 @@ nav.tabs button.active{
 .stat-box .lbl{font-size:0.75em;color:var(--muted);margin-top:4px;display:block;}
 
 .desglose{
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.82em;
   color:var(--muted);
   margin:6px 0 14px;
@@ -220,51 +211,45 @@ nav.tabs button.active{
 .ing-row input[type=number]{
   width:100%;
   padding:6px 8px;
-  border-radius:3px;
+  border-radius:6px;
   border:1px solid var(--line);
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.95em;
-  background:var(--panel);
-  color:var(--ink);
 }
 .ing-name{font-weight:600;}
-.ing-aporta{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.85em;}
+.ing-aporta{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:0.85em;}
 
 .config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:6px;}
-.config-field label{display:block;font-size:0.75em;color:var(--muted);margin-bottom:4px;font-family:'Share Tech Mono',monospace;}
+.config-field label{display:block;font-size:0.75em;color:var(--muted);margin-bottom:4px;font-family:'IBM Plex Mono',monospace;}
 .config-field input, .config-field select{
   width:100%;
   padding:8px 10px;
-  border-radius:3px;
+  border-radius:6px;
   border:1px solid var(--line);
-  font-family:'Share Tech Mono',monospace;
-  background:var(--panel);
-  color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;
 }
 
 button.btn{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Inter',sans-serif;
   font-weight:600;
   padding:10px 18px;
-  border-radius:4px;
+  border-radius:8px;
   border:none;
   background:var(--copper);
-  color:#111;
+  color:#fff8ec;
   cursor:pointer;
   font-size:0.9em;
   margin-top:10px;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
 }
 button.btn:hover{background:var(--copper-light);}
-button.btn:disabled{background:#444;color:#777;cursor:not-allowed;}
+button.btn:disabled{background:#c9bda3;color:#8a7d64;cursor:not-allowed;}
 button.btn.secondary{background:transparent;border:1.5px solid var(--copper);color:var(--copper);}
-button.btn.danger{background:var(--red);color:#fff;}
+button.btn.danger{background:var(--red);}
 
 .grid-ferm{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
 .ferm-card{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:18px;
   border:1px solid var(--line);
   text-align:center;
@@ -273,27 +258,25 @@ button.btn.danger{background:var(--red);color:#fff;}
 .ferm-select, .ferm-date{
   width:100%;
   padding:8px;
-  border-radius:3px;
+  border-radius:6px;
   border:1px solid var(--line);
-  font-family:'Rajdhani',sans-serif;
+  font-family:'Inter',sans-serif;
   margin-bottom:8px;
-  background:var(--panel);
-  color:var(--ink);
 }
 .etapa-pill{
   display:inline-block;
   padding:5px 14px;
-  border-radius:3px;
-  font-family:'Share Tech Mono',monospace;
+  border-radius:20px;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.78em;
   font-weight:600;
-  color:#111;
+  color:#fff;
   margin:8px 0;
 }
 
 .entregas-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end;}
 .entregas-form .config-field input,.entregas-form select{
-  width:100%;padding:8px;border-radius:3px;border:1px solid var(--line);font-family:'Rajdhani',sans-serif;background:var(--panel);color:var(--ink);
+  width:100%;padding:8px;border-radius:6px;border:1px solid var(--line);font-family:'Inter',sans-serif;
 }
 .hist-item{
   display:grid;
@@ -308,14 +291,14 @@ button.btn.danger{background:var(--red);color:#fff;}
 .pill-pago{
   cursor:pointer;
   padding:4px 10px;
-  border-radius:3px;
+  border-radius:20px;
   font-size:0.75em;
   font-weight:700;
   text-align:center;
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
 }
-.pill-pago.pagado{background:#1a3320;color:var(--green);}
-.pill-pago.pendiente{background:#3a1a18;color:var(--red);}
+.pill-pago.pagado{background:#e1ead9;color:var(--green-dark);}
+.pill-pago.pendiente{background:#f2ddd6;color:var(--red);}
 .icon-btn{background:none;border:none;cursor:pointer;font-size:1em;color:var(--muted);padding:4px;}
 .icon-btn:hover{color:var(--red);}
 .icon-btn.print:hover{color:var(--copper);}
@@ -326,27 +309,26 @@ button.btn.danger{background:var(--red);color:#fff;}
 .loading{
   text-align:center;
   color:var(--copper-light);
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   padding:60px 20px;
 }
 
 .lote-card{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:16px 18px;
   border:1px solid var(--line);
   border-left:5px solid var(--copper);
   margin-bottom:12px;
 }
-.lote-card.open{background:#333;}
+.lote-card.open{background:#fff;}
 .lote-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;cursor:pointer;}
-.lote-title{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:1.1em;margin:0 0 2px;}
-.lote-meta{font-family:'Share Tech Mono',monospace;font-size:0.75em;color:var(--muted);}
+.lote-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.1em;margin:0 0 2px;}
+.lote-meta{font-family:'IBM Plex Mono',monospace;font-size:0.75em;color:var(--muted);}
 .stage-badge{
-  font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:0.72em;
-  padding:5px 10px;border-radius:3px;white-space:nowrap;color:#111;
+  font-family:'Inter',sans-serif;font-weight:600;font-size:0.72em;
+  padding:5px 10px;border-radius:20px;white-space:nowrap;color:#fff;
   display:inline-flex;align-items:center;gap:6px;
-  text-transform:uppercase;letter-spacing:0.5px;
 }
 .airlock-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:bubble 1.8s ease-in-out infinite;}
 @keyframes bubble{0%,100%{opacity:.4;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
@@ -354,24 +336,33 @@ button.btn.danger{background:var(--red);color:#fff;}
 .lote-body{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);display:none;}
 .lote-card.open .lote-body{display:block;}
 .lote-body .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.lote-body .field-row-3{grid-template-columns:1fr 1fr 1fr;}
+.lote-body .abv-display{
+  font-family:'IBM Plex Mono',monospace;font-size:0.95em;font-weight:600;color:var(--copper);
+  padding:8px 10px;background:var(--card-soft);border:1px solid var(--line);border-radius:6px;
+}
+.alerta-stock{border-left:4px solid var(--red);}
+.alerta-stock h2{color:var(--red);}
+.stock-bajo-list{margin:8px 0 0;padding-left:20px;}
+.stock-bajo-list li{margin-bottom:4px;font-size:0.92em;}
 .lote-body .field label{display:block;font-size:0.72em;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
 .lote-body .field select,.lote-body .field input,.lote-body .field textarea{
   width:100%;padding:7px 9px;border-radius:6px;border:1px solid var(--line);
-  font-family:'Share Tech Mono',monospace;font-size:0.85em;background:var(--panel);color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:#fff;color:var(--ink);
 }
-.lote-body .field textarea{font-family:'Rajdhani',sans-serif;min-height:56px;resize:vertical;}
+.lote-body .field textarea{font-family:'Inter',sans-serif;min-height:56px;resize:vertical;}
 .lote-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap;}
 .new-lote-form{display:none;margin-bottom:14px;}
 .new-lote-form.show{display:block;}
 
 .lote-check{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:14px 16px;
   border:1px solid var(--line);
   margin-bottom:10px;
 }
-.lote-check h4{margin:0 0 6px;font-family:'Chakra Petch',sans-serif;}
+.lote-check h4{margin:0 0 6px;font-family:'Fraunces',serif;}
 .fecha-row{
   display:flex;
   gap:10px;
@@ -387,45 +378,13 @@ button.btn.danger{background:var(--red);color:#fff;}
   .ing-row > *:nth-child(1){grid-column:1/3;}
   .hist-item{grid-template-columns:1fr 1fr;}
 }
-
-/* Login TR-808 */
-.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,var(--bg1),var(--bg2));}
-.login-card{background:var(--card);border-radius:6px;padding:36px 32px;text-align:center;max-width:380px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.5);border:1px solid var(--line);}
-.login-card h1{font-family:'Chakra Petch',sans-serif;font-size:1.5em;margin:0 0 6px;color:var(--copper);letter-spacing:2px;text-transform:uppercase;}
-.login-card > p{color:var(--silver);font-size:0.88em;margin:0 0 28px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
-.btn-google{display:inline-flex;align-items:center;gap:10px;font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:0.95em;padding:12px 22px;border-radius:4px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;transition:all 0.15s ease;text-transform:uppercase;letter-spacing:0.5px;}
-.btn-google:hover{background:#333;border-color:var(--copper);color:var(--copper-light);}
-.login-error{color:var(--red);font-size:0.85em;margin-top:14px;min-height:1.2em;}
-.user-bar{margin-top:10px;}
-
 </style>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
-<div id="login-screen" class="login-screen">
-  <div class="login-card">
-    <h1>🍺 Cervecería Tierra Grande</h1>
-    <p>Bitácora de operación · nano brewery</p>
-    <button id="btn-google-login" class="btn-google">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Entrar con Google
-    </button>
-    <p id="login-error" class="login-error"></p>
-  </div>
-</div>
-
-<div class="wrap" id="app-wrap" style="display:none;">
+<div class="wrap">
   <header class="top">
-    <h1>🍺 Cervecería Tierra Grande</h1>
+    <h1>🍺 Cervecería El Origen</h1>
     <p>Bitácora de operación · nano brewery</p>
-    <div class="user-bar">
-      <span id="user-email" class="muted"></span>
-      <button id="btn-logout" class="btn secondary" style="margin-top:8px;padding:6px 14px;font-size:0.8em;">Cerrar sesión</button>
-    </div>
   </header>
   <nav class="tabs" id="tabs"></nav>
   <div id="content"><div class="loading">Cargando bitácora…</div></div>
@@ -597,76 +556,32 @@ let state = {
   currentTab: 'recetas',
 };
 
-// ======================= FIREBASE =======================
-const firebaseConfig = {
-  apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
-  authDomain: "cervecera-tierra-grande.firebaseapp.com",
-  databaseURL: "https://cervecera-tierra-grande-default-rtdb.firebaseio.com",
-  projectId: "cervecera-tierra-grande",
-  storageBucket: "cervecera-tierra-grande.firebasestorage.app",
-  messagingSenderId: "243316014670",
-  appId: "1:243316014670:web:0545ce0b0cb81f7af54d1f",
-  measurementId: "G-8NDCKNGPB0"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const auth = firebase.auth();
-
-async function loadKey(key, fallback) {
-  try {
-    const snapshot = await db.ref('bitacora/' + key).once('value');
-    const val = snapshot.val();
-    if (val !== null && val !== undefined) return val;
-    return fallback;
-  } catch (e) {
-    console.error('Error cargando ' + key, e);
-    return fallback;
-  }
-}
-
-async function saveKey(key, value) {
-  try {
-    await db.ref('bitacora/' + key).set(value);
-  } catch (e) {
-    console.error('Error guardando ' + key, e);
-  }
-}
-
-function showApp(user) {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-wrap').style.display = 'block';
-  const emailEl = document.getElementById('user-email');
-  if (emailEl) emailEl.textContent = user.email || user.displayName || 'Usuario';
-  init();
-}
-
-function showLogin() {
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('app-wrap').style.display = 'none';
-}
-
-function setupAuthUI() {
-  document.getElementById('btn-google-login').addEventListener('click', async () => {
-    const errEl = document.getElementById('login-error');
-    errEl.textContent = '';
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      await auth.signInWithPopup(provider);
-    } catch (e) {
-      console.error(e);
-      errEl.textContent = e.message || 'Error al iniciar sesión';
+async function loadKey(key, fallback){
+  try{
+    if (window.storage && window.storage.get) {
+      const res = await window.storage.get(key, false);
+      if(res && res.value !== undefined && res.value !== null){
+        return JSON.parse(res.value);
+      }
+    } else {
+      const raw = localStorage.getItem(key);
+      if (raw) return JSON.parse(raw);
     }
-  });
-
-  document.getElementById('btn-logout').addEventListener('click', async () => {
-    await auth.signOut();
-  });
-
-  auth.onAuthStateChanged(user => {
-    if (user) showApp(user);
-    else showLogin();
-  });
+    return fallback;
+  }catch(e){
+    return fallback;
+  }
+}
+async function saveKey(key, value){
+  try{
+    if (window.storage && window.storage.set) {
+      await window.storage.set(key, JSON.stringify(value), false);
+    } else {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+  }catch(e){
+    console.error('Error guardando '+key, e);
+  }
 }
 
 async function init(){
@@ -705,58 +620,36 @@ function daysBetween(iso){
   return Math.floor((nowMid - start) / 86400000);
 }
 function addDaysISO(iso, days){
+  if(!iso) return null;
   const d = new Date(iso + 'T00:00:00');
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0,10);
+  return d;
 }
-function fmtDateCorta(iso){
-  if(!iso) return '—';
-  const dt = new Date(iso + 'T00:00:00');
-  if(isNaN(dt)) return iso;
-  return dt.toLocaleDateString('es-MX', {day:'numeric', month:'short'});
+function fmtDateShort(d){
+  if(!d) return '—';
+  return d.toLocaleDateString('es-MX', {day:'2-digit', month:'short'});
 }
 function getReceta(id){ return RECETAS.find(r=>r.id===id); }
 function getCatalogo(id){ return CATALOGO.find(c=>c.id===id); }
 
-function getStockBajo(){
+function getIngredientesStockBajo(){
   const bajos = [];
   CATALOGO.forEach(cat=>{
     if(cat.fresco) return;
-    const stock = (state.inventario[cat.id] && state.inventario[cat.id].stock) || 0;
-    let minLotes = Infinity;
+    const data = state.inventario[cat.id] || {stock:0, precio:0};
+    let minLotes = null;
     RECETAS.forEach(r=>{
       const scaled = getScaledIngredients(r.id).find(i=>i.id===cat.id);
       if(scaled && scaled.cantidad > 0){
-        const lotes = Math.floor(stock / scaled.cantidad);
-        if(lotes < minLotes) minLotes = lotes;
+        const lotes = Math.floor((data.stock||0) / scaled.cantidad);
+        if(minLotes === null || lotes < minLotes) minLotes = lotes;
       }
     });
-    if(isFinite(minLotes) && minLotes <= 1){
-      bajos.push({ id: cat.id, nombre: cat.nombre, unidad: cat.unidad, stock, lotes: minLotes });
+    if(minLotes !== null && minLotes <= 1){
+      bajos.push({ nombre: cat.nombre, lotes: minLotes, stock: data.stock||0, unidad: cat.unidad });
     }
   });
-  return bajos;
-}
-
-function calcCostoLoteHistorico(lote){
-  if(!lote || !lote.recetaId) return 0;
-  const receta = getReceta(lote.recetaId);
-  if(!receta) return 0;
-  const botellas = lote.botellas || receta.bottleYield || 15;
-  const factor = botellas / (receta.bottleYield || 15);
-  let total = 0;
-  receta.ingredientes.forEach(ing=>{
-    const cat = getCatalogo(ing.id);
-    if(cat && cat.fresco) return;
-    const precio = (state.inventario[ing.id] && state.inventario[ing.id].precio) || 0;
-    let cant = ing.cantidad * factor;
-    if(ing.id === 's-33') cant = Math.max(1, Math.round(cant));
-    else if(cant < 10) cant = Math.round(cant * 10) / 10;
-    else cant = Math.round(cant);
-    total += precio * cant;
-  });
-  total += calcCostoElectricidad() + calcCostoAgua();
-  return total;
+  return bajos.sort((a,b)=>a.lotes-b.lotes);
 }
 
 /** Factor de escala: botellas deseadas / botellas base de la receta */
@@ -1004,19 +897,19 @@ function renderInventario(){
     `;
   }).join('');
 
-  const stockBajo = getStockBajo();
-  const alertaStock = stockBajo.length === 0 ? '' : `
-    <div class="card" style="background:#3a1a18;border-left:5px solid var(--red);">
-      <h2 style="color:var(--red);margin:0 0 8px;">⚠ Stock bajo</h2>
-      <p class="muted" style="margin:0 0 10px;">Estos ingredientes alcanzan para 1 lote o menos (según las escalas actuales):</p>
-      <ul style="margin:0;padding-left:18px;font-family:'Share Tech Mono',monospace;font-size:0.85em;">
-        ${stockBajo.map(b=>`<li><strong>${b.nombre}</strong>: ${b.stock}${b.unidad} · ${b.lotes===0?'0 lotes':'máx. 1 lote'}</li>`).join('')}
+  const stockBajo = getIngredientesStockBajo();
+  const alertaHtml = stockBajo.length ? `
+    <div class="card alerta-stock">
+      <h2>⚠ Stock bajo (${stockBajo.length})</h2>
+      <p class="muted">Estos ingredientes alcanzan para 1 lote o menos en al menos una receta. Revísalos antes de que te frenen un cocimiento.</p>
+      <ul class="stock-bajo-list">
+        ${stockBajo.map(b=>`<li><strong>${b.nombre}</strong> — quedan ${b.stock}${b.unidad} · alcanza para ${b.lotes} lote${b.lotes===1?'':'s'}</li>`).join('')}
       </ul>
     </div>
-  `;
+  ` : '';
 
   return `
-    ${alertaStock}
+    ${alertaHtml}
     <div class="card">
       <h2>Inventario único</h2>
       <p class="muted">Un solo almacén compartido. Puedes registrar elaboraciones con fecha de hoy o días anteriores.</p>
@@ -1133,6 +1026,21 @@ function fmtDateBit(d){
   return dt.toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'});
 }
 
+function calcABV(ogStr, fgStr){
+  const og = parseFloat(ogStr);
+  const fg = parseFloat(fgStr);
+  if(!og || !fg || isNaN(og) || isNaN(fg)) return null;
+  if(og < 0.99 || og > 1.2 || fg < 0.99 || fg > 1.2) return null; // fuera de rango plausible
+  if(fg > og) return null; // FG no puede ser mayor que OG
+  const abv = (og - fg) * 131.25;
+  return Math.round(abv * 10) / 10;
+}
+
+function fmtABV(ogStr, fgStr){
+  const abv = calcABV(ogStr, fgStr);
+  return abv === null ? '—' : `${abv}%`;
+}
+
 function escapeHTML(str){
   return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1155,7 +1063,7 @@ function renderBitacora(){
           <div class="lote-top" data-toggle-lote="${l.id}">
             <div>
               <div class="lote-title">${escapeHTML(l.nombre || 'Lote')}</div>
-              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}</div>
+              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}${calcABV(l.og,l.fg)!==null?` · ${fmtABV(l.og,l.fg)} ABV`:''}</div>
             </div>
             <div class="stage-badge ${isDone?'stage-done':''}" style="background:${st.color}">
               <span class="airlock-dot"></span>${st.label}
@@ -1174,7 +1082,7 @@ function renderBitacora(){
                 <input type="date" data-lote-field="fecha" data-lote-id="${l.id}" value="${l.fecha||hoy}" max="${hoy}">
               </div>
             </div>
-            <div class="field-row">
+            <div class="field-row field-row-3">
               <div class="field">
                 <label>OG</label>
                 <input type="text" data-lote-field="og" data-lote-id="${l.id}" value="${escapeHTML(l.og||'')}" placeholder="1.050">
@@ -1182,6 +1090,10 @@ function renderBitacora(){
               <div class="field">
                 <label>FG</label>
                 <input type="text" data-lote-field="fg" data-lote-id="${l.id}" value="${escapeHTML(l.fg||'')}" placeholder="1.012">
+              </div>
+              <div class="field">
+                <label>ABV (calculado)</label>
+                <div class="abv-display" data-abv-display="${l.id}">${fmtABV(l.og, l.fg)}</div>
               </div>
             </div>
             <div class="field" style="margin-bottom:10px;">
@@ -1262,6 +1174,12 @@ function bindBitacoraEvents(){
       const lote = state.lotes.find(x=>x.id===id);
       if(!lote) return;
       lote[field] = inp.value;
+      if(field === 'og' || field === 'fg'){
+        const abv = calcABV(lote.og, lote.fg);
+        lote.abv = abv === null ? '' : String(abv);
+        const display = document.querySelector(`[data-abv-display="${id}"]`);
+        if(display) display.textContent = fmtABV(lote.og, lote.fg);
+      }
       await saveKey('lotes-bitacora', state.lotes);
       if(field === 'etapa' || field === 'fecha') renderContent();
     });
@@ -1299,35 +1217,25 @@ function renderFermentadores(){
     } else {
       const receta = getReceta(f.recetaId);
       const dias = daysBetween(f.fechaInicio);
-      const diasListo = (receta && receta.fermenterDays) || 11;
-      const fechaListo = f.fechaInicio ? addDaysISO(f.fechaInicio, diasListo) : null;
-      const diasHastaListo = fechaListo ? Math.ceil((new Date(fechaListo+'T00:00:00') - new Date(hoy+'T00:00:00')) / 86400000) : 0;
-      const fermDays = (receta && receta.fermentandoDays) || 7;
-      const fermTotal = (receta && receta.fermenterDays) || 11;
       let etapa, color;
-      if(dias < fermDays){ etapa = 'Fermentando'; color = 'var(--copper)'; }
-      else if(dias < fermTotal){ etapa = 'Reposo / integración'; color = 'var(--green)'; }
+      if(dias < receta.fermentandoDays){ etapa = 'Fermentando'; color = 'var(--copper)'; }
+      else if(dias < receta.fermenterDays){ etapa = 'Reposo / integración'; color = 'var(--green)'; }
       else { etapa = 'Listo para embotellar'; color = 'var(--green-dark)'; }
-      let listoTxt;
-      if(diasHastaListo > 0){
-        listoTxt = `Listo aprox. el ${fmtDateCorta(fechaListo)} (en ${diasHastaListo} día${diasHastaListo===1?'':'s'})`;
-      } else if(diasHastaListo === 0){
-        listoTxt = `Listo aprox. hoy (${fmtDateCorta(fechaListo)})`;
-      } else {
-        listoTxt = `Listo desde el ${fmtDateCorta(fechaListo)} (hace ${Math.abs(diasHastaListo)} día${Math.abs(diasHastaListo)===1?'':'s'})`;
-      }
-      const nombreReceta = receta ? receta.nombre : (f.recetaId || 'Lote');
+      const fechaListo = addDaysISO(f.fechaInicio, receta.fermenterDays);
+      const diasFaltan = receta.fermenterDays - dias;
+      const listoTexto = dias >= receta.fermenterDays
+        ? `Listo desde el ${fmtDateShort(fechaListo)}`
+        : `Listo aprox. el ${fmtDateShort(fechaListo)} (en ${diasFaltan} día${diasFaltan===1?'':'s'})`;
       return `
         <div class="ferm-card">
           <h3>Fermentador ${f.id}</h3>
           <span class="badge copper">OCUPADO</span>
-          <div style="margin-top:8px;font-weight:600;">${nombreReceta}${f.botellas ? ` · ${f.botellas} bot.` : ''}</div>
+          <div style="margin-top:8px;font-weight:600;">${receta.nombre}${f.botellas ? ` · ${f.botellas} bot.` : ''}</div>
           <div class="config-field" style="text-align:left;margin:10px 0 4px;">
             <label>Fecha de elaboración</label>
             <input type="date" class="ferm-date" data-edit-fecha="${f.id}" value="${f.fechaInicio || hoy}" max="${hoy}">
           </div>
-          <div class="muted">${dias} día${dias===1?'':'s'} desde el inicio</div>
-          <div class="muted" style="margin-top:4px;font-weight:600;color:var(--ink);">${listoTxt}</div>
+          <div class="muted">${dias} día${dias===1?'':'s'} desde el inicio · ${listoTexto}</div>
           <div class="etapa-pill" style="background:${color};">${etapa}</div><br>
           <button class="btn secondary" data-release="${f.id}">Liberar fermentador</button>
         </div>
@@ -1474,15 +1382,10 @@ function imprimirRecibo(entrega){
     body { padding: 0; }
   }
 </style>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
   <div class="center">
-    <h1>CERVECERÍA TIERRA GRANDE</h1>
+    <h1>CERVECERÍA EL ORIGEN</h1>
     <div class="sub">nano brewery</div>
   </div>
   <hr>
@@ -1501,7 +1404,7 @@ function imprimirRecibo(entrega){
   <hr>
   <div class="footer">
     Gracias por su preferencia<br>
-    Cervecería Tierra Grande · nano brewery
+    Cerveza artesanal · Lote pequeño
   </div>
   <div class="actions">
     <button class="primary" onclick="window.print()">Imprimir</button>
@@ -1520,12 +1423,30 @@ function imprimirRecibo(entrega){
   w.focus();
 }
 
+function calcGananciaNeta(){
+  const ingresos = state.entregas.reduce((s,e)=>s + (e.precio||0), 0);
+  let costoProduccion = 0;
+  let lotesSinCosto = 0;
+  state.lotes.forEach(l=>{
+    if(!l.recetaId){ lotesSinCosto++; return; }
+    const receta = getReceta(l.recetaId);
+    if(!receta){ lotesSinCosto++; return; }
+    const costo = calcCostoLote(l.recetaId);
+    const botellasBase = getBotellas(l.recetaId);
+    const costoBotella = botellasBase > 0 ? costo.total / botellasBase : 0;
+    costoProduccion += costoBotella * (l.botellas || 0);
+  });
+  return {
+    ingresos,
+    costoProduccion,
+    neta: ingresos - costoProduccion,
+    lotesSinCosto,
+  };
+}
+
 function renderEntregas(){
   const totalBotellas = state.entregas.reduce((s,e)=>s + (e.botellas||0), 0);
   const totalPendiente = state.entregas.filter(e=>!e.pagado).reduce((s,e)=>s + (e.precio||0), 0);
-  const totalIngresos = state.entregas.reduce((s,e)=>s + (e.precio||0), 0);
-  const totalCostoLotes = (state.lotes || []).reduce((s,l)=>s + calcCostoLoteHistorico(l), 0);
-  const gananciaNeta = totalIngresos - totalCostoLotes;
   const sugerido = sugerirSabor();
   const saborOptions = SABORES_ENTREGA.map(s=>`<option value="${s}" ${s===sugerido?'selected':''}>${s}</option>`).join('');
 
@@ -1541,6 +1462,8 @@ function renderEntregas(){
     </div>
   `).join('') || '<p class="muted">Aún no hay entregas registradas.</p>';
 
+  const ganancia = calcGananciaNeta();
+
   return `
     <div class="card">
       <h2>Entregas</h2>
@@ -1552,9 +1475,9 @@ function renderEntregas(){
       <div class="stats-row">
         <div class="stat-box"><span class="num">${totalBotellas}</span><span class="lbl">Botellas entregadas (histórico)</span></div>
         <div class="stat-box"><span class="num">${fmtMoney(totalPendiente)}</span><span class="lbl">Pendiente de cobro</span></div>
-        <div class="stat-box"><span class="num" style="color:${gananciaNeta>=0?'var(--green)':'var(--red)'}">${fmtMoney(gananciaNeta)}</span><span class="lbl">Ganancia neta est.</span></div>
+        <div class="stat-box"><span class="num">${fmtMoney(ganancia.neta)}</span><span class="lbl">Ganancia neta estimada</span></div>
       </div>
-      <p class="muted" style="font-size:0.78em;margin-top:4px;">Ganancia estimada = ingresos de entregas (${fmtMoney(totalIngresos)}) − costo de lotes en Bitácora a precios actuales (${fmtMoney(totalCostoLotes)}). No es contabilidad exacta.</p>
+      <p class="muted" style="font-size:0.82em;">Ganancia = ingresos de todas las entregas (${fmtMoney(ganancia.ingresos)}) − costo de producción de los lotes en Bitácora a precios actuales (${fmtMoney(ganancia.costoProduccion)}).${ganancia.lotesSinCosto ? ` ${ganancia.lotesSinCosto} lote(s) sin receta asociada no se incluyeron en el costo.` : ''} Es una estimación, no contabilidad exacta.</p>
 
       <h3>Nueva entrega</h3>
       <div class="entregas-form">
@@ -1626,7 +1549,7 @@ function bindEntregasEvents(){
   });
 }
 
-setupAuthUI();
+init();
 </script>
 </body>
 </html>
