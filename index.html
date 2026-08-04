@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cervecería Tierra Grande</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg1:#241a15;
+  --bg2:#160d09;
+  --card:#f3e9d2;
+  --card-soft:#ece0c4;
+  --copper:#b5652d;
+  --copper-light:#d4923f;
+  --ink:#2a1d13;
+  --muted:#7a6650;
+  --green:#4f7a52;
+  --green-dark:#345a37;
+  --red:#a8442f;
+  --line:#d9c9a3;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  font-family:'Inter',sans-serif;
+  color:var(--ink);
+  padding-bottom:60px;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 18px 10px;}
+
+header.top{text-align:center;margin-bottom:22px;}
+header.top h1{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  font-size:2.1em;
+  color:var(--card);
+  margin:0 0 4px;
+  letter-spacing:0.5px;
+}
+header.top p{
+  color:var(--copper-light);
+  font-size:0.92em;
+  margin:0;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+nav.tabs{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+}
+nav.tabs button{
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:0.9em;
+  padding:10px 20px;
+  border-radius:8px;
+  border:1.5px solid rgba(212,146,63,0.35);
+  background:rgba(255,255,255,0.04);
+  color:var(--copper-light);
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+nav.tabs button:hover{background:rgba(212,146,63,0.12);}
+nav.tabs button.active{
+  background:var(--copper);
+  border-color:var(--copper);
+  color:#fff8ec;
+}
+
+.card{
+  background:var(--card);
+  border-radius:12px;
+  padding:20px 22px;
+  margin-bottom:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  border:1px solid rgba(0,0,0,0.05);
+}
+.card h2{
+  font-family:'Fraunces',serif;
+  font-size:1.3em;
+  margin:0 0 6px;
+  color:var(--ink);
+}
+.card h3{
+  font-family:'Fraunces',serif;
+  font-size:1.05em;
+  margin:16px 0 8px;
+  color:var(--copper);
+}
+.muted{color:var(--muted);font-size:0.88em;}
+.badge{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.72em;
+  padding:2px 8px;
+  border-radius:20px;
+  font-weight:600;
+}
+.badge.fresh{background:#e4d7b0;color:#7a5a1f;}
+.badge.green{background:#e1ead9;color:var(--green-dark);}
+.badge.red{background:#f2ddd6;color:var(--red);}
+.badge.copper{background:#f0ddc7;color:var(--copper);}
+
+.grid-recetas{display:grid;grid-template-columns:1fr;gap:16px;}
+.receta-card{
+  background:var(--card-soft);
+  border-radius:10px;
+  padding:18px 20px;
+  border:1px solid var(--line);
+}
+.receta-card h3{margin-top:0;}
+.receta-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+.receta-desc{font-size:0.88em;color:var(--muted);margin-bottom:10px;line-height:1.4;}
+.ing-list{list-style:none;padding:0;margin:0 0 12px;font-family:'IBM Plex Mono',monospace;font-size:0.8em;}
+.ing-list li{padding:3px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;gap:8px;}
+.ing-list li:last-child{border-bottom:none;}
+.proc-title{
+  font-family:'Fraunces',serif;
+  font-size:0.95em;
+  color:var(--copper);
+  margin:12px 0 6px;
+}
+.proc-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  font-size:0.84em;
+  line-height:1.45;
+  color:var(--ink);
+}
+.proc-list li{
+  padding:6px 0 6px 0;
+  border-bottom:1px dashed var(--line);
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:8px;
+}
+.proc-list li:last-child{border-bottom:none;}
+.proc-num{
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:600;
+  color:var(--copper);
+  font-size:0.9em;
+}
+.proc-why{
+  display:block;
+  margin-top:2px;
+  font-size:0.92em;
+  color:var(--muted);
+  font-style:italic;
+}
+.params{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0 4px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.75em;
+}
+.params span{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:3px 8px;
+  color:var(--muted);
+}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0;}
+.stat-box{
+  background:#fff;
+  border-radius:10px;
+  padding:14px;
+  text-align:center;
+  border:1px solid var(--line);
+}
+.stat-box .num{
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:600;
+  font-size:1.5em;
+  color:var(--copper);
+  display:block;
+}
+.stat-box .lbl{font-size:0.75em;color:var(--muted);margin-top:4px;display:block;}
+
+.desglose{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.82em;
+  color:var(--muted);
+  margin:6px 0 14px;
+}
+
+.ing-row{
+  display:grid;
+  grid-template-columns:1.8fr 0.9fr 0.9fr 1fr;
+  gap:10px;
+  align-items:center;
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+  font-size:0.85em;
+}
+.ing-row:last-child{border-bottom:none;}
+.ing-row input[type=number]{
+  width:100%;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.95em;
+}
+.ing-name{font-weight:600;}
+.ing-aporta{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:0.85em;}
+
+.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:6px;}
+.config-field label{display:block;font-size:0.75em;color:var(--muted);margin-bottom:4px;font-family:'IBM Plex Mono',monospace;}
+.config-field input, .config-field select{
+  width:100%;
+  padding:8px 10px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;
+}
+
+button.btn{
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  padding:10px 18px;
+  border-radius:8px;
+  border:none;
+  background:var(--copper);
+  color:#fff8ec;
+  cursor:pointer;
+  font-size:0.9em;
+  margin-top:10px;
+}
+button.btn:hover{background:var(--copper-light);}
+button.btn:disabled{background:#c9bda3;color:#8a7d64;cursor:not-allowed;}
+button.btn.secondary{background:transparent;border:1.5px solid var(--copper);color:var(--copper);}
+button.btn.danger{background:var(--red);}
+
+.grid-ferm{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
+.ferm-card{
+  background:var(--card-soft);
+  border-radius:10px;
+  padding:18px;
+  border:1px solid var(--line);
+  text-align:center;
+}
+.ferm-card h3{margin-top:0;}
+.ferm-select, .ferm-date{
+  width:100%;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  font-family:'Inter',sans-serif;
+  margin-bottom:8px;
+}
+.etapa-pill{
+  display:inline-block;
+  padding:5px 14px;
+  border-radius:20px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.78em;
+  font-weight:600;
+  color:#fff;
+  margin:8px 0;
+}
+
+.entregas-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end;}
+.entregas-form .config-field input,.entregas-form select{
+  width:100%;padding:8px;border-radius:6px;border:1px solid var(--line);font-family:'Inter',sans-serif;
+}
+.hist-item{
+  display:grid;
+  grid-template-columns:1.3fr 1fr 0.7fr 0.8fr 0.8fr 0.45fr 0.45fr;
+  align-items:center;
+  gap:8px;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+  font-size:0.86em;
+}
+.hist-item:last-child{border-bottom:none;}
+.pill-pago{
+  cursor:pointer;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:0.75em;
+  font-weight:700;
+  text-align:center;
+  font-family:'IBM Plex Mono',monospace;
+}
+.pill-pago.pagado{background:#e1ead9;color:var(--green-dark);}
+.pill-pago.pendiente{background:#f2ddd6;color:var(--red);}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:1em;color:var(--muted);padding:4px;}
+.icon-btn:hover{color:var(--red);}
+.icon-btn.print:hover{color:var(--copper);}
+@media print{
+  body *{visibility:hidden;}
+}
+
+.loading{
+  text-align:center;
+  color:var(--copper-light);
+  font-family:'IBM Plex Mono',monospace;
+  padding:60px 20px;
+}
+
+.lote-card{
+  background:var(--card-soft);
+  border-radius:10px;
+  padding:16px 18px;
+  border:1px solid var(--line);
+  border-left:5px solid var(--copper);
+  margin-bottom:12px;
+}
+.lote-card.open{background:#fff;}
+.lote-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;cursor:pointer;}
+.lote-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.1em;margin:0 0 2px;}
+.lote-meta{font-family:'IBM Plex Mono',monospace;font-size:0.75em;color:var(--muted);}
+.stage-badge{
+  font-family:'Inter',sans-serif;font-weight:600;font-size:0.72em;
+  padding:5px 10px;border-radius:20px;white-space:nowrap;color:#fff;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.airlock-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:bubble 1.8s ease-in-out infinite;}
+@keyframes bubble{0%,100%{opacity:.4;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+.stage-done .airlock-dot{animation:none;}
+.lote-body{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);display:none;}
+.lote-card.open .lote-body{display:block;}
+.lote-body .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.lote-body .field label{display:block;font-size:0.72em;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.lote-body .field select,.lote-body .field input,.lote-body .field textarea{
+  width:100%;padding:7px 9px;border-radius:6px;border:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:#fff;color:var(--ink);
+}
+.lote-body .field textarea{font-family:'Inter',sans-serif;min-height:56px;resize:vertical;}
+.lote-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.new-lote-form{display:none;margin-bottom:14px;}
+.new-lote-form.show{display:block;}
+
+.lote-check{
+  background:var(--card-soft);
+  border-radius:10px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  margin-bottom:10px;
+}
+.lote-check h4{margin:0 0 6px;font-family:'Fraunces',serif;}
+.fecha-row{
+  display:flex;
+  gap:10px;
+  align-items:end;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.fecha-row .config-field{flex:1;min-width:140px;}
+.fecha-row .btn{margin-top:0;}
+
+@media(max-width:680px){
+  .ing-row{grid-template-columns:1fr 1fr;}
+  .ing-row > *:nth-child(1){grid-column:1/3;}
+  .hist-item{grid-template-columns:1fr 1fr;}
+}
+</style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🍺 Cervecería Tierra Grande</h1>
+    <p>Bitácora de operación · nano brewery</p>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <div id="content"><div class="loading">Cargando bitácora…</div></div>
+</div>
+
+<script>
+// ======================= INVENTARIO ÚNICO =======================
+const CATALOGO = [
+  {id:'pale-ale',       nombre:'Malta Pale Ale',              unidad:'g',  fresco:false},
+  {id:'crystal',        nombre:'Crystal malt',                unidad:'g',  fresco:false},
+  {id:'crystal-10',     nombre:'Crystal 10',                  unidad:'g',  fresco:false},
+  {id:'light-chocolate',nombre:'Light Chocolate',             unidad:'g',  fresco:false},
+  {id:'roasted-barley', nombre:'Roasted Barley',              unidad:'g',  fresco:false},
+  {id:'wheat',          nombre:'Wheat malt',                  unidad:'g',  fresco:false},
+  {id:'aromatic',       nombre:'Aromatic malt (Aroma)',       unidad:'g',  fresco:false},
+  {id:'honey-malt',     nombre:'Honey malt',                  unidad:'g',  fresco:false},
+  {id:'avena',          nombre:'Avena natural (hojuelas)',    unidad:'g',  fresco:false},
+  {id:'northern-brewer',nombre:'Lúpulo Northern Brewer',      unidad:'g',  fresco:false},
+  {id:'s-33',           nombre:'Levadura Fermentis S-33',     unidad:'u',  fresco:false},
+  {id:'azucar',         nombre:'Azúcar cebado',               unidad:'g',  fresco:false},
+  {id:'miel',           nombre:'Miel',                        unidad:'g',  fresco:true},
+  {id:'cold-brew',      nombre:'Cold brew café',              unidad:'ml', fresco:true},
+  {id:'albahaca',       nombre:'Albahaca fresca',             unidad:'g',  fresco:true},
+  {id:'romero',         nombre:'Romero fresco',               unidad:'g',  fresco:true},
+];
+
+const RECETAS = [
+  {
+    id:'r-stout', nombre:'Coffee Stout', variante:'All Grain · 15 botellas',
+    tiempoTotal:'4-5 semanas + macerado', bottleYield:15, volumenL:5.5,
+    descripcion:'Coffee Stout con Pale Ale, Crystal, Light Chocolate, Roasted Barley, Northern Brewer y S-33. Cold brew de café al final de fermentación.',
+    fermentandoDays:8, fermenterDays:12,
+    params:{ og:'1.052–1.058', fg:'1.014–1.018', abv:'5.0–5.5%', ibu:'32–38', mash:'66–67°C', ferm:'18–21°C' },
+    ingredientes:[
+      {id:'pale-ale',        cantidad:1000},
+      {id:'crystal',         cantidad:150},
+      {id:'light-chocolate', cantidad:120},
+      {id:'roasted-barley',  cantidad:130},
+      {id:'northern-brewer', cantidad:12},
+      {id:'s-33',            cantidad:1},
+      {id:'cold-brew',       cantidad:450},
+      {id:'azucar',          cantidad:20},
+    ],
+    procedimiento:[
+      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L de agua a 72–74 °C (strike).', why:'Al añadir granos baja a la temperatura de macerado.'},
+      {paso:'Macerado', detalle:'Añade todos los granos. Mantén 66–67 °C durante 60 min. pH objetivo 5,2–5,5.', why:'Temperatura que da cuerpo medio-alto típico de stout.'},
+      {paso:'Mash-out', detalle:'Sube a 75–76 °C durante 10 min.', why:'Detiene enzimas y facilita el drenado.'},
+      {paso:'Drenado', detalle:'Escurre la bolsa. Opcional: dunk sparge 1–1,5 L a 75–78 °C.', why:'Recupera azúcares y sube un poco la eficiencia.'},
+      {paso:'Hervido 60 min', detalle:'A los 60 min añade 12 g Northern Brewer. Últimos 10–15 min: Whirlfloc si tienes.', why:'Isomeriza amargor limpio y elimina DMS.'},
+      {paso:'Enfriado', detalle:'Baja a 18–20 °C lo más rápido posible.', why:'Evita contaminación y forma cold break.'},
+      {paso:'Fermentación', detalle:'Siembra S-33. Fermenta a 18–21 °C. Primaria ~5–8 días.', why:'S-33 da cuerpo y fruta moderada; rango ideal de la levadura.'},
+      {paso:'Café', detalle:'Días 4–6 (o cerca del FG) añade cold brew filtrado (450 ml).', why:'Conserva aroma a café fresco sin “cocinarlo”.'},
+      {paso:'Embotellado', detalle:'Cuando FG esté estable (≈1.014–1.018): 18–20 g azúcar de cebado en 5,3 L.', why:'Carbonatación media de stout (~2,0–2,2 vol).'},
+    ]
+  },
+  {
+    id:'r-belgian', nombre:'Belgian Blonde Albahaca-Romero', variante:'All Grain · 15 botellas',
+    tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
+    descripcion:'Belgian Blonde con notas frescas de albahaca y romero. Pale Ale + Wheat + Aromatic + Honey malt + Crystal 10 + avena. Northern Brewer y S-33.',
+    fermentandoDays:7, fermenterDays:11,
+    params:{ og:'1.050–1.055', fg:'1.010–1.014', abv:'5.2–5.6%', ibu:'22–28', mash:'66–67°C', ferm:'18–21°C' },
+    ingredientes:[
+      {id:'pale-ale',        cantidad:900},
+      {id:'wheat',           cantidad:200},
+      {id:'aromatic',        cantidad:100},
+      {id:'honey-malt',      cantidad:80},
+      {id:'crystal-10',      cantidad:50},
+      {id:'avena',           cantidad:50},
+      {id:'northern-brewer', cantidad:9},
+      {id:'albahaca',        cantidad:10},
+      {id:'romero',          cantidad:4},
+      {id:'s-33',            cantidad:1},
+      {id:'azucar',          cantidad:23},
+    ],
+    procedimiento:[
+      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L a 72–73 °C.', why:'Strike para llegar a 66–67 °C al mash-in.'},
+      {paso:'Macerado', detalle:'Añade todos los granos (avena incluida, sin hervir aparte). 66–67 °C × 60 min. pH 5,2–5,5.', why:'Cuerpo medio belga; trigo y avena mejoran espuma.'},
+      {paso:'Mash-out', detalle:'75–76 °C durante 10 min.', why:'Facilita drenado del mosto viscoso con trigo/avena.'},
+      {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional 1–1,5 L a 75–78 °C.', why:'Mejora eficiencia en lote pequeño.'},
+      {paso:'Hervido 60 min', detalle:'Min 60: 9 g Northern Brewer. Últimos 5 min: mitad de albahaca + todo el romero. Flameout: resto de albahaca.', why:'Amargor limpio; hierbas al final conservan aroma fresco.'},
+      {paso:'Enfriado', detalle:'Baja a 18–20 °C rápidamente.', why:'Protege el mosto y permite sembrar levadura pronto.'},
+      {paso:'Fermentación', detalle:'Siembra S-33 a 18–21 °C. Primaria 5–8 días.', why:'Ésteres frutales moderados típicos belgas.'},
+      {paso:'Hierbas extra (opc.)', detalle:'Días 4–6 puedes añadir 3–4 g albahaca 2–3 días y retirar.', why:'Más aroma fresco tipo dry-hop.'},
+      {paso:'Embotellado', detalle:'FG estable ≈1.010–1.014. Priming 22–25 g azúcar (~2,4–2,6 vol).', why:'Carbonatación belga media-alta.'},
+    ]
+  },
+  {
+    id:'r-honey-wheat', nombre:'Honey Wheat', variante:'All Grain · 15 botellas',
+    tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
+    descripcion:'Trigo ligero y refrescante con notas de miel. Pale Ale + Wheat + Honey malt + avena + miel al final del hervido. Northern Brewer y S-33.',
+    fermentandoDays:7, fermenterDays:11,
+    params:{ og:'1.048–1.052', fg:'1.010–1.014', abv:'5.0–5.3%', ibu:'15–18', mash:'66–67°C', ferm:'18–20°C' },
+    ingredientes:[
+      {id:'pale-ale',        cantidad:700},
+      {id:'wheat',           cantidad:500},
+      {id:'honey-malt',      cantidad:80},
+      {id:'avena',           cantidad:50},
+      {id:'crystal-10',      cantidad:30},
+      {id:'northern-brewer', cantidad:6},
+      {id:'miel',            cantidad:175},
+      {id:'s-33',            cantidad:1},
+      {id:'azucar',          cantidad:23},
+    ],
+    procedimiento:[
+      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L a 72–73 °C.', why:'Strike temperature para mash a 66–67 °C.'},
+      {paso:'Macerado', detalle:'Añade granos (avena sin hervir aparte). 66–67 °C × 60 min. pH 5,2–5,5.', why:'Cuerpo agradable sin pesadez; trigo aporta espuma.'},
+      {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Detiene enzimas y mejora drenado.'},
+      {paso:'Drenado', detalle:'Escurre. Dunk sparge opcional 1–1,5 L a 75–78 °C.', why:'Recupera extracto en BIAB pequeño.'},
+      {paso:'Hervido 60 min', detalle:'Min 60: 6 g Northern Brewer. Flameout o últimos 5 min: apaga fuego y añade 175 g miel disuelta en mosto caliente.', why:'Miel al final conserva aroma; hervirla mucho lo reduce.'},
+      {paso:'Enfriado', detalle:'Baja a 18–20 °C lo antes posible.', why:'Evita contaminación y off-flavors.'},
+      {paso:'Fermentación', detalle:'Siembra S-33 a 18–20 °C. Primaria 5–8 días. FG ≈1.010–1.014.', why:'Rango limpio para wheat con toque frutal suave.'},
+      {paso:'Embotellado', detalle:'Priming 22–24 g azúcar en 5,3 L (~2,4–2,5 vol).', why:'Carbonatación media-alta, refrescante.'},
+    ]
+  },
+  {
+    id:'r-dry-stout', nombre:'Dry Stout', variante:'All Grain · 15 botellas',
+    tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
+    descripcion:'Stout seca estilo irlandés. Pale Ale + Roasted Barley + Light Chocolate + Crystal + avena. Amargor limpio con Northern Brewer y S-33.',
+    fermentandoDays:7, fermenterDays:11,
+    params:{ og:'1.042–1.048', fg:'1.010–1.014', abv:'4.2–4.6%', ibu:'30–36', mash:'66–67°C', ferm:'18–20°C' },
+    ingredientes:[
+      {id:'pale-ale',        cantidad:950},
+      {id:'roasted-barley',  cantidad:120},
+      {id:'light-chocolate', cantidad:60},
+      {id:'crystal',         cantidad:50},
+      {id:'avena',           cantidad:40},
+      {id:'northern-brewer', cantidad:12},
+      {id:'s-33',            cantidad:1},
+      {id:'azucar',          cantidad:19},
+    ],
+    procedimiento:[
+      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L a 72–73 °C.', why:'Strike para mash a 66–67 °C.'},
+      {paso:'Macerado', detalle:'Añade todos los granos. 66–67 °C × 60 min (o 65 °C si la quieres más seca). pH 5,2–5,5.', why:'Equilibrio fermentables/cuerpo; roasted barley da el carácter dry.'},
+      {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Facilita el drenado.'},
+      {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional.', why:'Mejora eficiencia.'},
+      {paso:'Hervido 60 min', detalle:'Min 60: 12 g Northern Brewer. Sin adiciones de aroma.', why:'Amargor limpio que equilibra el tostado, sin floral fuerte.'},
+      {paso:'Enfriado', detalle:'Baja a 18–20 °C rápidamente.', why:'Cold break y seguridad microbiológica.'},
+      {paso:'Fermentación', detalle:'Siembra S-33 a 18–20 °C. Primaria 5–8 días. FG ≈1.010–1.014.', why:'S-33 da algo más de cuerpo que Irish clásica, pero funciona.'},
+      {paso:'Embotellado', detalle:'Priming 18–20 g azúcar (~2,0–2,2 vol).', why:'Stouts se carbonatan menos que wheat o belgas.'},
+    ]
+  },
+];
+
+const SABORES_ENTREGA = [
+  'Coffee Stout',
+  'Belgian Blonde Albahaca-Romero',
+  'Honey Wheat',
+  'Dry Stout',
+];
+
+const ETAPAS_LOTE = [
+  { key:'elaboracion', label:'Día de elaboración', color:'#b5652d' },
+  { key:'fermentando', label:'Fermentando', color:'#c9862f' },
+  { key:'reposo', label:'Reposo / embotellado', color:'#8a7a3f' },
+  { key:'carbonatando', label:'Carbonatando', color:'#6b7a4f' },
+  { key:'listo', label:'Listo — a disfrutar', color:'#4f6b52' },
+];
+
+let state = {
+  config: { ollaW:1800, precioElec:0, horasProceso:2.5, litrosAgua:12, precioAgua:0 },
+  inventario: {},
+  // escalas[recipeId] = número de botellas deseadas (base = bottleYield de la receta)
+  escalas: {},
+  fermentadores: [ {id:1,estado:'libre'}, {id:2,estado:'libre'}, {id:3,estado:'libre'} ],
+  entregas: [],
+  entregasCliente: 'Pizzería Locondus',
+  lotes: [], // bitácora de lotes
+  openLoteId: null,
+  currentTab: 'recetas',
+};
+
+// ======================= FIREBASE =======================
+const firebaseConfig = {
+  apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
+  authDomain: "cervecera-tierra-grande.firebaseapp.com",
+  databaseURL: "https://cervecera-tierra-grande-default-rtdb.firebaseio.com",
+  projectId: "cervecera-tierra-grande",
+  storageBucket: "cervecera-tierra-grande.firebasestorage.app",
+  messagingSenderId: "243316014670",
+  appId: "1:243316014670:web:0545ce0b0cb81f7af54d1f",
+  measurementId: "G-8NDCKNGPB0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+async function loadKey(key, fallback) {
+  try {
+    const snapshot = await db.ref('bitacora/' + key).once('value');
+    const val = snapshot.val();
+    if (val !== null && val !== undefined) return val;
+    return fallback;
+  } catch (e) {
+    console.error('Error cargando ' + key, e);
+    return fallback;
+  }
+}
+
+async function saveKey(key, value) {
+  try {
+    await db.ref('bitacora/' + key).set(value);
+  } catch (e) {
+    console.error('Error guardando ' + key, e);
+  }
+}
+
+async function init(){
+  state.config = await loadKey('config-costos', state.config);
+  state.inventario = await loadKey('inventario-unico', {});
+  CATALOGO.forEach(c=>{
+    if(!state.inventario[c.id]) state.inventario[c.id] = {stock:0, precio:0};
+  });
+  state.escalas = await loadKey('escalas-recetas', {});
+  RECETAS.forEach(r=>{
+    if(state.escalas[r.id] === undefined || state.escalas[r.id] === null){
+      state.escalas[r.id] = r.bottleYield;
+    }
+  });
+  state.fermentadores = await loadKey('fermentadores', state.fermentadores);
+  state.entregas = await loadKey('entregas', []);
+  state.entregasCliente = await loadKey('entregas-cliente', state.entregasCliente);
+  state.lotes = await loadKey('lotes-bitacora', []);
+  renderTabs();
+  renderContent();
+}
+
+function fmtMoney(n){
+  if(isNaN(n)) n = 0;
+  return '$' + n.toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function todayISO(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+function daysBetween(iso){
+  if(!iso) return 0;
+  const start = new Date(iso + 'T00:00:00');
+  const now = new Date();
+  const nowMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.floor((nowMid - start) / 86400000);
+}
+function getReceta(id){ return RECETAS.find(r=>r.id===id); }
+function getCatalogo(id){ return CATALOGO.find(c=>c.id===id); }
+
+/** Factor de escala: botellas deseadas / botellas base de la receta */
+function getScaleFactor(recipeId){
+  const receta = getReceta(recipeId);
+  if(!receta || !receta.bottleYield) return 1;
+  const botellas = state.escalas[recipeId];
+  const n = (botellas !== undefined && botellas !== null) ? Number(botellas) : receta.bottleYield;
+  if(!n || n <= 0) return 1;
+  return n / receta.bottleYield;
+}
+
+function getBotellas(recipeId){
+  const receta = getReceta(recipeId);
+  const n = state.escalas[recipeId];
+  if(n !== undefined && n !== null && Number(n) > 0) return Number(n);
+  return receta ? receta.bottleYield : 15;
+}
+
+function getVolumenL(recipeId){
+  const receta = getReceta(recipeId);
+  return (receta.volumenL || 5.5) * getScaleFactor(recipeId);
+}
+
+/** Cantidad escalada de un ingrediente (g/ml redondeados; levadura mínimo 1) */
+function scaleCantidad(recipeId, ing){
+  const factor = getScaleFactor(recipeId);
+  const raw = ing.cantidad * factor;
+  if(ing.id === 's-33') return Math.max(1, Math.round(raw));
+  if(raw < 10) return Math.round(raw * 10) / 10; // 1 decimal para cantidades pequeñas
+  return Math.round(raw);
+}
+
+function getScaledIngredients(recipeId){
+  const receta = getReceta(recipeId);
+  return receta.ingredientes.map(ing=>({
+    id: ing.id,
+    cantidad: scaleCantidad(recipeId, ing),
+  }));
+}
+
+function calcLotesPosibles(recipeId){
+  const receta = getReceta(recipeId);
+  let minLotes = Infinity;
+  getScaledIngredients(recipeId).forEach(ing=>{
+    const cat = getCatalogo(ing.id);
+    if(cat && cat.fresco) return;
+    const stock = (state.inventario[ing.id] && state.inventario[ing.id].stock) || 0;
+    const lotes = ing.cantidad > 0 ? Math.floor(stock / ing.cantidad) : 0;
+    if(lotes < minLotes) minLotes = lotes;
+  });
+  if(!isFinite(minLotes)) minLotes = 0;
+  return minLotes;
+}
+
+function calcCostoIngredientes(recipeId){
+  let total = 0;
+  getScaledIngredients(recipeId).forEach(ing=>{
+    const precio = (state.inventario[ing.id] && state.inventario[ing.id].precio) || 0;
+    total += precio * ing.cantidad;
+  });
+  return total;
+}
+
+function calcCostoElectricidad(){
+  return (state.config.ollaW/1000) * state.config.horasProceso * (state.config.precioElec || 0);
+}
+function calcCostoAgua(){
+  return state.config.litrosAgua * (state.config.precioAgua || 0);
+}
+function calcCostoLote(recipeId){
+  const ing = calcCostoIngredientes(recipeId);
+  const elec = calcCostoElectricidad();
+  const agua = calcCostoAgua();
+  return { ing, elec, agua, total: ing + elec + agua };
+}
+
+function renderTabs(){
+  const tabs = [
+    {id:'recetas', label:'Recetas'},
+    {id:'inventario', label:'Inventario'},
+    {id:'fermentadores', label:'Fermentadores'},
+    {id:'bitacora', label:'Bitácora'},
+    {id:'entregas', label:'Entregas'},
+  ];
+  const el = document.getElementById('tabs');
+  el.innerHTML = tabs.map(t => `<button data-tab="${t.id}" class="${state.currentTab===t.id?'active':''}">${t.label}</button>`).join('');
+  el.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.currentTab = btn.dataset.tab;
+      renderTabs();
+      renderContent();
+    });
+  });
+}
+
+function renderContent(){
+  const el = document.getElementById('content');
+  if(state.currentTab === 'recetas') { el.innerHTML = renderRecetas(); bindEscalaEvents(); }
+  else if(state.currentTab === 'inventario') { el.innerHTML = renderInventario(); bindInventarioEvents(); bindEscalaEvents(); }
+  else if(state.currentTab === 'fermentadores') { el.innerHTML = renderFermentadores(); bindFermentadoresEvents(); }
+  else if(state.currentTab === 'bitacora') { el.innerHTML = renderBitacora(); bindBitacoraEvents(); }
+  else if(state.currentTab === 'entregas') { el.innerHTML = renderEntregas(); bindEntregasEvents(); }
+}
+
+function bindEscalaEvents(){
+  document.querySelectorAll('.escala-input').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const id = inp.dataset.escala;
+      let n = parseInt(inp.value, 10);
+      if(!n || n < 1) n = 1;
+      state.escalas[id] = n;
+      await saveKey('escalas-recetas', state.escalas);
+      renderContent();
+    });
+  });
+}
+
+function renderRecetas(){
+  const cards = RECETAS.map(r=>{
+    const lotes = calcLotesPosibles(r.id);
+    const costo = calcCostoLote(r.id);
+    const p = r.params || {};
+    const botellas = getBotellas(r.id);
+    const vol = getVolumenL(r.id);
+    const factor = getScaleFactor(r.id);
+    const scaled = getScaledIngredients(r.id);
+    const ingHtml = scaled.map(i=>{
+      const cat = getCatalogo(i.id);
+      const base = r.ingredientes.find(x=>x.id===i.id);
+      const baseTxt = factor !== 1 && base ? ` <span class="muted">(base ${base.cantidad})</span>` : '';
+      return `<li><span>${cat.nombre}${cat.fresco?' <span class="badge fresh">FRESCO</span>':''}${baseTxt}</span><span>${i.cantidad}${cat.unidad}</span></li>`;
+    }).join('');
+    const procHtml = (r.procedimiento || []).map((s, idx)=>`
+      <li>
+        <span class="proc-num">${idx+1}.</span>
+        <div>
+          <strong>${s.paso}:</strong> ${s.detalle}
+          ${s.why ? `<span class="proc-why">→ ${s.why}</span>` : ''}
+        </div>
+      </li>
+    `).join('');
+    return `
+      <div class="receta-card">
+        <h3>${r.nombre}</h3>
+        <div class="receta-meta">
+          <span class="badge copper">${r.variante}</span>
+          <span class="badge green">${botellas} botellas</span>
+          <span class="badge green">${vol.toFixed(1)}L</span>
+          <span class="badge ${lotes>=1?'green':'red'}">${lotes} lote${lotes===1?'':'s'} posible${lotes===1?'':'s'}</span>
+          ${factor!==1 ? `<span class="badge copper">×${factor.toFixed(2)}</span>` : ''}
+        </div>
+        <div class="fecha-row" style="margin:8px 0 4px;">
+          <div class="config-field" style="max-width:160px;">
+            <label>Botellas (escala receta)</label>
+            <input type="number" min="1" step="1" value="${botellas}" data-escala="${r.id}" class="escala-input">
+          </div>
+          <div class="muted" style="align-self:center;font-size:0.8em;">Base: ${r.bottleYield} bot. · ${r.volumenL} L<br>Vol. actual ≈ ${vol.toFixed(1)} L</div>
+        </div>
+        <div class="receta-desc">${r.descripcion}<br><span class="muted">⏱ ${r.tiempoTotal} · Costo lote escalado ${fmtMoney(costo.total)}</span></div>
+        <div class="params">
+          <span>OG ${p.og||'—'}</span>
+          <span>FG ${p.fg||'—'}</span>
+          <span>ABV ${p.abv||'—'}</span>
+          <span>IBU ${p.ibu||'—'}</span>
+          <span>Mash ${p.mash||'—'}</span>
+          <span>Ferm ${p.ferm||'—'}</span>
+        </div>
+        <div class="proc-title">Ingredientes ${factor!==1?'(escalados)':''}</div>
+        <ul class="ing-list">${ingHtml}</ul>
+        <div class="proc-title">Procedimiento de elaboración</div>
+        <ul class="proc-list">${procHtml}</ul>
+      </div>
+    `;
+  }).join('');
+  return `<div class="card"><h2>Recetas de referencia</h2><p class="muted">Cambia el número de <strong>botellas</strong> y los ingredientes se recalculan solos (base 15 bot. / 5,5 L). El inventario y costos usan esas cantidades.</p></div>
+          <div class="grid-recetas">${cards}</div>`;
+}
+
+function renderInventario(){
+  const hoy = todayISO();
+  const resumenLotes = RECETAS.map(r=>{
+    const lotes = calcLotesPosibles(r.id);
+    const costo = calcCostoLote(r.id);
+    const botellas = getBotellas(r.id);
+    const vol = getVolumenL(r.id);
+    const costoBotella = botellas > 0 ? costo.total / botellas : 0;
+    const fermLibres = state.fermentadores.some(f=>f.estado==='libre');
+    const puede = lotes >= 1 && fermLibres;
+    const factor = getScaleFactor(r.id);
+    return `
+      <div class="lote-check">
+        <h4>${r.nombre}</h4>
+        <div class="fecha-row" style="margin-bottom:6px;">
+          <div class="config-field" style="max-width:140px;">
+            <label>Botellas del lote</label>
+            <input type="number" min="1" step="1" value="${botellas}" data-escala="${r.id}" class="escala-input">
+          </div>
+          <div class="muted" style="align-self:center;font-size:0.8em;">≈ ${vol.toFixed(1)} L · factor ×${factor.toFixed(2)} (base ${r.bottleYield} bot.)</div>
+        </div>
+        <div class="stats-row" style="margin:8px 0;">
+          <div class="stat-box"><span class="num">${lotes}</span><span class="lbl">Lotes posibles</span></div>
+          <div class="stat-box"><span class="num">${fmtMoney(costo.total)}</span><span class="lbl">Costo por lote</span></div>
+          <div class="stat-box"><span class="num">${fmtMoney(costoBotella)}</span><span class="lbl">Costo por botella</span></div>
+        </div>
+        <div class="desglose">ingredientes ${fmtMoney(costo.ing)} · electricidad ${fmtMoney(costo.elec)} · agua ${fmtMoney(costo.agua)}</div>
+        <div class="fecha-row">
+          <div class="config-field">
+            <label>Fecha de elaboración</label>
+            <input type="date" id="fecha-reg-${r.id}" value="${hoy}" max="${hoy}">
+          </div>
+          <button class="btn" data-registrar="${r.id}" ${puede?'':'disabled'}>Registrar cocimiento</button>
+        </div>
+        ${!puede ? `<div class="muted" style="margin-top:6px;">${lotes<1?'Stock insuficiente para este tamaño de lote. ':''}${!fermLibres?'No hay fermentadores libres.':''}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  const ingRows = CATALOGO.map(cat=>{
+    const data = state.inventario[cat.id] || {stock:0, precio:0};
+    let usadoEn = [];
+    RECETAS.forEach(r=>{
+      const scaled = getScaledIngredients(r.id).find(i=>i.id===cat.id);
+      if(scaled && !cat.fresco){
+        const lotes = scaled.cantidad > 0 ? Math.floor((data.stock||0)/scaled.cantidad) : 0;
+        usadoEn.push(`${r.nombre.split(' ')[0]}: ${lotes}`);
+      }
+    });
+    return `
+      <div class="ing-row">
+        <div>
+          <div class="ing-name">${cat.nombre} ${cat.fresco?'<span class="badge fresh">FRESCO</span>':''}</div>
+          <div class="muted">${cat.unidad}${usadoEn.length ? ' · lotes c/escala: ' + usadoEn.join(' · ') : ''}</div>
+        </div>
+        <div>
+          <label class="muted" style="font-size:0.7em;">Stock</label>
+          <input type="number" min="0" step="any" value="${data.stock||0}" data-ing="${cat.id}" data-field="stock" class="inv-input">
+        </div>
+        <div>
+          <label class="muted" style="font-size:0.7em;">Precio / ${cat.unidad}</label>
+          <input type="number" min="0" step="any" value="${data.precio||0}" data-ing="${cat.id}" data-field="precio" class="inv-input">
+        </div>
+        <div class="ing-aporta">${fmtMoney((data.precio||0)*(data.stock||0))} valor</div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="card">
+      <h2>Inventario único</h2>
+      <p class="muted">Un solo almacén compartido. Puedes registrar elaboraciones con fecha de hoy o días anteriores.</p>
+      <div class="config-grid">
+        <div class="config-field"><label>Potencia olla (W)</label><input type="number" id="cfg-ollaW" value="${state.config.ollaW}"></div>
+        <div class="config-field"><label>Precio electricidad ($/kWh)</label><input type="number" step="0.01" id="cfg-precioElec" value="${state.config.precioElec}"></div>
+        <div class="config-field"><label>Horas de uso</label><input type="number" step="0.1" id="cfg-horasProceso" value="${state.config.horasProceso}"></div>
+        <div class="config-field"><label>Litros de agua</label><input type="number" step="0.1" id="cfg-litrosAgua" value="${state.config.litrosAgua}"></div>
+        <div class="config-field"><label>Precio agua ($/litro)</label><input type="number" step="0.01" id="cfg-precioAgua" value="${state.config.precioAgua}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Lotes posibles por receta</h2>
+      ${resumenLotes}
+    </div>
+
+    <div class="card">
+      <h2>Stock de ingredientes</h2>
+      <p class="muted">Edita stock y precio unitario. Los cambios se guardan automáticamente.</p>
+      ${ingRows}
+    </div>
+  `;
+}
+
+function bindInventarioEvents(){
+  const cfgIds = ['ollaW','precioElec','horasProceso','litrosAgua','precioAgua'];
+  cfgIds.forEach(id=>{
+    const elx = document.getElementById('cfg-'+id);
+    if(elx){
+      elx.addEventListener('change', async ()=>{
+        state.config[id] = parseFloat(elx.value) || 0;
+        await saveKey('config-costos', state.config);
+        renderContent();
+      });
+    }
+  });
+
+  document.querySelectorAll('.inv-input').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const ingId = inp.dataset.ing;
+      const field = inp.dataset.field;
+      if(!state.inventario[ingId]) state.inventario[ingId] = {stock:0, precio:0};
+      state.inventario[ingId][field] = parseFloat(inp.value) || 0;
+      await saveKey('inventario-unico', state.inventario);
+      renderContent();
+    });
+  });
+
+  document.querySelectorAll('[data-registrar]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const recipeId = btn.dataset.registrar;
+      const fechaInput = document.getElementById('fecha-reg-'+recipeId);
+      const fecha = (fechaInput && fechaInput.value) ? fechaInput.value : todayISO();
+      await registrarCocimiento(recipeId, fecha);
+    });
+  });
+}
+
+async function registrarCocimiento(recipeId, fecha){
+  const lotesPos = calcLotesPosibles(recipeId);
+  const fermentadorLibre = state.fermentadores.find(f=>f.estado==='libre');
+  if(lotesPos < 1 || !fermentadorLibre) return;
+
+  const fechaInicio = fecha || todayISO();
+  const scaled = getScaledIngredients(recipeId);
+  const receta = getReceta(recipeId);
+  const botellas = getBotellas(recipeId);
+
+  scaled.forEach(ing=>{
+    const cat = getCatalogo(ing.id);
+    if(cat && cat.fresco) return;
+    if(!state.inventario[ing.id]) state.inventario[ing.id] = {stock:0, precio:0};
+    state.inventario[ing.id].stock = Math.max(0, (state.inventario[ing.id].stock || 0) - ing.cantidad);
+  });
+  await saveKey('inventario-unico', state.inventario);
+
+  fermentadorLibre.estado = 'ocupado';
+  fermentadorLibre.recetaId = recipeId;
+  fermentadorLibre.fechaInicio = fechaInicio;
+  fermentadorLibre.botellas = botellas;
+  await saveKey('fermentadores', state.fermentadores);
+
+  // Crear entrada automática en bitácora
+  const loteId = 'l' + Date.now();
+  state.lotes.unshift({
+    id: loteId,
+    nombre: receta.nombre + ' · ' + botellas + ' bot.',
+    estilo: receta.nombre,
+    recetaId: recipeId,
+    fecha: fechaInicio,
+    botellas: botellas,
+    fermentadorId: fermentadorLibre.id,
+    og: (receta.params && receta.params.og) ? receta.params.og.split('–')[0].trim() : '',
+    fg: '',
+    notas: '',
+    etapa: 'fermentando',
+  });
+  fermentadorLibre.loteId = loteId;
+  await saveKey('lotes-bitacora', state.lotes);
+  await saveKey('fermentadores', state.fermentadores);
+
+  renderContent();
+}
+
+function etapaInfo(key){
+  return ETAPAS_LOTE.find(s=>s.key===key) || ETAPAS_LOTE[0];
+}
+
+function fmtDateBit(d){
+  if(!d) return '—';
+  const dt = new Date(d + 'T00:00:00');
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function escapeHTML(str){
+  return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderBitacora(){
+  const hoy = todayISO();
+  const recetaOpts = RECETAS.map(r=>`<option value="${r.nombre}">${r.nombre}</option>`).join('');
+
+  let listHtml;
+  if(state.lotes.length === 0){
+    listHtml = `<div class="muted" style="padding:20px 0;">Aún no hay lotes. Se crean al <strong>Registrar cocimiento</strong> en Inventario, o con el botón de abajo.</div>`;
+  } else {
+    listHtml = state.lotes.map(l=>{
+      const st = etapaInfo(l.etapa);
+      const isOpen = state.openLoteId === l.id;
+      const dias = daysBetween(l.fecha);
+      const isDone = l.etapa === 'listo';
+      return `
+        <div class="lote-card ${isOpen?'open':''}" data-lote-card="${l.id}">
+          <div class="lote-top" data-toggle-lote="${l.id}">
+            <div>
+              <div class="lote-title">${escapeHTML(l.nombre || 'Lote')}</div>
+              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}</div>
+            </div>
+            <div class="stage-badge ${isDone?'stage-done':''}" style="background:${st.color}">
+              <span class="airlock-dot"></span>${st.label}
+            </div>
+          </div>
+          <div class="lote-body">
+            <div class="field-row">
+              <div class="field">
+                <label>Etapa</label>
+                <select data-lote-field="etapa" data-lote-id="${l.id}">
+                  ${ETAPAS_LOTE.map(s=>`<option value="${s.key}" ${s.key===l.etapa?'selected':''}>${s.label}</option>`).join('')}
+                </select>
+              </div>
+              <div class="field">
+                <label>Fecha elaboración</label>
+                <input type="date" data-lote-field="fecha" data-lote-id="${l.id}" value="${l.fecha||hoy}" max="${hoy}">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>OG</label>
+                <input type="text" data-lote-field="og" data-lote-id="${l.id}" value="${escapeHTML(l.og||'')}" placeholder="1.050">
+              </div>
+              <div class="field">
+                <label>FG</label>
+                <input type="text" data-lote-field="fg" data-lote-id="${l.id}" value="${escapeHTML(l.fg||'')}" placeholder="1.012">
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:10px;">
+              <label>Notas</label>
+              <textarea data-lote-field="notas" data-lote-id="${l.id}" placeholder="Sabor, aroma, temperatura, ideas para el próximo lote...">${escapeHTML(l.notas||'')}</textarea>
+            </div>
+            <div class="lote-actions">
+              <button class="btn secondary" data-del-lote="${l.id}" style="border-color:var(--red);color:var(--red);">Eliminar</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  return `
+    <div class="card">
+      <h2>Bitácora de lotes</h2>
+      <p class="muted">Historial de cada cocimiento: densidades, etapa y notas. Al registrar un cocimiento en Inventario se crea un lote aquí automáticamente.</p>
+      <button class="btn" id="btn-toggle-nuevo-lote">+ Registrar lote manual</button>
+    </div>
+    <div class="card new-lote-form" id="nuevo-lote-form">
+      <h3>Nuevo lote manual</h3>
+      <div class="entregas-form">
+        <div class="config-field"><label>Nombre</label><input type="text" id="nl-nombre" placeholder="Coffee Stout · 15 bot."></div>
+        <div class="config-field"><label>Estilo / receta</label><select id="nl-estilo">${recetaOpts}<option value="Otro">Otro</option></select></div>
+        <div class="config-field"><label>Fecha</label><input type="date" id="nl-fecha" value="${hoy}" max="${hoy}"></div>
+        <div class="config-field"><label>Botellas</label><input type="number" id="nl-botellas" value="15" min="1"></div>
+        <div class="config-field"><label>OG</label><input type="text" id="nl-og" placeholder="1.050"></div>
+        <div><button class="btn" id="btn-guardar-lote-manual">Guardar</button>
+            <button class="btn secondary" id="btn-cancel-lote-manual">Cancelar</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Lotes registrados (${state.lotes.length})</h3>
+      ${listHtml}
+    </div>
+  `;
+}
+
+function bindBitacoraEvents(){
+  const form = document.getElementById('nuevo-lote-form');
+  document.getElementById('btn-toggle-nuevo-lote').addEventListener('click', ()=>{
+    form.classList.toggle('show');
+  });
+  document.getElementById('btn-cancel-lote-manual').addEventListener('click', ()=>{
+    form.classList.remove('show');
+  });
+  document.getElementById('btn-guardar-lote-manual').addEventListener('click', async ()=>{
+    const nombre = document.getElementById('nl-nombre').value.trim() || document.getElementById('nl-estilo').value;
+    const estilo = document.getElementById('nl-estilo').value;
+    const fecha = document.getElementById('nl-fecha').value || todayISO();
+    const botellas = parseInt(document.getElementById('nl-botellas').value, 10) || 15;
+    const og = document.getElementById('nl-og').value.trim();
+    state.lotes.unshift({
+      id: 'l' + Date.now(),
+      nombre, estilo, fecha, botellas,
+      og, fg:'', notas:'', etapa:'elaboracion',
+      recetaId: null, fermentadorId: null,
+    });
+    await saveKey('lotes-bitacora', state.lotes);
+    form.classList.remove('show');
+    renderContent();
+  });
+
+  document.querySelectorAll('[data-toggle-lote]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.toggleLote;
+      state.openLoteId = state.openLoteId === id ? null : id;
+      renderContent();
+    });
+  });
+
+  document.querySelectorAll('[data-lote-field]').forEach(inp=>{
+    const evt = inp.tagName === 'TEXTAREA' || inp.tagName === 'SELECT' ? 'change' : 'change';
+    inp.addEventListener(evt, async ()=>{
+      const id = inp.dataset.loteId;
+      const field = inp.dataset.loteField;
+      const lote = state.lotes.find(x=>x.id===id);
+      if(!lote) return;
+      lote[field] = inp.value;
+      await saveKey('lotes-bitacora', state.lotes);
+      if(field === 'etapa' || field === 'fecha') renderContent();
+    });
+  });
+
+  document.querySelectorAll('[data-del-lote]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.delLote;
+      state.lotes = state.lotes.filter(x=>x.id!==id);
+      if(state.openLoteId === id) state.openLoteId = null;
+      await saveKey('lotes-bitacora', state.lotes);
+      renderContent();
+    });
+  });
+}
+
+function renderFermentadores(){
+  const hoy = todayISO();
+  const optionsHtml = RECETAS.map(r=>`<option value="${r.id}">${r.nombre}</option>`).join('');
+
+  const cards = state.fermentadores.map(f=>{
+    if(f.estado === 'libre'){
+      return `
+        <div class="ferm-card">
+          <h3>Fermentador ${f.id}</h3>
+          <span class="badge green">LIBRE</span>
+          <select class="ferm-select" data-ferm="${f.id}">${optionsHtml}</select>
+          <div class="config-field" style="text-align:left;margin-bottom:8px;">
+            <label>Fecha de elaboración</label>
+            <input type="date" class="ferm-date" data-fecha-assign="${f.id}" value="${hoy}" max="${hoy}">
+          </div>
+          <button class="btn" data-assign="${f.id}">Asignar lote</button>
+        </div>
+      `;
+    } else {
+      const receta = getReceta(f.recetaId);
+      const dias = daysBetween(f.fechaInicio);
+      let etapa, color;
+      if(dias < receta.fermentandoDays){ etapa = 'Fermentando'; color = 'var(--copper)'; }
+      else if(dias < receta.fermenterDays){ etapa = 'Reposo / integración'; color = 'var(--green)'; }
+      else { etapa = 'Listo para embotellar'; color = 'var(--green-dark)'; }
+      return `
+        <div class="ferm-card">
+          <h3>Fermentador ${f.id}</h3>
+          <span class="badge copper">OCUPADO</span>
+          <div style="margin-top:8px;font-weight:600;">${receta.nombre}${f.botellas ? ` · ${f.botellas} bot.` : ''}</div>
+          <div class="config-field" style="text-align:left;margin:10px 0 4px;">
+            <label>Fecha de elaboración</label>
+            <input type="date" class="ferm-date" data-edit-fecha="${f.id}" value="${f.fechaInicio || hoy}" max="${hoy}">
+          </div>
+          <div class="muted">${dias} día${dias===1?'':'s'} desde el inicio</div>
+          <div class="etapa-pill" style="background:${color};">${etapa}</div><br>
+          <button class="btn secondary" data-release="${f.id}">Liberar fermentador</button>
+        </div>
+      `;
+    }
+  }).join('');
+
+  return `<div class="card"><h2>Fermentadores</h2><p class="muted">Puedes elegir o corregir la fecha de elaboración (hoy o días anteriores). La etapa se recalcula según esa fecha.</p></div>
+          <div class="grid-ferm">${cards}</div>`;
+}
+
+function bindFermentadoresEvents(){
+  document.querySelectorAll('[data-assign]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const fermId = parseInt(btn.dataset.assign);
+      const select = document.querySelector(`select[data-ferm="${fermId}"]`);
+      const fechaInput = document.querySelector(`input[data-fecha-assign="${fermId}"]`);
+      const recetaId = select.value;
+      const fecha = (fechaInput && fechaInput.value) ? fechaInput.value : todayISO();
+      const ferm = state.fermentadores.find(f=>f.id===fermId);
+      ferm.estado = 'ocupado';
+      ferm.recetaId = recetaId;
+      ferm.fechaInicio = fecha;
+      await saveKey('fermentadores', state.fermentadores);
+      renderContent();
+    });
+  });
+
+  document.querySelectorAll('[data-edit-fecha]').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const fermId = parseInt(inp.dataset.editFecha);
+      const ferm = state.fermentadores.find(f=>f.id===fermId);
+      if(ferm && inp.value){
+        ferm.fechaInicio = inp.value;
+        await saveKey('fermentadores', state.fermentadores);
+        renderContent();
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-release]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const fermId = parseInt(btn.dataset.release);
+      const ferm = state.fermentadores.find(f=>f.id===fermId);
+      ferm.estado = 'libre';
+      delete ferm.recetaId;
+      delete ferm.fechaInicio;
+      await saveKey('fermentadores', state.fermentadores);
+      renderContent();
+    });
+  });
+}
+
+function sugerirSabor(){
+  if(state.entregas.length === 0) return SABORES_ENTREGA[0];
+  const ultimo = state.entregas[0].sabor;
+  const idx = SABORES_ENTREGA.indexOf(ultimo);
+  return SABORES_ENTREGA[(idx + 1) % SABORES_ENTREGA.length] || SABORES_ENTREGA[0];
+}
+
+function imprimirRecibo(entrega){
+  const cliente = state.entregasCliente || 'Cliente';
+  const folio = 'R-' + (entrega.fecha || '').replace(/-/g,'') + '-' + String(Math.floor(Math.random()*900)+100);
+  const estadoPago = entrega.pagado ? 'PAGADO' : 'PENDIENTE DE PAGO';
+  const precioUnit = entrega.botellas > 0 ? (entrega.precio / entrega.botellas) : 0;
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Recibo ${folio}</title>
+<style>
+  @page { size: 80mm auto; margin: 8mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    color: #1a1a1a;
+    padding: 12px;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  .center { text-align: center; }
+  .right { text-align: right; }
+  .bold { font-weight: bold; }
+  h1 {
+    font-size: 16px;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+  .sub { font-size: 11px; color: #444; margin-bottom: 10px; }
+  hr {
+    border: none;
+    border-top: 1px dashed #333;
+    margin: 10px 0;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+  }
+  .label { color: #555; }
+  .total {
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 6px;
+  }
+  .estado {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border: 1.5px solid #333;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .estado.pagado { background: #e8f5e9; }
+  .estado.pendiente { background: #fff3e0; }
+  .footer {
+    margin-top: 14px;
+    font-size: 10px;
+    color: #666;
+    text-align: center;
+  }
+  .actions {
+    margin-top: 18px;
+    text-align: center;
+  }
+  .actions button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 18px;
+    margin: 0 4px;
+    cursor: pointer;
+    border: 1px solid #333;
+    background: #fff;
+    border-radius: 4px;
+  }
+  .actions button.primary {
+    background: #2a1d13;
+    color: #fff;
+  }
+  @media print {
+    .actions { display: none; }
+    body { padding: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="center">
+    <h1>CERVECERÍA TIERRA GRANDE</h1>
+    <div class="sub">nano brewery</div>
+  </div>
+  <hr>
+  <div class="row"><span class="label">Folio</span><span>${folio}</span></div>
+  <div class="row"><span class="label">Fecha</span><span>${entrega.fecha || '—'}</span></div>
+  <div class="row"><span class="label">Cliente</span><span class="bold">${cliente}</span></div>
+  <hr>
+  <div class="row"><span class="label">Producto</span><span class="bold">${entrega.sabor || '—'}</span></div>
+  <div class="row"><span class="label">Cantidad</span><span>${entrega.botellas || 0} botellas (355 ml)</span></div>
+  <div class="row"><span class="label">Precio unitario</span><span>${fmtMoney(precioUnit)}</span></div>
+  <hr>
+  <div class="row total"><span>TOTAL</span><span>${fmtMoney(entrega.precio || 0)}</span></div>
+  <div class="center">
+    <span class="estado ${entrega.pagado ? 'pagado' : 'pendiente'}">${estadoPago}</span>
+  </div>
+  <hr>
+  <div class="footer">
+    Gracias por su preferencia<br>
+    Cervecería Tierra Grande · nano brewery
+  </div>
+  <div class="actions">
+    <button class="primary" onclick="window.print()">Imprimir</button>
+    <button onclick="window.close()">Cerrar</button>
+  </div>
+</body>
+</html>`;
+
+  const w = window.open('', '_blank', 'width=420,height=640');
+  if(!w){
+    alert('Permite ventanas emergentes para imprimir el recibo.');
+    return;
+  }
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+}
+
+function renderEntregas(){
+  const totalBotellas = state.entregas.reduce((s,e)=>s + (e.botellas||0), 0);
+  const totalPendiente = state.entregas.filter(e=>!e.pagado).reduce((s,e)=>s + (e.precio||0), 0);
+  const sugerido = sugerirSabor();
+  const saborOptions = SABORES_ENTREGA.map(s=>`<option value="${s}" ${s===sugerido?'selected':''}>${s}</option>`).join('');
+
+  const historial = state.entregas.map((e, idx)=>`
+    <div class="hist-item">
+      <div><strong>${e.sabor}</strong></div>
+      <div class="muted">${e.fecha}</div>
+      <div>${e.botellas} bot.</div>
+      <div>${fmtMoney(e.precio)}</div>
+      <div><span class="pill-pago ${e.pagado?'pagado':'pendiente'}" data-toggle-pago="${idx}">${e.pagado?'Pagado':'Pendiente'}</span></div>
+      <div><button class="icon-btn print" data-print="${idx}" title="Imprimir recibo">🖨</button></div>
+      <div><button class="icon-btn" data-delete="${idx}" title="Eliminar">🗑</button></div>
+    </div>
+  `).join('') || '<p class="muted">Aún no hay entregas registradas.</p>';
+
+  return `
+    <div class="card">
+      <h2>Entregas</h2>
+      <div class="config-field" style="max-width:320px;">
+        <label>Cliente</label>
+        <input type="text" id="entregas-cliente" value="${state.entregasCliente}">
+      </div>
+      <p class="muted">Contrato base: 15 botellas por entrega. Usa el botón 🖨 para imprimir recibo del cliente.</p>
+      <div class="stats-row">
+        <div class="stat-box"><span class="num">${totalBotellas}</span><span class="lbl">Botellas entregadas (histórico)</span></div>
+        <div class="stat-box"><span class="num">${fmtMoney(totalPendiente)}</span><span class="lbl">Pendiente de cobro</span></div>
+      </div>
+
+      <h3>Nueva entrega</h3>
+      <div class="entregas-form">
+        <div class="config-field"><label>Fecha</label><input type="date" id="ent-fecha" value="${todayISO()}"></div>
+        <div class="config-field"><label>Sabor</label><select id="ent-sabor">${saborOptions}</select></div>
+        <div class="config-field"><label>Botellas</label><input type="number" id="ent-botellas" value="15"></div>
+        <div class="config-field"><label>Precio del lote</label><input type="number" id="ent-precio" value="600"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn" id="btn-agregar-entrega">Agregar entrega</button>
+          <button class="btn secondary" id="btn-agregar-imprimir">Agregar e imprimir</button>
+        </div>
+      </div>
+
+      <h3>Historial</h3>
+      ${historial}
+    </div>
+  `;
+}
+
+function bindEntregasEvents(){
+  const clienteInput = document.getElementById('entregas-cliente');
+  clienteInput.addEventListener('change', async ()=>{
+    state.entregasCliente = clienteInput.value;
+    await saveKey('entregas-cliente', state.entregasCliente);
+  });
+
+  async function agregarEntrega(imprimir){
+    const fecha = document.getElementById('ent-fecha').value || todayISO();
+    const sabor = document.getElementById('ent-sabor').value;
+    const botellas = parseInt(document.getElementById('ent-botellas').value) || 0;
+    const precio = parseFloat(document.getElementById('ent-precio').value) || 0;
+    const nueva = { fecha, sabor, botellas, precio, pagado:false };
+    state.entregas.unshift(nueva);
+    await saveKey('entregas', state.entregas);
+    if(imprimir) imprimirRecibo(nueva);
+    renderContent();
+  }
+
+  document.getElementById('btn-agregar-entrega').addEventListener('click', async ()=>{
+    await agregarEntrega(false);
+  });
+  document.getElementById('btn-agregar-imprimir').addEventListener('click', async ()=>{
+    await agregarEntrega(true);
+  });
+
+  document.querySelectorAll('[data-toggle-pago]').forEach(pill=>{
+    pill.addEventListener('click', async ()=>{
+      const idx = parseInt(pill.dataset.togglePago);
+      state.entregas[idx].pagado = !state.entregas[idx].pagado;
+      await saveKey('entregas', state.entregas);
+      renderContent();
+    });
+  });
+
+  document.querySelectorAll('[data-print]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.print);
+      imprimirRecibo(state.entregas[idx]);
+    });
+  });
+
+  document.querySelectorAll('[data-delete]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const idx = parseInt(btn.dataset.delete);
+      state.entregas.splice(idx,1);
+      await saveKey('entregas', state.entregas);
+      renderContent();
+    });
+  });
+}
+
+init();
+</script>
+</body>
+</html>
+
