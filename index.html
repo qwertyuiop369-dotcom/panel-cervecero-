@@ -369,17 +369,85 @@ button.btn.danger{background:var(--red);}
   .ing-row > *:nth-child(1){grid-column:1/3;}
   .hist-item{grid-template-columns:1fr 1fr;}
 }
+
+/* Login */
+.login-screen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+}
+.login-card{
+  background:var(--card);
+  border-radius:14px;
+  padding:36px 32px;
+  text-align:center;
+  max-width:380px;
+  width:100%;
+  box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+.login-card h1{
+  font-family:'Fraunces',serif;
+  font-size:1.6em;
+  margin:0 0 6px;
+  color:var(--ink);
+}
+.login-card > p{
+  color:var(--muted);
+  font-size:0.88em;
+  margin:0 0 28px;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:0.5px;
+}
+.btn-google{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:0.95em;
+  padding:12px 22px;
+  border-radius:8px;
+  border:1.5px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+.btn-google:hover{background:#f8f4eb;border-color:var(--copper-light);}
+.login-error{color:var(--red);font-size:0.85em;margin-top:14px;min-height:1.2em;}
+.user-bar{margin-top:10px;}
 </style>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
-<div class="wrap">
+<!-- Pantalla de login -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <h1>🍺 Cervecería Tierra Grande</h1>
+    <p>Bitácora de operación · nano brewery</p>
+    <button id="btn-google-login" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Entrar con Google
+    </button>
+    <p id="login-error" class="login-error"></p>
+  </div>
+</div>
+
+<div class="wrap" id="app-wrap" style="display:none;">
   <header class="top">
     <h1>🍺 Cervecería Tierra Grande</h1>
     <p>Bitácora de operación · nano brewery</p>
+    <div class="user-bar">
+      <span id="user-email" class="muted"></span>
+      <button id="btn-logout" class="btn secondary" style="margin-top:8px;padding:6px 14px;font-size:0.8em;">Cerrar sesión</button>
+    </div>
   </header>
   <nav class="tabs" id="tabs"></nav>
   <div id="content"><div class="loading">Cargando bitácora…</div></div>
@@ -565,6 +633,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const auth = firebase.auth();
 
 async function loadKey(key, fallback) {
   try {
@@ -584,6 +653,42 @@ async function saveKey(key, value) {
   } catch (e) {
     console.error('Error guardando ' + key, e);
   }
+}
+
+function showApp(user) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-wrap').style.display = 'block';
+  const emailEl = document.getElementById('user-email');
+  if (emailEl) emailEl.textContent = user.email || user.displayName || 'Usuario';
+  init();
+}
+
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-wrap').style.display = 'none';
+}
+
+function setupAuthUI() {
+  document.getElementById('btn-google-login').addEventListener('click', async () => {
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      await auth.signInWithPopup(provider);
+    } catch (e) {
+      console.error(e);
+      errEl.textContent = e.message || 'Error al iniciar sesión';
+    }
+  });
+
+  document.getElementById('btn-logout').addEventListener('click', async () => {
+    await auth.signOut();
+  });
+
+  auth.onAuthStateChanged(user => {
+    if (user) showApp(user);
+    else showLogin();
+  });
 }
 
 async function init(){
@@ -621,8 +726,62 @@ function daysBetween(iso){
   const nowMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   return Math.floor((nowMid - start) / 86400000);
 }
+function addDaysISO(iso, days){
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+function fmtDateCorta(iso){
+  if(!iso) return '—';
+  const dt = new Date(iso + 'T00:00:00');
+  if(isNaN(dt)) return iso;
+  return dt.toLocaleDateString('es-MX', {day:'numeric', month:'short'});
+}
 function getReceta(id){ return RECETAS.find(r=>r.id===id); }
 function getCatalogo(id){ return CATALOGO.find(c=>c.id===id); }
+
+/** Ingredientes con stock bajo: alcanzan para ≤1 lote (en al menos una receta que los usa) */
+function getStockBajo(){
+  const bajos = [];
+  CATALOGO.forEach(cat=>{
+    if(cat.fresco) return;
+    const stock = (state.inventario[cat.id] && state.inventario[cat.id].stock) || 0;
+    let minLotes = Infinity;
+    RECETAS.forEach(r=>{
+      const scaled = getScaledIngredients(r.id).find(i=>i.id===cat.id);
+      if(scaled && scaled.cantidad > 0){
+        const lotes = Math.floor(stock / scaled.cantidad);
+        if(lotes < minLotes) minLotes = lotes;
+      }
+    });
+    if(isFinite(minLotes) && minLotes <= 1){
+      bajos.push({ id: cat.id, nombre: cat.nombre, unidad: cat.unidad, stock, lotes: minLotes });
+    }
+  });
+  return bajos;
+}
+
+/** Costo estimado de un lote de bitácora a precios actuales */
+function calcCostoLoteHistorico(lote){
+  if(!lote || !lote.recetaId) return 0;
+  const receta = getReceta(lote.recetaId);
+  if(!receta) return 0;
+  const botellas = lote.botellas || receta.bottleYield || 15;
+  const factor = botellas / (receta.bottleYield || 15);
+  let total = 0;
+  receta.ingredientes.forEach(ing=>{
+    const cat = getCatalogo(ing.id);
+    if(cat && cat.fresco) return;
+    const precio = (state.inventario[ing.id] && state.inventario[ing.id].precio) || 0;
+    let cant = ing.cantidad * factor;
+    if(ing.id === 's-33') cant = Math.max(1, Math.round(cant));
+    else if(cant < 10) cant = Math.round(cant * 10) / 10;
+    else cant = Math.round(cant);
+    total += precio * cant;
+  });
+  total += calcCostoElectricidad() + calcCostoAgua();
+  return total;
+}
 
 /** Factor de escala: botellas deseadas / botellas base de la receta */
 function getScaleFactor(recipeId){
@@ -869,7 +1028,19 @@ function renderInventario(){
     `;
   }).join('');
 
+  const stockBajo = getStockBajo();
+  const alertaStock = stockBajo.length === 0 ? '' : `
+    <div class="card" style="background:#f2ddd6;border-left:5px solid var(--red);">
+      <h2 style="color:var(--red);margin:0 0 8px;">⚠ Stock bajo</h2>
+      <p class="muted" style="margin:0 0 10px;">Estos ingredientes alcanzan para 1 lote o menos (según las escalas actuales):</p>
+      <ul style="margin:0;padding-left:18px;font-family:'IBM Plex Mono',monospace;font-size:0.85em;">
+        ${stockBajo.map(b=>`<li><strong>${b.nombre}</strong>: ${b.stock}${b.unidad} · ${b.lotes===0?'0 lotes':'máx. 1 lote'}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+
   return `
+    ${alertaStock}
     <div class="card">
       <h2>Inventario único</h2>
       <p class="muted">Un solo almacén compartido. Puedes registrar elaboraciones con fecha de hoy o días anteriores.</p>
@@ -1152,20 +1323,35 @@ function renderFermentadores(){
     } else {
       const receta = getReceta(f.recetaId);
       const dias = daysBetween(f.fechaInicio);
+      const diasListo = (receta && receta.fermenterDays) || 11;
+      const fechaListo = f.fechaInicio ? addDaysISO(f.fechaInicio, diasListo) : null;
+      const diasHastaListo = fechaListo ? Math.ceil((new Date(fechaListo+'T00:00:00') - new Date(hoy+'T00:00:00')) / 86400000) : 0;
+      const fermDays = (receta && receta.fermentandoDays) || 7;
+      const fermTotal = (receta && receta.fermenterDays) || 11;
       let etapa, color;
-      if(dias < receta.fermentandoDays){ etapa = 'Fermentando'; color = 'var(--copper)'; }
-      else if(dias < receta.fermenterDays){ etapa = 'Reposo / integración'; color = 'var(--green)'; }
+      if(dias < fermDays){ etapa = 'Fermentando'; color = 'var(--copper)'; }
+      else if(dias < fermTotal){ etapa = 'Reposo / integración'; color = 'var(--green)'; }
       else { etapa = 'Listo para embotellar'; color = 'var(--green-dark)'; }
+      let listoTxt;
+      if(diasHastaListo > 0){
+        listoTxt = `Listo aprox. el ${fmtDateCorta(fechaListo)} (en ${diasHastaListo} día${diasHastaListo===1?'':'s'})`;
+      } else if(diasHastaListo === 0){
+        listoTxt = `Listo aprox. hoy (${fmtDateCorta(fechaListo)})`;
+      } else {
+        listoTxt = `Listo desde el ${fmtDateCorta(fechaListo)} (hace ${Math.abs(diasHastaListo)} día${Math.abs(diasHastaListo)===1?'':'s'})`;
+      }
+      const nombreReceta = receta ? receta.nombre : (f.recetaId || 'Lote');
       return `
         <div class="ferm-card">
           <h3>Fermentador ${f.id}</h3>
           <span class="badge copper">OCUPADO</span>
-          <div style="margin-top:8px;font-weight:600;">${receta.nombre}${f.botellas ? ` · ${f.botellas} bot.` : ''}</div>
+          <div style="margin-top:8px;font-weight:600;">${nombreReceta}${f.botellas ? ` · ${f.botellas} bot.` : ''}</div>
           <div class="config-field" style="text-align:left;margin:10px 0 4px;">
             <label>Fecha de elaboración</label>
             <input type="date" class="ferm-date" data-edit-fecha="${f.id}" value="${f.fechaInicio || hoy}" max="${hoy}">
           </div>
           <div class="muted">${dias} día${dias===1?'':'s'} desde el inicio</div>
+          <div class="muted" style="margin-top:4px;font-weight:600;color:var(--ink);">${listoTxt}</div>
           <div class="etapa-pill" style="background:${color};">${etapa}</div><br>
           <button class="btn secondary" data-release="${f.id}">Liberar fermentador</button>
         </div>
@@ -1356,6 +1542,9 @@ function imprimirRecibo(entrega){
 function renderEntregas(){
   const totalBotellas = state.entregas.reduce((s,e)=>s + (e.botellas||0), 0);
   const totalPendiente = state.entregas.filter(e=>!e.pagado).reduce((s,e)=>s + (e.precio||0), 0);
+  const totalIngresos = state.entregas.reduce((s,e)=>s + (e.precio||0), 0);
+  const totalCostoLotes = (state.lotes || []).reduce((s,l)=>s + calcCostoLoteHistorico(l), 0);
+  const gananciaNeta = totalIngresos - totalCostoLotes;
   const sugerido = sugerirSabor();
   const saborOptions = SABORES_ENTREGA.map(s=>`<option value="${s}" ${s===sugerido?'selected':''}>${s}</option>`).join('');
 
@@ -1382,7 +1571,9 @@ function renderEntregas(){
       <div class="stats-row">
         <div class="stat-box"><span class="num">${totalBotellas}</span><span class="lbl">Botellas entregadas (histórico)</span></div>
         <div class="stat-box"><span class="num">${fmtMoney(totalPendiente)}</span><span class="lbl">Pendiente de cobro</span></div>
+        <div class="stat-box"><span class="num" style="color:${gananciaNeta>=0?'var(--green-dark)':'var(--red)'}">${fmtMoney(gananciaNeta)}</span><span class="lbl">Ganancia neta est.</span></div>
       </div>
+      <p class="muted" style="font-size:0.78em;margin-top:4px;">Ganancia estimada = ingresos de entregas (${fmtMoney(totalIngresos)}) − costo de lotes en Bitácora a precios actuales (${fmtMoney(totalCostoLotes)}). No es contabilidad exacta.</p>
 
       <h3>Nueva entrega</h3>
       <div class="entregas-form">
@@ -1454,7 +1645,7 @@ function bindEntregasEvents(){
   });
 }
 
-init();
+setupAuthUI();
 </script>
 </body>
 </html>
