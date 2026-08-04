@@ -379,6 +379,10 @@ button.btn.danger{background:var(--red);}
   .hist-item{grid-template-columns:1fr 1fr;}
 }
 </style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -556,31 +560,38 @@ let state = {
   currentTab: 'recetas',
 };
 
-async function loadKey(key, fallback){
-  try{
-    if (window.storage && window.storage.get) {
-      const res = await window.storage.get(key, false);
-      if(res && res.value !== undefined && res.value !== null){
-        return JSON.parse(res.value);
-      }
-    } else {
-      const raw = localStorage.getItem(key);
-      if (raw) return JSON.parse(raw);
-    }
+// ======================= FIREBASE =======================
+const firebaseConfig = {
+  apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
+  authDomain: "cervecera-tierra-grande.firebaseapp.com",
+  databaseURL: "https://cervecera-tierra-grande-default-rtdb.firebaseio.com",
+  projectId: "cervecera-tierra-grande",
+  storageBucket: "cervecera-tierra-grande.firebasestorage.app",
+  messagingSenderId: "243316014670",
+  appId: "1:243316014670:web:0545ce0b0cb81f7af54d1f",
+  measurementId: "G-8NDCKNGPB0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+async function loadKey(key, fallback) {
+  try {
+    const snapshot = await db.ref('bitacora/' + key).once('value');
+    const val = snapshot.val();
+    if (val !== null && val !== undefined) return val;
     return fallback;
-  }catch(e){
+  } catch (e) {
+    console.error('Error cargando ' + key, e);
     return fallback;
   }
 }
-async function saveKey(key, value){
-  try{
-    if (window.storage && window.storage.set) {
-      await window.storage.set(key, JSON.stringify(value), false);
-    } else {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-  }catch(e){
-    console.error('Error guardando '+key, e);
+
+async function saveKey(key, value) {
+  try {
+    await db.ref('bitacora/' + key).set(value);
+  } catch (e) {
+    console.error('Error guardando ' + key, e);
   }
 }
 
