@@ -3,33 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cervecería Tierra Grande</title>
+<title>Cervecería El Origen</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root{
-  /* Roland TR-808 palette */
-  --bg1:#1a1a1a;
-  --bg2:#0e0e0e;
-  --card:#252525;
-  --card-soft:#2e2e2e;
-  --copper:#FF6200;
-  --copper-light:#FF8533;
-  --ink:#E8E8E8;
-  --muted:#8a8a8a;
-  --green:#3ecf4a;
-  --green-dark:#2a9e36;
-  --red:#E6392B;
-  --line:#404040;
-  --panel:#1f1f1f;
-  --silver:#b0b0b0;
+  --bg1:#241a15;
+  --bg2:#160d09;
+  --card:#f3e9d2;
+  --card-soft:#ece0c4;
+  --copper:#b5652d;
+  --copper-light:#d4923f;
+  --ink:#2a1d13;
+  --muted:#7a6650;
+  --green:#4f7a52;
+  --green-dark:#345a37;
+  --red:#a8442f;
+  --line:#d9c9a3;
 }
 *{box-sizing:border-box;}
 body{
   margin:0;
   min-height:100vh;
   background:linear-gradient(160deg,var(--bg1),var(--bg2));
-  font-family:'Rajdhani',sans-serif;
+  font-family:'Inter',sans-serif;
   color:var(--ink);
   padding-bottom:60px;
 }
@@ -37,20 +34,19 @@ body{
 
 header.top{text-align:center;margin-bottom:22px;}
 header.top h1{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-weight:700;
   font-size:2.1em;
-  color:var(--copper);
+  color:var(--card);
   margin:0 0 4px;
-  letter-spacing:2px;
-  text-transform:uppercase;
+  letter-spacing:0.5px;
 }
 header.top p{
-  color:var(--silver);
+  color:var(--copper-light);
   font-size:0.92em;
   margin:0;
-  font-family:'Share Tech Mono',monospace;
-  letter-spacing:2px;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:1px;
   text-transform:uppercase;
 }
 
@@ -62,78 +58,73 @@ nav.tabs{
   margin-bottom:24px;
 }
 nav.tabs button{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Inter',sans-serif;
   font-weight:600;
   font-size:0.9em;
   padding:10px 20px;
-  border-radius:4px;
-  border:1.5px solid #3a3a3a;
-  background:var(--panel);
-  color:var(--silver);
+  border-radius:8px;
+  border:1.5px solid rgba(212,146,63,0.35);
+  background:rgba(255,255,255,0.04);
+  color:var(--copper-light);
   cursor:pointer;
   transition:all 0.15s ease;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
 }
-nav.tabs button:hover{background:#333;border-color:var(--copper);color:var(--copper-light);}
+nav.tabs button:hover{background:rgba(212,146,63,0.12);}
 nav.tabs button.active{
   background:var(--copper);
   border-color:var(--copper);
-  color:#111;
+  color:#fff8ec;
 }
 
 .card{
   background:var(--card);
-  border-radius:6px;
+  border-radius:12px;
   padding:20px 22px;
   margin-bottom:16px;
-  box-shadow:0 4px 16px rgba(0,0,0,0.4);
-  border:1px solid var(--line);
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  border:1px solid rgba(0,0,0,0.05);
 }
 .card h2{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-size:1.3em;
   margin:0 0 6px;
   color:var(--ink);
-  letter-spacing:1px;
-  text-transform:uppercase;
 }
 .card h3{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-size:1.05em;
   margin:16px 0 8px;
   color:var(--copper);
-  letter-spacing:0.5px;
 }
 .muted{color:var(--muted);font-size:0.88em;}
 .badge{
   display:inline-block;
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.72em;
   padding:2px 8px;
-  border-radius:3px;
+  border-radius:20px;
   font-weight:600;
 }
-.badge.fresh{background:#3a3520;color:#e8c84a;}
-.badge.green{background:#1a3320;color:var(--green);}
-.badge.red{background:#3a1a18;color:var(--red);}
-.badge.copper{background:#3a2208;color:var(--copper-light);}
+.badge.fresh{background:#e4d7b0;color:#7a5a1f;}
+.badge.green{background:#e1ead9;color:var(--green-dark);}
+.badge.red{background:#f2ddd6;color:var(--red);}
+.badge.copper{background:#f0ddc7;color:var(--copper);}
 
 .grid-recetas{display:grid;grid-template-columns:1fr;gap:16px;}
 .receta-card{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:18px 20px;
   border:1px solid var(--line);
 }
 .receta-card h3{margin-top:0;}
 .receta-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
 .receta-desc{font-size:0.88em;color:var(--muted);margin-bottom:10px;line-height:1.4;}
-.ing-list{list-style:none;padding:0;margin:0 0 12px;font-family:'Share Tech Mono',monospace;font-size:0.8em;}
+.ing-list{list-style:none;padding:0;margin:0 0 12px;font-family:'IBM Plex Mono',monospace;font-size:0.8em;}
 .ing-list li{padding:3px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;gap:8px;}
 .ing-list li:last-child{border-bottom:none;}
 .proc-title{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Fraunces',serif;
   font-size:0.95em;
   color:var(--copper);
   margin:12px 0 6px;
@@ -155,7 +146,7 @@ nav.tabs button.active{
 }
 .proc-list li:last-child{border-bottom:none;}
 .proc-num{
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-weight:600;
   color:var(--copper);
   font-size:0.9em;
@@ -172,27 +163,27 @@ nav.tabs button.active{
   flex-wrap:wrap;
   gap:8px;
   margin:8px 0 4px;
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.75em;
 }
 .params span{
-  background:var(--panel);
+  background:#fff;
   border:1px solid var(--line);
-  border-radius:3px;
+  border-radius:6px;
   padding:3px 8px;
-  color:var(--silver);
+  color:var(--muted);
 }
 
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0;}
 .stat-box{
-  background:var(--panel);
-  border-radius:6px;
+  background:#fff;
+  border-radius:10px;
   padding:14px;
   text-align:center;
   border:1px solid var(--line);
 }
 .stat-box .num{
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-weight:600;
   font-size:1.5em;
   color:var(--copper);
@@ -201,7 +192,7 @@ nav.tabs button.active{
 .stat-box .lbl{font-size:0.75em;color:var(--muted);margin-top:4px;display:block;}
 
 .desglose{
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.82em;
   color:var(--muted);
   margin:6px 0 14px;
@@ -220,51 +211,45 @@ nav.tabs button.active{
 .ing-row input[type=number]{
   width:100%;
   padding:6px 8px;
-  border-radius:3px;
+  border-radius:6px;
   border:1px solid var(--line);
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.95em;
-  background:var(--panel);
-  color:var(--ink);
 }
 .ing-name{font-weight:600;}
-.ing-aporta{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.85em;}
+.ing-aporta{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:0.85em;}
 
 .config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:6px;}
-.config-field label{display:block;font-size:0.75em;color:var(--muted);margin-bottom:4px;font-family:'Share Tech Mono',monospace;}
+.config-field label{display:block;font-size:0.75em;color:var(--muted);margin-bottom:4px;font-family:'IBM Plex Mono',monospace;}
 .config-field input, .config-field select{
   width:100%;
   padding:8px 10px;
-  border-radius:3px;
+  border-radius:6px;
   border:1px solid var(--line);
-  font-family:'Share Tech Mono',monospace;
-  background:var(--panel);
-  color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;
 }
 
 button.btn{
-  font-family:'Chakra Petch',sans-serif;
+  font-family:'Inter',sans-serif;
   font-weight:600;
   padding:10px 18px;
-  border-radius:4px;
+  border-radius:8px;
   border:none;
   background:var(--copper);
-  color:#111;
+  color:#fff8ec;
   cursor:pointer;
   font-size:0.9em;
   margin-top:10px;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
 }
 button.btn:hover{background:var(--copper-light);}
-button.btn:disabled{background:#444;color:#777;cursor:not-allowed;}
+button.btn:disabled{background:#c9bda3;color:#8a7d64;cursor:not-allowed;}
 button.btn.secondary{background:transparent;border:1.5px solid var(--copper);color:var(--copper);}
-button.btn.danger{background:var(--red);color:#fff;}
+button.btn.danger{background:var(--red);}
 
 .grid-ferm{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
 .ferm-card{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:18px;
   border:1px solid var(--line);
   text-align:center;
@@ -273,27 +258,25 @@ button.btn.danger{background:var(--red);color:#fff;}
 .ferm-select, .ferm-date{
   width:100%;
   padding:8px;
-  border-radius:3px;
+  border-radius:6px;
   border:1px solid var(--line);
-  font-family:'Rajdhani',sans-serif;
+  font-family:'Inter',sans-serif;
   margin-bottom:8px;
-  background:var(--panel);
-  color:var(--ink);
 }
 .etapa-pill{
   display:inline-block;
   padding:5px 14px;
-  border-radius:3px;
-  font-family:'Share Tech Mono',monospace;
+  border-radius:20px;
+  font-family:'IBM Plex Mono',monospace;
   font-size:0.78em;
   font-weight:600;
-  color:#111;
+  color:#fff;
   margin:8px 0;
 }
 
 .entregas-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end;}
 .entregas-form .config-field input,.entregas-form select{
-  width:100%;padding:8px;border-radius:3px;border:1px solid var(--line);font-family:'Rajdhani',sans-serif;background:var(--panel);color:var(--ink);
+  width:100%;padding:8px;border-radius:6px;border:1px solid var(--line);font-family:'Inter',sans-serif;
 }
 .hist-item{
   display:grid;
@@ -308,14 +291,14 @@ button.btn.danger{background:var(--red);color:#fff;}
 .pill-pago{
   cursor:pointer;
   padding:4px 10px;
-  border-radius:3px;
+  border-radius:20px;
   font-size:0.75em;
   font-weight:700;
   text-align:center;
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
 }
-.pill-pago.pagado{background:#1a3320;color:var(--green);}
-.pill-pago.pendiente{background:#3a1a18;color:var(--red);}
+.pill-pago.pagado{background:#e1ead9;color:var(--green-dark);}
+.pill-pago.pendiente{background:#f2ddd6;color:var(--red);}
 .icon-btn{background:none;border:none;cursor:pointer;font-size:1em;color:var(--muted);padding:4px;}
 .icon-btn:hover{color:var(--red);}
 .icon-btn.print:hover{color:var(--copper);}
@@ -326,27 +309,26 @@ button.btn.danger{background:var(--red);color:#fff;}
 .loading{
   text-align:center;
   color:var(--copper-light);
-  font-family:'Share Tech Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   padding:60px 20px;
 }
 
 .lote-card{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:16px 18px;
   border:1px solid var(--line);
   border-left:5px solid var(--copper);
   margin-bottom:12px;
 }
-.lote-card.open{background:#333;}
+.lote-card.open{background:#fff;}
 .lote-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;cursor:pointer;}
-.lote-title{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:1.1em;margin:0 0 2px;}
-.lote-meta{font-family:'Share Tech Mono',monospace;font-size:0.75em;color:var(--muted);}
+.lote-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.1em;margin:0 0 2px;}
+.lote-meta{font-family:'IBM Plex Mono',monospace;font-size:0.75em;color:var(--muted);}
 .stage-badge{
-  font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:0.72em;
-  padding:5px 10px;border-radius:3px;white-space:nowrap;color:#111;
+  font-family:'Inter',sans-serif;font-weight:600;font-size:0.72em;
+  padding:5px 10px;border-radius:20px;white-space:nowrap;color:#fff;
   display:inline-flex;align-items:center;gap:6px;
-  text-transform:uppercase;letter-spacing:0.5px;
 }
 .airlock-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:bubble 1.8s ease-in-out infinite;}
 @keyframes bubble{0%,100%{opacity:.4;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
@@ -356,8 +338,8 @@ button.btn.danger{background:var(--red);color:#fff;}
 .lote-body .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .lote-body .field-row-3{grid-template-columns:1fr 1fr 1fr;}
 .lote-body .abv-display{
-  font-family:'Share Tech Mono',monospace;font-size:0.95em;font-weight:600;color:var(--copper);
-  padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:3px;
+  font-family:'IBM Plex Mono',monospace;font-size:0.95em;font-weight:600;color:var(--copper);
+  padding:8px 10px;background:var(--card-soft);border:1px solid var(--line);border-radius:6px;
 }
 .alerta-stock{border-left:4px solid var(--red);}
 .alerta-stock h2{color:var(--red);}
@@ -366,21 +348,21 @@ button.btn.danger{background:var(--red);color:#fff;}
 .lote-body .field label{display:block;font-size:0.72em;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
 .lote-body .field select,.lote-body .field input,.lote-body .field textarea{
   width:100%;padding:7px 9px;border-radius:6px;border:1px solid var(--line);
-  font-family:'Share Tech Mono',monospace;font-size:0.85em;background:var(--panel);color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:#fff;color:var(--ink);
 }
-.lote-body .field textarea{font-family:'Rajdhani',sans-serif;min-height:56px;resize:vertical;}
+.lote-body .field textarea{font-family:'Inter',sans-serif;min-height:56px;resize:vertical;}
 .lote-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap;}
 .new-lote-form{display:none;margin-bottom:14px;}
 .new-lote-form.show{display:block;}
 
 .lote-check{
   background:var(--card-soft);
-  border-radius:6px;
+  border-radius:10px;
   padding:14px 16px;
   border:1px solid var(--line);
   margin-bottom:10px;
 }
-.lote-check h4{margin:0 0 6px;font-family:'Chakra Petch',sans-serif;}
+.lote-check h4{margin:0 0 6px;font-family:'Fraunces',serif;}
 .fecha-row{
   display:flex;
   gap:10px;
@@ -397,11 +379,15 @@ button.btn.danger{background:var(--red);color:#fff;}
   .hist-item{grid-template-columns:1fr 1fr;}
 }
 </style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>🍺 Cervecería Tierra Grande</h1>
+    <h1>🍺 Cervecería El Origen</h1>
     <p>Bitácora de operación · nano brewery</p>
   </header>
   <nav class="tabs" id="tabs"></nav>
@@ -574,31 +560,38 @@ let state = {
   currentTab: 'recetas',
 };
 
-async function loadKey(key, fallback){
-  try{
-    if (window.storage && window.storage.get) {
-      const res = await window.storage.get(key, false);
-      if(res && res.value !== undefined && res.value !== null){
-        return JSON.parse(res.value);
-      }
-    } else {
-      const raw = localStorage.getItem(key);
-      if (raw) return JSON.parse(raw);
-    }
+// ======================= FIREBASE =======================
+const firebaseConfig = {
+  apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
+  authDomain: "cervecera-tierra-grande.firebaseapp.com",
+  databaseURL: "https://cervecera-tierra-grande-default-rtdb.firebaseio.com",
+  projectId: "cervecera-tierra-grande",
+  storageBucket: "cervecera-tierra-grande.firebasestorage.app",
+  messagingSenderId: "243316014670",
+  appId: "1:243316014670:web:0545ce0b0cb81f7af54d1f",
+  measurementId: "G-8NDCKNGPB0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+async function loadKey(key, fallback) {
+  try {
+    const snapshot = await db.ref('bitacora/' + key).once('value');
+    const val = snapshot.val();
+    if (val !== null && val !== undefined) return val;
     return fallback;
-  }catch(e){
+  } catch (e) {
+    console.error('Error cargando ' + key, e);
     return fallback;
   }
 }
-async function saveKey(key, value){
-  try{
-    if (window.storage && window.storage.set) {
-      await window.storage.set(key, JSON.stringify(value), false);
-    } else {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-  }catch(e){
-    console.error('Error guardando '+key, e);
+
+async function saveKey(key, value) {
+  try {
+    await db.ref('bitacora/' + key).set(value);
+  } catch (e) {
+    console.error('Error guardando ' + key, e);
   }
 }
 
@@ -1403,7 +1396,7 @@ function imprimirRecibo(entrega){
 </head>
 <body>
   <div class="center">
-    <h1>CERVECERÍA TIERRA GRANDE</h1>
+    <h1>CERVECERÍA EL ORIGEN</h1>
     <div class="sub">nano brewery</div>
   </div>
   <hr>
