@@ -369,10 +369,6 @@ button.btn.danger{background:var(--red);color:#fff;}
   font-family:'Share Tech Mono',monospace;font-size:0.85em;background:var(--panel);color:var(--ink);
 }
 .lote-body .field textarea{font-family:'Rajdhani',sans-serif;min-height:56px;resize:vertical;}
-.qr-box{background:#252525;border:1px solid var(--line);border-radius:6px;padding:12px;text-align:center;}
-.qr-box canvas{max-width:180px;margin:0 auto 10px;border-radius:4px;}
-.qr-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-.qr-actions .btn{text-decoration:none;display:inline-block;}
 .lote-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap;}
 .new-lote-form{display:none;margin-bottom:14px;}
 .new-lote-form.show{display:block;}
@@ -405,8 +401,6 @@ button.btn.danger{background:var(--red);color:#fff;}
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -440,10 +434,6 @@ const CATALOGO = [
 ];
 
 const RECETAS = [
-  // ⚠️ ADVERTENCIA: esta lista es la fuente maestra de recetas. También existen copias
-  // manuales (solo con los campos necesarios) en lote.html y estado-produccion.html.
-  // Si cambias ingredientes, ABV, IBU o días de fermentación aquí, actualiza esos
-  // archivos también o quedarán desincronizados.
   {
     id:'r-stout', nombre:'Coffee Stout', variante:'All Grain · 15 botellas',
     tiempoTotal:'4-5 semanas + macerado', bottleYield:15, volumenL:5.5,
@@ -589,10 +579,6 @@ let state = {
 };
 
 // ======================= FIREBASE =======================
-// Cambia esto por la URL real donde publicaste tu sitio en GitHub Pages
-// (sin diagonal al final), ej: "https://tu-usuario.github.io/panel-cervecero"
-const SITIO_BASE = "https://qwertyuiop369-dotcom.github.io/panel-cervecero-";
-
 const firebaseConfig = {
   apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
   authDomain: "cervecera-tierra-grande.firebaseapp.com",
@@ -606,9 +592,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
-let authReady = firebase.auth().signInAnonymously()
-  .catch(err => console.error('Error de autenticación Firebase:', err));
 
 async function loadKey(key, fallback) {
   try {
@@ -1146,17 +1129,6 @@ function renderBitacora(){
               <label>Notas</label>
               <textarea data-lote-field="notas" data-lote-id="${l.id}" placeholder="Sabor, aroma, temperatura, ideas para el próximo lote...">${escapeHTML(l.notas||'')}</textarea>
             </div>
-            <div class="field" style="margin-bottom:10px;">
-              <label>Código QR para la etiqueta (info al consumidor)</label>
-              <div class="qr-box">
-                <canvas data-qr-canvas="${l.id}" style="display:none;"></canvas>
-                <div class="qr-actions">
-                  <button class="btn secondary" data-gen-qr="${l.id}">Generar QR</button>
-                  <a class="btn secondary" data-download-qr="${l.id}" style="display:none;" download="qr-lote-${l.id}.png">Descargar PNG</a>
-                </div>
-                <p class="muted" style="font-size:0.78em;margin-top:6px;">Enlaza a: ${SITIO_BASE}/lote.html?id=${l.id}</p>
-              </div>
-            </div>
             <div class="lote-actions">
               <button class="btn secondary" data-del-lote="${l.id}" style="border-color:var(--red);color:var(--red);">Eliminar</button>
             </div>
@@ -1251,21 +1223,6 @@ function bindBitacoraEvents(){
       renderContent();
     });
   });
-
-  document.querySelectorAll('[data-gen-qr]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const id = btn.dataset.genQr;
-      const canvas = document.querySelector(`[data-qr-canvas="${id}"]`);
-      const link = document.querySelector(`[data-download-qr="${id}"]`);
-      const url = `${SITIO_BASE}/lote.html?id=${id}`;
-      QRCode.toCanvas(canvas, url, { width: 220, margin: 2 }, (err)=>{
-        if(err){ console.error(err); alert('No se pudo generar el QR.'); return; }
-        canvas.style.display = 'inline-block';
-        link.href = canvas.toDataURL('image/png');
-        link.style.display = 'inline-block';
-      });
-    });
-  });
 }
 
 function renderFermentadores(){
@@ -1355,8 +1312,6 @@ function bindFermentadoresEvents(){
       ferm.estado = 'libre';
       delete ferm.recetaId;
       delete ferm.fechaInicio;
-      delete ferm.botellas;
-      delete ferm.loteId;
       await saveKey('fermentadores', state.fermentadores);
       renderContent();
     });
@@ -1623,7 +1578,7 @@ function bindEntregasEvents(){
   });
 }
 
-authReady.then(() => { init(); });
+init();
 </script>
 </body>
 </html>
