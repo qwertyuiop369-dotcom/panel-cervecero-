@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estado de pedido · Cervecería Tierra Grande</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0e0e0e;
+  --card: #1f1f1f;
+  --copper: #FF6200;
+  --copper-light: #FF8533;
+  --ink: #E8E8E8;
+  --muted: #8a8a8a;
+  --green: #3ecf4a;
+  --red: #E6392B;
+  --line: #333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #1a1a1a, #0e0e0e);
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--ink);
+  padding: 24px 16px 40px;
+}
+
+.wrap {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+header h1 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.5em;
+  color: var(--copper);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+header p {
+  color: var(--muted);
+  font-size: 0.9em;
+  letter-spacing: 1px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+.card h2 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.05em;
+  color: var(--ink);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.cliente-name {
+  font-size: 1.15em;
+  font-weight: 600;
+  color: var(--copper-light);
+  margin-bottom: 6px;
+}
+
+.muted { color: var(--muted); font-size: 0.88em; }
+
+.pedido {
+  border-bottom: 1px dashed var(--line);
+  padding: 12px 0;
+}
+
+.pedido:last-child { border-bottom: none; }
+
+.pedido-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.sabor {
+  font-weight: 600;
+  font-size: 1.05em;
+}
+
+.fecha {
+  font-size: 0.85em;
+  color: var(--muted);
+}
+
+.detalle {
+  font-size: 0.9em;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.estado {
+  display: inline-block;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.estado.pagado {
+  background: #1a3320;
+  color: var(--green);
+}
+
+.estado.pendiente {
+  background: #3a1a18;
+  color: var(--red);
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 10px;
+  font-size: 0.95em;
+}
+
+.loading {
+  text-align: center;
+  color: var(--copper-light);
+  padding: 40px 10px;
+  font-size: 0.95em;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.8em;
+  color: #555;
+}
+
+.resumen {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  flex: 1;
+  background: #252525;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid var(--line);
+}
+
+.stat .num {
+  display: block;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.4em;
+  color: var(--copper);
+  font-weight: 600;
+}
+
+.stat .lbl {
+  font-size: 0.75em;
+  color: var(--muted);
+  margin-top: 2px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🍺 Tierra Grande</h1>
+    <p>Estado de tu pedido</p>
+  </header>
+
+  <div id="content">
+    <div class="loading">Cargando información…</div>
+  </div>
+
+  <div class="footer">
+    Cervecería Tierra Grande · nano brewery
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
+  authDomain: "cervecera-tierra-grande.firebaseapp.com",
+  databaseURL: "https://cervecera-tierra-grande-default-rtdb.firebaseio.com",
+  projectId: "cervecera-tierra-grande",
+  storageBucket: "cervecera-tierra-grande.firebasestorage.app",
+  messagingSenderId: "243316014670",
+  appId: "1:243316014670:web:0545ce0b0cb81f7af54d1f",
+  measurementId: "G-8NDCKNGPB0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function fmtMoney(n) {
+  return '$' + (Number(n) || 0).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+async function load() {
+  try {
+    const [snapEntregas, snapCliente] = await Promise.all([
+      db.ref('bitacora/entregas').once('value'),
+      db.ref('bitacora/entregas-cliente').once('value')
+    ]);
+
+    const entregas = snapEntregas.val() || [];
+    const cliente = snapCliente.val() || 'Cliente';
+
+    render(cliente, Array.isArray(entregas) ? entregas : []);
+  } catch (e) {
+    console.error(e);
+    document.getElementById('content').innerHTML = `
+      <div class="card">
+        <div class="empty">No se pudo cargar la información.<br>Intenta de nuevo más tarde.</div>
+      </div>`;
+  }
+}
+
+function render(cliente, entregas) {
+  const totalBotellas = entregas.reduce((s, e) => s + (e.botellas || 0), 0);
+  const pendientes = entregas.filter(e => !e.pagado);
+  const totalPendiente = pendientes.reduce((s, e) => s + (e.precio || 0), 0);
+
+  let pedidosHtml = '';
+  if (entregas.length === 0) {
+    pedidosHtml = `<div class="empty">Aún no hay pedidos registrados.</div>`;
+  } else {
+    pedidosHtml = entregas.map(e => `
+      <div class="pedido">
+        <div class="pedido-top">
+          <div>
+            <div class="sabor">${e.sabor || '—'}</div>
+            <div class="fecha">${fmtDate(e.fecha)}</div>
+          </div>
+          <span class="estado ${e.pagado ? 'pagado' : 'pendiente'}">
+            ${e.pagado ? 'Pagado' : 'Pendiente'}
+          </span>
+        </div>
+        <div class="detalle">${e.botellas || 0} botellas · ${fmtMoney(e.precio || 0)}</div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div class="card">
+      <div class="cliente-name">${cliente}</div>
+      <p class="muted">Aquí puedes consultar el estado de tus entregas.</p>
+    </div>
+
+    <div class="resumen">
+      <div class="stat">
+        <span class="num">${totalBotellas}</span>
+        <span class="lbl">Botellas totales</span>
+      </div>
+      <div class="stat">
+        <span class="num">${fmtMoney(totalPendiente)}</span>
+        <span class="lbl">Pendiente de pago</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Tus pedidos</h2>
+      ${pedidosHtml}
+    </div>
+  `;
+}
+
+load();
+</script>
+</body>
+</html>
