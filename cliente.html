@@ -202,6 +202,7 @@ header p {
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
@@ -229,6 +230,9 @@ function fmtDate(iso) {
 
 async function load() {
   try {
+    // Las reglas de Firebase exigen auth != null, así que iniciamos sesión anónima primero.
+    await firebase.auth().signInAnonymously();
+
     const [snapEntregas, snapCliente] = await Promise.all([
       db.ref('bitacora/entregas').once('value'),
       db.ref('bitacora/entregas-cliente').once('value')
