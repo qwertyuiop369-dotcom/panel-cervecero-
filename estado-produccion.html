@@ -140,6 +140,8 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // Solo datos necesarios para esta vista (sin costos ni inventario)
+// ⚠️ ADVERTENCIA: esta es una copia manual de RECETAS de index.html (fuente maestra).
+// Si cambias fermentandoDays, fermenterDays o tiempoTotalDias en el panel admin, actualiza esta copia también.
 const RECETAS = {
   'r-stout':        { nombre:'Coffee Stout',                    fermentandoDays:8, fermenterDays:12, tiempoTotalDias:32 },
   'r-belgian':      { nombre:'Belgian Blonde Albahaca-Romero',  fermentandoDays:7, fermenterDays:11, tiempoTotalDias:24 },
