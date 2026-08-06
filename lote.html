@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cervecería Tierra Grande — Información del lote</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg: #0e0e0e;
+  --card: #1f1f1f;
+  --copper: #FF6200;
+  --copper-light: #FF8533;
+  --ink: #E8E8E8;
+  --muted: #8a8a8a;
+  --green: #3ecf4a;
+  --red: #E6392B;
+  --line: #333;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #1a1a1a, #0e0e0e);
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--ink);
+  padding: 24px 16px 40px;
+}
+.wrap { max-width: 480px; margin: 0 auto; }
+header { text-align: center; margin-bottom: 22px; }
+header h1 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.5em;
+  color: var(--copper);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.card h2 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.85em;
+  color: var(--muted);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.estilo-nombre {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.4em;
+  font-weight: 600;
+  color: var(--copper-light);
+  margin-bottom: 4px;
+}
+.folio {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+.abv-row { display:flex; gap:12px; margin-top: 4px; }
+.abv-box {
+  flex:1; text-align:center; background:#252525; border:1px solid var(--line);
+  border-radius:6px; padding:14px 8px;
+}
+.abv-box .num {
+  display:block; font-family:'Chakra Petch',sans-serif; font-size:1.6em;
+  color: var(--copper); font-weight:700;
+}
+.abv-box .lbl { font-size:0.72em; color:var(--muted); margin-top:2px; letter-spacing:0.5px; text-transform:uppercase; }
+.abv-note { font-size:0.78em; color:var(--muted); margin-top:8px; font-style:italic; }
+
+.detail-row {
+  display:flex; justify-content:space-between; padding:8px 0;
+  border-top:1px solid var(--line); font-size:0.95em;
+}
+.detail-row:first-child{ border-top:none; }
+.detail-row .lbl { color: var(--muted); }
+.detail-row .val { font-family:'Share Tech Mono', monospace; }
+
+.ing-list { list-style:none; font-size:0.92em; }
+.ing-list li { padding:5px 0; border-top:1px solid var(--line); display:flex; justify-content:space-between; }
+.ing-list li:first-child{ border-top:none; }
+.ing-list .cant { color:var(--muted); font-family:'Share Tech Mono',monospace; font-size:0.9em; }
+
+.alerta {
+  background:#2a1f10; border:1px solid #5a3d10; border-radius:6px;
+  padding:12px 14px; font-size:0.88em; color:var(--copper-light); margin-top:12px;
+}
+.alerta strong { color:#ffce9e; }
+
+.legal {
+  font-size:0.82em; color:var(--muted); line-height:1.5; text-align:center;
+}
+.legal strong{ color:var(--red); }
+
+.empty, .loading {
+  text-align:center; color:var(--muted); padding:60px 10px; font-size:0.95em;
+}
+.footer { text-align:center; margin-top:24px; font-size:0.8em; color:#555; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🍺 Tierra Grande</h1>
+    <p>Información del lote</p>
+  </header>
+
+  <div id="content"><div class="loading">Cargando información…</div></div>
+
+  <div class="footer">Cervecería Tierra Grande · Chiconcuac, Edo. Méx. · nano brewery</div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
+  authDomain: "cervecera-tierra-grande.firebaseapp.com",
+  databaseURL: "https://cervecera-tierra-grande-default-rtdb.firebaseio.com",
+  projectId: "cervecera-tierra-grande",
+  storageBucket: "cervecera-tierra-grande.firebasestorage.app",
+  messagingSenderId: "243316014670",
+  appId: "1:243316014670:web:0545ce0b0cb81f7af54d1f",
+  measurementId: "G-8NDCKNGPB0"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Datos de referencia (sin costos ni info interna) — deben coincidir con las recetas del panel admin.
+const RECETAS = {
+  'r-stout':       { nombre:'Coffee Stout',                   abvEstimado:'5.0–5.5%', ibu:'32–38',
+                      ingredientes:[
+                        {id:'pale-ale',cantidad:1000},{id:'crystal',cantidad:150},{id:'light-chocolate',cantidad:120},
+                        {id:'roasted-barley',cantidad:130},{id:'northern-brewer',cantidad:12},{id:'s-33',cantidad:1},
+                        {id:'cold-brew',cantidad:450},{id:'azucar',cantidad:20},
+                      ]},
+  'r-belgian':     { nombre:'Belgian Blonde Albahaca-Romero', abvEstimado:'5.2–5.6%', ibu:'22–28',
+                      ingredientes:[
+                        {id:'pale-ale',cantidad:900},{id:'wheat',cantidad:200},{id:'aromatic',cantidad:100},
+                        {id:'honey-malt',cantidad:80},{id:'crystal-10',cantidad:50},{id:'avena',cantidad:50},
+                        {id:'northern-brewer',cantidad:9},{id:'albahaca',cantidad:10},{id:'romero',cantidad:4},
+                        {id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
+                      ]},
+  'r-honey-wheat': { nombre:'Honey Wheat', abvEstimado:'5.0–5.3%', ibu:'15–18',
+                      ingredientes:[
+                        {id:'pale-ale',cantidad:700},{id:'wheat',cantidad:500},{id:'honey-malt',cantidad:80},
+                        {id:'avena',cantidad:50},{id:'crystal-10',cantidad:30},{id:'northern-brewer',cantidad:6},
+                        {id:'miel',cantidad:175},{id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
+                      ]},
+  'r-dry-stout':   { nombre:'Dry Stout', abvEstimado:'4.2–4.6%', ibu:'30–36',
+                      ingredientes:[
+                        {id:'pale-ale',cantidad:950},{id:'roasted-barley',cantidad:120},{id:'light-chocolate',cantidad:60},
+                        {id:'crystal',cantidad:50},{id:'avena',cantidad:40},{id:'northern-brewer',cantidad:12},
+                        {id:'s-33',cantidad:1},{id:'azucar',cantidad:19},
+                      ]},
+};
+
+const CATALOGO = {
+  'pale-ale':{nombre:'Malta Pale Ale', gluten:'cebada'},
+  'crystal':{nombre:'Crystal malt', gluten:'cebada'},
+  'crystal-10':{nombre:'Crystal 10', gluten:'cebada'},
+  'light-chocolate':{nombre:'Light Chocolate', gluten:'cebada'},
+  'roasted-barley':{nombre:'Roasted Barley', gluten:'cebada'},
+  'wheat':{nombre:'Wheat malt', gluten:'trigo'},
+  'aromatic':{nombre:'Aromatic malt (Aroma)', gluten:'cebada'},
+  'honey-malt':{nombre:'Honey malt', gluten:'cebada'},
+  'avena':{nombre:'Avena natural (hojuelas)', gluten:'avena'},
+  'northern-brewer':{nombre:'Lúpulo Northern Brewer'},
+  's-33':{nombre:'Levadura Fermentis S-33'},
+  'azucar':{nombre:'Azúcar de cebado'},
+  'miel':{nombre:'Miel'},
+  'cold-brew':{nombre:'Cold brew de café'},
+  'albahaca':{nombre:'Albahaca fresca'},
+  'romero':{nombre:'Romero fresco'},
+};
+
+function calcABV(ogStr, fgStr){
+  const og = parseFloat(ogStr), fg = parseFloat(fgStr);
+  if(!og || !fg || isNaN(og) || isNaN(fg)) return null;
+  if(og < 0.99 || og > 1.2 || fg < 0.99 || fg > 1.2 || fg > og) return null;
+  return Math.round((og - fg) * 131.25 * 10) / 10;
+}
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
+}
+function addDaysISO(iso, days){
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function getParam(name){
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function render(lote){
+  const content = document.getElementById('content');
+  if(!lote){
+    content.innerHTML = `<div class="card"><div class="empty">No encontramos información para este lote.<br>Verifica el código QR o contacta a la cervecería.</div></div>`;
+    return;
+  }
+
+  const receta = RECETAS[lote.recetaId] || {};
+  const abvMedido = calcABV(lote.og, lote.fg);
+  const abvTexto = abvMedido !== null ? (abvMedido + '% vol.') : (receta.abvEstimado || '—');
+  const abvNota = abvMedido !== null ? '' : '<div class="abv-note">Valor estimado del estilo — aún no se registró la lectura final del lote.</div>';
+
+  const ingredientes = receta.ingredientes || [];
+  const ingHtml = ingredientes.map(i=>{
+    const cat = CATALOGO[i.id] || {nombre:i.id};
+    return `<li><span>${cat.nombre}</span><span class="cant">${i.cantidad}${cat.unidad||''}</span></li>`;
+  }).join('');
+
+  const glutenFuentes = [...new Set(ingredientes.map(i => (CATALOGO[i.id]||{}).gluten).filter(Boolean))];
+  const alertaHtml = glutenFuentes.length
+    ? `<div class="alerta"><strong>Contiene gluten:</strong> ${glutenFuentes.join(', ')}. Elaborada en un espacio que también procesa otros cereales.</div>`
+    : '';
+
+  const consumoPreferente = lote.fecha ? fmtDate(addDaysISO(lote.fecha, 180)) : '—';
+
+  content.innerHTML = `
+    <div class="card">
+      <h2>Cerveza</h2>
+      <div class="estilo-nombre">${receta.nombre || lote.estilo || '—'}</div>
+      <div class="folio">Lote ${lote.id || '—'}</div>
+    </div>
+
+    <div class="card">
+      <h2>Contenido alcohólico</h2>
+      <div class="abv-row">
+        <div class="abv-box"><span class="num">${abvTexto}</span><span class="lbl">ABV</span></div>
+        <div class="abv-box"><span class="num">${receta.ibu || '—'}</span><span class="lbl">IBU</span></div>
+        <div class="abv-box"><span class="num">355 ml</span><span class="lbl">Volumen</span></div>
+      </div>
+      ${abvNota}
+    </div>
+
+    <div class="card">
+      <h2>Datos del lote</h2>
+      <div class="detail-row"><span class="lbl">Fecha de elaboración</span><span class="val">${fmtDate(lote.fecha)}</span></div>
+      <div class="detail-row"><span class="lbl">Consumo preferente antes de</span><span class="val">${consumoPreferente}</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Ingredientes</h2>
+      <ul class="ing-list">${ingHtml || '<li>—</li>'}</ul>
+      ${alertaHtml}
+    </div>
+
+    <div class="card">
+      <p class="legal">
+        <strong>Contiene alcohol.</strong> Prohibida su venta a menores de 18 años.<br>
+        El abuso en el consumo de este producto es nocivo para la salud.
+      </p>
+    </div>
+  `;
+}
+
+firebase.auth().signInAnonymously()
+  .then(async () => {
+    const loteId = getParam('id');
+    if(!loteId){
+      document.getElementById('content').innerHTML = `<div class="card"><div class="empty">Código QR incompleto. Falta el identificador del lote.</div></div>`;
+      return;
+    }
+    const snap = await db.ref('bitacora/lotes-bitacora').once('value');
+    const lotes = snap.val() || [];
+    const lista = Array.isArray(lotes) ? lotes : Object.values(lotes);
+    const lote = lista.find(l => l && l.id === loteId);
+    render(lote);
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById('content').innerHTML = `<div class="card"><div class="empty">No se pudo cargar la información en este momento.</div></div>`;
+  });
+</script>
+</body>
+</html>
