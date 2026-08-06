@@ -196,10 +196,20 @@ function render(fermentadores){
 
     const fechaEntrega = addDaysISO(f.fechaInicio, receta.tiempoTotalDias);
 
+    const botellas = f.botellas ? Number(f.botellas) : null;
+    const litros = botellas ? (botellas * 0.355) : null;
+    const cantidadTxt = botellas
+      ? `${botellas} botella${botellas === 1 ? '' : 's'} · ≈ ${litros.toFixed(1)} L`
+      : '—';
+
     return `
       <div class="card">
         <div class="receta">${receta.nombre}</div>
         <span class="badge ${claseEtapa}">${etapa}</span>
+        <div class="detail-row">
+          <span class="lbl">Cantidad en elaboración</span>
+          <span class="val">${cantidadTxt}</span>
+        </div>
         <div class="detail-row">
           <span class="lbl">Elaboración iniciada</span>
           <span class="val">${fmtDate(new Date(f.fechaInicio + 'T00:00:00'))}</span>
