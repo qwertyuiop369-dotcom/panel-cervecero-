@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cervecería Tierra Grande — Información del lote</title>
+<title>Cerveza Locondus — Información del lote</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -113,13 +113,13 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
 <body>
 <div class="wrap">
   <header>
-    <h1>🍺 Tierra Grande</h1>
+    <h1>🍺 Cerveza Locondus</h1>
     <p>Información del lote</p>
   </header>
 
   <div id="content"><div class="loading">Cargando información…</div></div>
 
-  <div class="footer">Cervecería Tierra Grande · Chiconcuac, Edo. Méx. · nano brewery</div>
+  <div class="footer">Cerveza Locondus · Chiconcuac, Edo. Méx. · nano brewery</div>
 </div>
 
 <script>
@@ -137,8 +137,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // Datos de referencia (sin costos ni info interna) — deben coincidir con las recetas del panel admin.
-// ⚠️ ADVERTENCIA: esta es una copia manual de RECETAS/CATALOGO de index.html (fuente maestra).
-// Si cambias ingredientes, ABV o IBU en el panel admin, actualiza esta copia también.
 const RECETAS = {
   'r-stout':       { nombre:'Coffee Stout',                   abvEstimado:'5.0–5.5%', ibu:'32–38',
                       ingredientes:[
@@ -168,22 +166,22 @@ const RECETAS = {
 };
 
 const CATALOGO = {
-  'pale-ale':{nombre:'Malta Pale Ale', unidad:'g', gluten:'cebada'},
-  'crystal':{nombre:'Crystal malt', unidad:'g', gluten:'cebada'},
-  'crystal-10':{nombre:'Crystal 10', unidad:'g', gluten:'cebada'},
-  'light-chocolate':{nombre:'Light Chocolate', unidad:'g', gluten:'cebada'},
-  'roasted-barley':{nombre:'Roasted Barley', unidad:'g', gluten:'cebada'},
-  'wheat':{nombre:'Wheat malt', unidad:'g', gluten:'trigo'},
-  'aromatic':{nombre:'Aromatic malt (Aroma)', unidad:'g', gluten:'cebada'},
-  'honey-malt':{nombre:'Honey malt', unidad:'g', gluten:'cebada'},
-  'avena':{nombre:'Avena natural (hojuelas)', unidad:'g', gluten:'avena'},
-  'northern-brewer':{nombre:'Lúpulo Northern Brewer', unidad:'g'},
-  's-33':{nombre:'Levadura Fermentis S-33', unidad:'u'},
-  'azucar':{nombre:'Azúcar cebado', unidad:'g'},
-  'miel':{nombre:'Miel', unidad:'g'},
-  'cold-brew':{nombre:'Cold brew café', unidad:'ml'},
-  'albahaca':{nombre:'Albahaca fresca', unidad:'g'},
-  'romero':{nombre:'Romero fresco', unidad:'g'},
+  'pale-ale':{nombre:'Malta Pale Ale', gluten:'cebada'},
+  'crystal':{nombre:'Crystal malt', gluten:'cebada'},
+  'crystal-10':{nombre:'Crystal 10', gluten:'cebada'},
+  'light-chocolate':{nombre:'Light Chocolate', gluten:'cebada'},
+  'roasted-barley':{nombre:'Roasted Barley', gluten:'cebada'},
+  'wheat':{nombre:'Wheat malt', gluten:'trigo'},
+  'aromatic':{nombre:'Aromatic malt (Aroma)', gluten:'cebada'},
+  'honey-malt':{nombre:'Honey malt', gluten:'cebada'},
+  'avena':{nombre:'Avena natural (hojuelas)', gluten:'avena'},
+  'northern-brewer':{nombre:'Lúpulo Northern Brewer'},
+  's-33':{nombre:'Levadura Fermentis S-33'},
+  'azucar':{nombre:'Azúcar de cebado'},
+  'miel':{nombre:'Miel'},
+  'cold-brew':{nombre:'Cold brew de café'},
+  'albahaca':{nombre:'Albahaca fresca'},
+  'romero':{nombre:'Romero fresco'},
 };
 
 function calcABV(ogStr, fgStr){
