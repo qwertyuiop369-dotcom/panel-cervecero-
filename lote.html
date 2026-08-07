@@ -170,22 +170,22 @@ const RECETAS = {
 };
 
 const CATALOGO = {
-  'pale-ale':{nombre:'Malta Pale Ale', gluten:'cebada'},
-  'crystal':{nombre:'Crystal malt', gluten:'cebada'},
-  'crystal-10':{nombre:'Crystal 10', gluten:'cebada'},
-  'light-chocolate':{nombre:'Light Chocolate', gluten:'cebada'},
-  'roasted-barley':{nombre:'Roasted Barley', gluten:'cebada'},
-  'wheat':{nombre:'Wheat malt', gluten:'trigo'},
-  'aromatic':{nombre:'Aromatic malt (Aroma)', gluten:'cebada'},
-  'honey-malt':{nombre:'Honey malt', gluten:'cebada'},
-  'avena':{nombre:'Avena natural (hojuelas)', gluten:'avena'},
-  'northern-brewer':{nombre:'Lúpulo Northern Brewer'},
-  's-33':{nombre:'Levadura Fermentis S-33'},
-  'azucar':{nombre:'Azúcar de cebado'},
-  'miel':{nombre:'Miel'},
-  'cold-brew':{nombre:'Cold brew de café'},
-  'albahaca':{nombre:'Albahaca fresca'},
-  'romero':{nombre:'Romero fresco'},
+  'pale-ale':{nombre:'Malta Pale Ale', gluten:'cebada', unidad:' g'},
+  'crystal':{nombre:'Crystal malt', gluten:'cebada', unidad:' g'},
+  'crystal-10':{nombre:'Crystal 10', gluten:'cebada', unidad:' g'},
+  'light-chocolate':{nombre:'Light Chocolate', gluten:'cebada', unidad:' g'},
+  'roasted-barley':{nombre:'Roasted Barley', gluten:'cebada', unidad:' g'},
+  'wheat':{nombre:'Wheat malt', gluten:'trigo', unidad:' g'},
+  'aromatic':{nombre:'Aromatic malt (Aroma)', gluten:'cebada', unidad:' g'},
+  'honey-malt':{nombre:'Honey malt', gluten:'cebada', unidad:' g'},
+  'avena':{nombre:'Avena natural (hojuelas)', gluten:'avena', unidad:' g'},
+  'northern-brewer':{nombre:'Lúpulo Northern Brewer', unidad:' g'},
+  's-33':{nombre:'Levadura Fermentis S-33', unidad:' paq'},
+  'azucar':{nombre:'Azúcar de cebado', unidad:' g'},
+  'miel':{nombre:'Miel', unidad:' g'},
+  'cold-brew':{nombre:'Cold brew de café', unidad:' ml'},
+  'albahaca':{nombre:'Albahaca fresca', unidad:' g'},
+  'romero':{nombre:'Romero fresco', unidad:' g'},
 };
 
 function calcABV(ogStr, fgStr){
@@ -216,28 +216,60 @@ function render(lote){
     return;
   }
 
-  const receta = RECETAS[lote.recetaId] || {};
+  const recetaId = lote.recetaId || null;
+  const receta = (recetaId && RECETAS[recetaId]) ? RECETAS[recetaId] : null;
+
   const abvMedido = calcABV(lote.og, lote.fg);
-  const abvTexto = abvMedido !== null ? (abvMedido + '% vol.') : (receta.abvEstimado || '—');
-  const abvNota = abvMedido !== null ? '' : '<div class="abv-note">Valor estimado del estilo — aún no se registró la lectura final del lote.</div>';
+  const abvTexto = abvMedido !== null
+    ? (abvMedido + '% vol.')
+    : ((receta && receta.abvEstimado) ? receta.abvEstimado : '—');
+  const abvNota = abvMedido !== null
+    ? ''
+    : '<div class="abv-note">Valor estimado del estilo — aún no se registró la lectura final del lote.</div>';
 
-  const ingredientes = receta.ingredientes || [];
-  const ingHtml = ingredientes.map(i=>{
-    const cat = CATALOGO[i.id] || {nombre:i.id};
-    return `<li><span>${cat.nombre}</span><span class="cant">${i.cantidad}${cat.unidad||''}</span></li>`;
-  }).join('');
+  let ingHtml = '';
+  let alertaHtml = '';
+  let recetaWarning = '';
 
-  const glutenFuentes = [...new Set(ingredientes.map(i => (CATALOGO[i.id]||{}).gluten).filter(Boolean))];
-  const alertaHtml = glutenFuentes.length
-    ? `<div class="alerta"><strong>Contiene gluten:</strong> ${glutenFuentes.join(', ')}. Elaborada en un espacio que también procesa otros cereales.</div>`
-    : '';
+  if (!receta) {
+    recetaWarning = `
+      <div class="alerta">
+        <strong>Receta no encontrada.</strong><br>
+        ID de receta recibido: <code>${recetaId || '(vacío)'}</code><br>
+        Revisa que el lote en Firebase tenga un <code>recetaId</code> válido
+        (r-stout, r-belgian, r-honey-wheat o r-dry-stout).
+      </div>`;
+    ingHtml = '<li style="color:var(--muted)">No hay ingredientes disponibles para esta receta.</li>';
+  } else {
+    const ingredientes = receta.ingredientes || [];
+    if (ingredientes.length === 0) {
+      ingHtml = '<li style="color:var(--muted)">Esta receta no tiene ingredientes registrados.</li>';
+    } else {
+      ingHtml = ingredientes.map(i => {
+        const cat = CATALOGO[i.id] || {nombre: i.id, unidad: ''};
+        const cant = (i.cantidad !== undefined && i.cantidad !== null) ? i.cantidad : '—';
+        return `<li><span>${cat.nombre}</span><span class="cant">${cant}${cat.unidad || ''}</span></li>`;
+      }).join('');
+    }
+
+    const glutenFuentes = [...new Set(
+      (receta.ingredientes || [])
+        .map(i => (CATALOGO[i.id] || {}).gluten)
+        .filter(Boolean)
+    )];
+    alertaHtml = glutenFuentes.length
+      ? `<div class="alerta"><strong>Contiene gluten:</strong> ${glutenFuentes.join(', ')}. Elaborada en un espacio que también procesa otros cereales.</div>`
+      : '';
+  }
 
   const consumoPreferente = lote.fecha ? fmtDate(addDaysISO(lote.fecha, 180)) : '—';
+  const nombreCerveza = (receta && receta.nombre) || lote.estilo || lote.nombre || '—';
+  const ibuTexto = (receta && receta.ibu) || lote.ibu || '—';
 
   content.innerHTML = `
     <div class="card">
       <h2>Cerveza</h2>
-      <div class="estilo-nombre">${receta.nombre || lote.estilo || '—'}</div>
+      <div class="estilo-nombre">${nombreCerveza}</div>
       <div class="folio">Lote ${lote.id || '—'}</div>
     </div>
 
@@ -245,7 +277,7 @@ function render(lote){
       <h2>Contenido alcohólico</h2>
       <div class="abv-row">
         <div class="abv-box"><span class="num">${abvTexto}</span><span class="lbl">ABV</span></div>
-        <div class="abv-box"><span class="num">${receta.ibu || '—'}</span><span class="lbl">IBU</span></div>
+        <div class="abv-box"><span class="num">${ibuTexto}</span><span class="lbl">IBU</span></div>
         <div class="abv-box"><span class="num">355 ml</span><span class="lbl">Volumen</span></div>
       </div>
       ${abvNota}
@@ -255,11 +287,13 @@ function render(lote){
       <h2>Datos del lote</h2>
       <div class="detail-row"><span class="lbl">Fecha de elaboración</span><span class="val">${fmtDate(lote.fecha)}</span></div>
       <div class="detail-row"><span class="lbl">Consumo preferente antes de</span><span class="val">${consumoPreferente}</span></div>
+      ${recetaId ? `<div class="detail-row"><span class="lbl">Receta</span><span class="val">${recetaId}</span></div>` : ''}
     </div>
 
     <div class="card">
       <h2>Ingredientes</h2>
-      <ul class="ing-list">${ingHtml || '<li>—</li>'}</ul>
+      ${recetaWarning}
+      <ul class="ing-list">${ingHtml}</ul>
       ${alertaHtml}
     </div>
 
@@ -275,19 +309,73 @@ function render(lote){
 firebase.auth().signInAnonymously()
   .then(async () => {
     const loteId = getParam('id');
-    if(!loteId){
-      document.getElementById('content').innerHTML = `<div class="card"><div class="empty">Código QR incompleto. Falta el identificador del lote.</div></div>`;
+    if (!loteId) {
+      document.getElementById('content').innerHTML = `
+        <div class="card">
+          <div class="empty">Código QR incompleto.<br>Falta el identificador del lote (<code>?id=...</code>).</div>
+        </div>`;
       return;
     }
-    const snap = await db.ref('bitacora/lotes-bitacora').once('value');
-    const lotes = snap.val() || [];
-    const lista = Array.isArray(lotes) ? lotes : Object.values(lotes);
-    const lote = lista.find(l => l && l.id === loteId);
-    render(lote);
+
+    try {
+      const snap = await db.ref('bitacora/lotes-bitacora').once('value');
+      const raw = snap.val();
+
+      if (raw === null || raw === undefined) {
+        document.getElementById('content').innerHTML = `
+          <div class="card">
+            <div class="empty">
+              No hay lotes registrados en la base de datos.<br>
+              Ruta: <code>bitacora/lotes-bitacora</code>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const lista = Array.isArray(raw) ? raw : Object.values(raw);
+      const lote = lista.find(l => l && String(l.id) === String(loteId));
+
+      if (!lote) {
+        const idsDisponibles = lista
+          .filter(l => l && l.id)
+          .map(l => l.id)
+          .slice(0, 8)
+          .join(', ');
+        document.getElementById('content').innerHTML = `
+          <div class="card">
+            <div class="empty">
+              No encontramos el lote <strong>${loteId}</strong>.<br><br>
+              ${idsDisponibles
+                ? `Algunos lotes existentes: ${idsDisponibles}${lista.length > 8 ? '…' : ''}`
+                : 'No se encontraron lotes con campo <code>id</code>.'}
+            </div>
+          </div>`;
+        console.warn('Lote no encontrado:', loteId, 'Total lotes:', lista.length);
+        return;
+      }
+
+      console.log('Lote cargado:', lote);
+      render(lote);
+    } catch (err) {
+      console.error('Error al leer lotes:', err);
+      document.getElementById('content').innerHTML = `
+        <div class="card">
+          <div class="empty">
+            Error al consultar la base de datos.<br>
+            ${err && err.message ? err.message : 'Intenta de nuevo más tarde.'}
+          </div>
+        </div>`;
+    }
   })
   .catch(err => {
-    console.error(err);
-    document.getElementById('content').innerHTML = `<div class="card"><div class="empty">No se pudo cargar la información en este momento.</div></div>`;
+    console.error('Error de autenticación:', err);
+    document.getElementById('content').innerHTML = `
+      <div class="card">
+        <div class="empty">
+          No se pudo iniciar sesión para consultar los datos.<br>
+          ${err && err.message ? err.message : ''}
+        </div>
+      </div>`;
   });
 </script>
 </body>
