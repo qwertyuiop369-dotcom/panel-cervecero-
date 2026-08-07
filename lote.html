@@ -119,7 +119,11 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
 
   <div id="content"><div class="loading">Cargando información…</div></div>
 
-  <div class="footer">Cerveza Locondus · Chiconcuac, Edo. Méx. · nano brewery</div>
+  <div class="footer">
+    Elaborado para Locondus por Tierra Grande · Chiconcuac, Edo. Méx. · nano brewery +52 473 174 6210<br>
+    <span id="lastMod"></span>
+  </div>
+<script>document.getElementById("lastMod").textContent = "Última modificación: " + document.lastModified;</script>
 </div>
 
 <script>

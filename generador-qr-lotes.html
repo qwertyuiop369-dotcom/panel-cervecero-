@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador QR Masivo · Tierra Grande</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0e0e0e;
+  --card: #1f1f1f;
+  --copper: #FF6200;
+  --copper-light: #FF8533;
+  --ink: #E8E8E8;
+  --muted: #8a8a8a;
+  --green: #3ecf4a;
+  --line: #333;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #1a1a1a, #0e0e0e);
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--ink);
+  padding: 24px 16px 50px;
+}
+.wrap { max-width: 900px; margin: 0 auto; }
+header { text-align: center; margin-bottom: 28px; }
+header h1 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.6em;
+  color: var(--copper);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+header p { color: var(--muted); font-size: 0.95em; letter-spacing: 0.5px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.card h2 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.95em;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+label { display: block; font-size: 0.9em; color: var(--muted); margin-bottom: 6px; }
+input[type="text"], textarea {
+  width: 100%;
+  background: #252525;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: var(--ink);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1em;
+  outline: none;
+}
+input[type="text"]:focus, textarea:focus { border-color: var(--copper); }
+textarea { min-height: 140px; resize: vertical; line-height: 1.5; }
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+button {
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 600;
+  font-size: 0.9em;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.btn-primary { background: var(--copper); color: #111; }
+.btn-primary:hover { background: var(--copper-light); }
+.btn-secondary { background: #333; color: var(--ink); }
+.btn-secondary:hover { background: #444; }
+
+.stats {
+  display: flex; gap: 16px; margin-top: 12px; font-size: 0.9em; color: var(--muted);
+}
+.stats strong { color: var(--copper-light); }
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+.qr-item {
+  background: #252525;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+}
+.qr-item canvas, .qr-item img {
+  display: block;
+  margin: 0 auto 10px;
+  border-radius: 4px;
+}
+.qr-item .id {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.85em;
+  color: var(--copper-light);
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+.qr-item .url {
+  font-size: 0.72em;
+  color: var(--muted);
+  word-break: break-all;
+  line-height: 1.3;
+}
+.qr-item a {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.75em;
+  color: var(--green);
+  text-decoration: none;
+}
+.qr-item a:hover { text-decoration: underline; }
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 10px;
+  font-size: 0.95em;
+}
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 0.8em;
+  color: #555;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Generador QR Masivo</h1>
+    <p>Tierra Grande · Lotes para Locondus</p>
+  </header>
+
+  <div class="card">
+    <h2>1. URL base de lote.html</h2>
+    <label>Ejemplo: https://tudominio.com/lote.html</label>
+    <input type="text" id="baseUrl" value="https://qwertyuiop369-dotcom.github.io/panel-cervecero-/lote.html" placeholder="https://tudominio.com/lote.html">
+  </div>
+
+  <div class="card">
+    <h2>2. Lista de IDs de lote</h2>
+    <label>Uno por línea (ejemplo: L-2026-001)</label>
+    <textarea id="ids" placeholder="L-2026-001
+L-2026-002
+L-2026-003
+L-2026-004"></textarea>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="generar()">Generar QR</button>
+      <button class="btn-secondary" onclick="limpiar()">Limpiar</button>
+      <button class="btn-secondary" onclick="descargarTodos()">Descargar todos (PNG)</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <div class="card">
+    <h2>Códigos generados</h2>
+    <div id="grid">
+      <div class="empty">Escribe los IDs y pulsa «Generar QR»</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Elaborado para Locondus por Tierra Grande · Chiconcuac, Edo. Méx. · nano brewery +52 473 174 6210<br>
+    <span id="lastMod"></span>
+  </div>
+</div>
+<script>document.getElementById("lastMod").textContent = "Última modificación: " + document.lastModified;</script>
+
+<script>
+function generar() {
+  const base = document.getElementById('baseUrl').value.trim().replace(/\/$/, '');
+  const raw = document.getElementById('ids').value.trim();
+  const grid = document.getElementById('grid');
+  const stats = document.getElementById('stats');
+
+  if (!base) {
+    alert('Escribe la URL base de lote.html');
+    return;
+  }
+  if (!raw) {
+    alert('Escribe al menos un ID de lote');
+    return;
+  }
+
+  const ids = raw.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  grid.innerHTML = '';
+  window._qrData = [];
+
+  ids.forEach((id, i) => {
+    const url = base + '?id=' + encodeURIComponent(id);
+    const item = document.createElement('div');
+    item.className = 'qr-item';
+    item.innerHTML = `
+      <div class="id">${id}</div>
+      <div id="qr-${i}"></div>
+      <div class="url">${url}</div>
+      <a href="#" data-i="${i}">Descargar PNG</a>
+    `;
+    grid.appendChild(item);
+
+    const qr = new QRCode(document.getElementById('qr-' + i), {
+      text: url,
+      width: 140,
+      height: 140,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    window._qrData.push({ id, url, el: document.getElementById('qr-' + i) });
+  });
+
+  // Enlaces de descarga individual
+  grid.querySelectorAll('a[data-i]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const i = +a.dataset.i;
+      const canvas = window._qrData[i].el.querySelector('canvas');
+      if (canvas) {
+        const link = document.createElement('a');
+        link.download = 'QR-' + window._qrData[i].id + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+    });
+  });
+
+  stats.innerHTML = `<span>Total: <strong>${ids.length}</strong> códigos QR generados</span>`;
+}
+
+function limpiar() {
+  document.getElementById('ids').value = '';
+  document.getElementById('grid').innerHTML = '<div class="empty">Escribe los IDs y pulsa «Generar QR»</div>';
+  document.getElementById('stats').innerHTML = '';
+  window._qrData = [];
+}
+
+function descargarTodos() {
+  if (!window._qrData || !window._qrData.length) {
+    alert('Primero genera los códigos QR');
+    return;
+  }
+  window._qrData.forEach((item, i) => {
+    setTimeout(() => {
+      const canvas = item.el.querySelector('canvas');
+      if (canvas) {
+        const link = document.createElement('a');
+        link.download = 'QR-' + item.id + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+    }, i * 300);
+  });
+}
+</script>
+</body>
+</html>
