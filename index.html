@@ -1147,8 +1147,8 @@ async function registrarCocimiento(recipeId, fecha){
   fermentadorLibre.botellas = botellas;
   await saveKey('fermentadores', state.fermentadores);
 
-  // Crear entrada automática en bitácora
-  const loteId = 'l' + Date.now();
+  // Crear entrada automática en bitácora (trazabilidad)
+  const loteId = 'L-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
   state.lotes.unshift({
     id: loteId,
     nombre: receta.nombre + ' · ' + botellas + ' bot.',
@@ -1157,7 +1157,7 @@ async function registrarCocimiento(recipeId, fecha){
     fecha: fechaInicio,
     botellas: botellas,
     fermentadorId: fermentadorLibre.id,
-    og: (receta.params && receta.params.og) ? receta.params.og.split('–')[0].trim() : '',
+    og: (receta.params && receta.params.og) ? String(receta.params.og).split(/[–-]/)[0].trim() : '',
     fg: '',
     notas: '',
     etapa: 'fermentando',
@@ -1428,6 +1428,7 @@ function renderFermentadores(){
 }
 
 function bindFermentadoresEvents(){
+  // Asignar desde pestaña Fermentadores → crea lote con recetaId + botellas (trazabilidad)
   document.querySelectorAll('[data-assign]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const fermId = parseInt(btn.dataset.assign);
@@ -1436,9 +1437,35 @@ function bindFermentadoresEvents(){
       const recetaId = select.value;
       const fecha = (fechaInput && fechaInput.value) ? fechaInput.value : todayISO();
       const ferm = state.fermentadores.find(f=>f.id===fermId);
+      if(!ferm || ferm.estado !== 'libre') return;
+
+      const receta = getReceta(recetaId);
+      if(!receta){ alert('Receta no encontrada.'); return; }
+
+      const botellas = getBotellas(recetaId);
+      const loteId = 'L-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
+
       ferm.estado = 'ocupado';
       ferm.recetaId = recetaId;
       ferm.fechaInicio = fecha;
+      ferm.botellas = botellas;
+      ferm.loteId = loteId;
+
+      state.lotes.unshift({
+        id: loteId,
+        nombre: receta.nombre + ' · ' + botellas + ' bot.',
+        estilo: receta.nombre,
+        recetaId: recetaId,
+        fecha: fecha,
+        botellas: botellas,
+        fermentadorId: fermId,
+        og: (receta.params && receta.params.og) ? String(receta.params.og).split(/[–-]/)[0].trim() : '',
+        fg: '',
+        notas: '',
+        etapa: 'fermentando',
+      });
+
+      await saveKey('lotes-bitacora', state.lotes);
       await saveKey('fermentadores', state.fermentadores);
       renderContent();
     });
@@ -1450,21 +1477,88 @@ function bindFermentadoresEvents(){
       const ferm = state.fermentadores.find(f=>f.id===fermId);
       if(ferm && inp.value){
         ferm.fechaInicio = inp.value;
+        // Sincronizar fecha del lote ligado
+        if(ferm.loteId){
+          const lote = state.lotes.find(l => l && l.id === ferm.loteId);
+          if(lote){
+            lote.fecha = inp.value;
+            await saveKey('lotes-bitacora', state.lotes);
+          }
+        }
         await saveKey('fermentadores', state.fermentadores);
         renderContent();
       }
     });
   });
 
+  // Liberar → cierra el lote (embotellado) con recetaId + botellas + fechaEmbotellado
   document.querySelectorAll('[data-release]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const fermId = parseInt(btn.dataset.release);
       const ferm = state.fermentadores.find(f=>f.id===fermId);
+      if(!ferm || ferm.estado !== 'ocupado') return;
+
+      const recetaId = ferm.recetaId;
+      const receta = recetaId ? getReceta(recetaId) : null;
+      const botellas = ferm.botellas || (recetaId ? getBotellas(recetaId) : null) || 15;
+      const fechaInicio = ferm.fechaInicio || todayISO();
+      const fechaEmb = todayISO();
+
+      let lote = ferm.loteId ? state.lotes.find(l => l && l.id === ferm.loteId) : null;
+
+      // Si no hay lote ligado, buscar por fermentador + receta + fecha
+      if(!lote && recetaId){
+        lote = state.lotes.find(l =>
+          l && l.fermentadorId === fermId &&
+          l.recetaId === recetaId &&
+          l.fecha === fechaInicio &&
+          l.etapa !== 'listo' && l.etapa !== 'entregado'
+        );
+      }
+
+      if(lote){
+        lote.recetaId = recetaId || lote.recetaId;
+        lote.estilo = (receta && receta.nombre) || lote.estilo || lote.nombre;
+        lote.botellas = botellas;
+        lote.fermentadorId = fermId;
+        lote.fecha = lote.fecha || fechaInicio;
+        lote.fechaEmbotellado = fechaEmb;
+        lote.etapa = 'listo';
+        if(!lote.nombre && receta) lote.nombre = receta.nombre + ' · ' + botellas + ' bot.';
+      } else if(recetaId){
+        // Crear lote al liberar (trazabilidad de emergencia)
+        const loteId = 'L-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
+        lote = {
+          id: loteId,
+          nombre: (receta ? receta.nombre : 'Lote') + ' · ' + botellas + ' bot.',
+          estilo: receta ? receta.nombre : '',
+          recetaId: recetaId,
+          fecha: fechaInicio,
+          fechaEmbotellado: fechaEmb,
+          botellas: botellas,
+          fermentadorId: fermId,
+          og: '',
+          fg: '',
+          notas: 'Creado al liberar fermentador',
+          etapa: 'listo',
+        };
+        state.lotes.unshift(lote);
+      }
+
+      // Liberar fermentador
       ferm.estado = 'libre';
       delete ferm.recetaId;
       delete ferm.fechaInicio;
+      delete ferm.botellas;
+      delete ferm.loteId;
+
+      await saveKey('lotes-bitacora', state.lotes);
       await saveKey('fermentadores', state.fermentadores);
       renderContent();
+
+      if(lote){
+        alert('Fermentador liberado.\nLote ' + lote.id + ' marcado como listo/embotellado (' + botellas + ' botellas).\nYa puedes generar el QR desde Bitácora.');
+      }
     });
   });
 }
