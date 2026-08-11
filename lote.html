@@ -68,6 +68,23 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
   color: var(--muted);
   font-size: 0.85em;
 }
+.descripcion {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.92em;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.descripcion strong {
+  display: block;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.85em;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
 .abv-row { display:flex; gap:12px; margin-top: 4px; }
 .abv-box {
   flex:1; text-align:center; background:#252525; border:1px solid var(--line);
@@ -143,12 +160,14 @@ const db = firebase.database();
 // Datos de referencia (sin costos ni info interna) — deben coincidir con las recetas del panel admin.
 const RECETAS = {
   'r-stout':       { nombre:'Coffee Stout',                   abvEstimado:'5.0–5.5%', ibu:'32–38',
+                      descripcion:'Cerveza artesanal de cuerpo medio-alto, elaborada con malta Pale Ale, Crystal, Light Chocolate y Roasted Barley. Su perfil tostado y de chocolate se enriquece con cold brew de café añadido al final de la fermentación, aportando aroma fresco a café sin amargor excesivo. Equilibrada con lúpulo Northern Brewer y levadura S-33.',
                       ingredientes:[
                         {id:'pale-ale',cantidad:1000},{id:'crystal',cantidad:150},{id:'light-chocolate',cantidad:120},
                         {id:'roasted-barley',cantidad:130},{id:'northern-brewer',cantidad:12},{id:'s-33',cantidad:1},
                         {id:'cold-brew',cantidad:450},{id:'azucar',cantidad:20},
                       ]},
   'r-belgian':     { nombre:'Belgian Blonde Albahaca-Romero', abvEstimado:'5.2–5.6%', ibu:'22–28',
+                      descripcion:'Cerveza artesanal de carácter único, elaborada con una suave base de malta Pale Ale y trigo, enriquecida con avena para una textura sedosa. Su perfil aromático incorpora sutiles notas a miel y caramelo, equilibradas a la perfección con infusiones frescas de albahaca y romero que aportan un toque herbal, fresco y refrescante',
                       ingredientes:[
                         {id:'pale-ale',cantidad:900},{id:'wheat',cantidad:200},{id:'aromatic',cantidad:100},
                         {id:'honey-malt',cantidad:80},{id:'crystal-10',cantidad:50},{id:'avena',cantidad:50},
@@ -156,12 +175,14 @@ const RECETAS = {
                         {id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
                       ]},
   'r-honey-wheat': { nombre:'Honey Wheat', abvEstimado:'5.0–5.3%', ibu:'15–18',
+                      descripcion:'Cerveza de trigo ligera y refrescante, elaborada con malta Pale Ale, trigo, Honey malt y avena. La miel se incorpora al final del hervido para conservar su aroma delicado, dando un perfil suave, ligeramente dulce y muy bebible. Ideal para días cálidos, con carbonatación media-alta y un toque frutal sutil de la levadura S-33.',
                       ingredientes:[
                         {id:'pale-ale',cantidad:700},{id:'wheat',cantidad:500},{id:'honey-malt',cantidad:80},
                         {id:'avena',cantidad:50},{id:'crystal-10',cantidad:30},{id:'northern-brewer',cantidad:6},
                         {id:'miel',cantidad:175},{id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
                       ]},
   'r-dry-stout':   { nombre:'Dry Stout', abvEstimado:'4.2–4.6%', ibu:'30–36',
+                      descripcion:'Stout seca estilo irlandés, elaborada con malta Pale Ale, Roasted Barley, Light Chocolate, Crystal y avena. Ofrece un carácter tostado limpio y seco, con amargor equilibrado del lúpulo Northern Brewer. Cuerpo medio-bajo, final seco y refrescante, perfecta para quien busca una stout clásica sin excesiva dulzura.',
                       ingredientes:[
                         {id:'pale-ale',cantidad:950},{id:'roasted-barley',cantidad:120},{id:'light-chocolate',cantidad:60},
                         {id:'crystal',cantidad:50},{id:'avena',cantidad:40},{id:'northern-brewer',cantidad:12},
@@ -216,8 +237,21 @@ function render(lote){
     return;
   }
 
-  const recetaId = lote.recetaId || null;
-  const receta = (recetaId && RECETAS[recetaId]) ? RECETAS[recetaId] : null;
+  // Intentar por recetaId; si falta, buscar por nombre/estilo del lote
+  let recetaId = lote.recetaId || null;
+  let receta = (recetaId && RECETAS[recetaId]) ? RECETAS[recetaId] : null;
+
+  if (!receta) {
+    const textoBusqueda = ((lote.estilo || '') + ' ' + (lote.nombre || '')).toLowerCase();
+    const matchKey = Object.keys(RECETAS).find(key => {
+      const n = (RECETAS[key].nombre || '').toLowerCase();
+      return n && textoBusqueda.includes(n);
+    });
+    if (matchKey) {
+      recetaId = matchKey;
+      receta = RECETAS[matchKey];
+    }
+  }
 
   const abvMedido = calcABV(lote.og, lote.fg);
   const abvTexto = abvMedido !== null
@@ -235,9 +269,10 @@ function render(lote){
     recetaWarning = `
       <div class="alerta">
         <strong>Receta no encontrada.</strong><br>
-        ID de receta recibido: <code>${recetaId || '(vacío)'}</code><br>
+        ID de receta recibido: <code>${lote.recetaId || '(vacío)'}</code><br>
+        Nombre/estilo del lote: <code>${(lote.estilo || lote.nombre || '(vacío)')}</code><br>
         Revisa que el lote en Firebase tenga un <code>recetaId</code> válido
-        (r-stout, r-belgian, r-honey-wheat o r-dry-stout).
+        (r-stout, r-belgian, r-honey-wheat o r-dry-stout) o un nombre que coincida con alguna receta.
       </div>`;
     ingHtml = '<li style="color:var(--muted)">No hay ingredientes disponibles para esta receta.</li>';
   } else {
@@ -265,12 +300,16 @@ function render(lote){
   const consumoPreferente = lote.fecha ? fmtDate(addDaysISO(lote.fecha, 180)) : '—';
   const nombreCerveza = (receta && receta.nombre) || lote.estilo || lote.nombre || '—';
   const ibuTexto = (receta && receta.ibu) || lote.ibu || '—';
+  const descripcionHtml = (receta && receta.descripcion)
+    ? `<div class="descripcion"><strong>Descripción</strong>${receta.descripcion}</div>`
+    : '';
 
   content.innerHTML = `
     <div class="card">
       <h2>Cerveza</h2>
       <div class="estilo-nombre">${nombreCerveza}</div>
       <div class="folio">Lote ${lote.id || '—'}</div>
+      ${descripcionHtml}
     </div>
 
     <div class="card">
