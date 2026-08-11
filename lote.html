@@ -216,37 +216,8 @@ function render(lote){
     return;
   }
 
-  // Resolver receta: primero por recetaId, luego por nombre/estilo
-  let receta = null;
-  let recetaId = lote.recetaId || null;
-
-  if (recetaId && RECETAS[recetaId]) {
-    receta = RECETAS[recetaId];
-  } else {
-    // Fallback: buscar por nombre de estilo
-    const estiloBuscado = (lote.estilo || lote.nombre || '').toLowerCase().trim();
-    if (estiloBuscado) {
-      for (const [id, r] of Object.entries(RECETAS)) {
-        if (r.nombre && r.nombre.toLowerCase().includes(estiloBuscado) ||
-            estiloBuscado.includes((r.nombre || '').toLowerCase().split(' ')[0])) {
-          receta = r;
-          recetaId = id;
-          break;
-        }
-      }
-      // Match más preciso por nombre exacto o parcial
-      if (!receta) {
-        for (const [id, r] of Object.entries(RECETAS)) {
-          const n = (r.nombre || '').toLowerCase();
-          if (n === estiloBuscado || n.includes(estiloBuscado) || estiloBuscado.includes(n)) {
-            receta = r;
-            recetaId = id;
-            break;
-          }
-        }
-      }
-    }
-  }
+  const recetaId = lote.recetaId || null;
+  const receta = (recetaId && RECETAS[recetaId]) ? RECETAS[recetaId] : null;
 
   const abvMedido = calcABV(lote.og, lote.fg);
   const abvTexto = abvMedido !== null
@@ -264,20 +235,20 @@ function render(lote){
     recetaWarning = `
       <div class="alerta">
         <strong>Receta no encontrada.</strong><br>
-        ID de receta: <code>${lote.recetaId || '(vacío)'}</code><br>
-        Estilo: <code>${lote.estilo || lote.nombre || '(vacío)'}</code><br>
-        Asigna un <code>recetaId</code> válido o un nombre de estilo reconocible.
+        ID de receta recibido: <code>${recetaId || '(vacío)'}</code><br>
+        Revisa que el lote en Firebase tenga un <code>recetaId</code> válido
+        (r-stout, r-belgian, r-honey-wheat o r-dry-stout).
       </div>`;
-    ingHtml = '<li style="color:var(--muted)">No hay ingredientes disponibles.</li>';
+    ingHtml = '<li style="color:var(--muted)">No hay ingredientes disponibles para esta receta.</li>';
   } else {
     const ingredientes = receta.ingredientes || [];
     if (ingredientes.length === 0) {
       ingHtml = '<li style="color:var(--muted)">Esta receta no tiene ingredientes registrados.</li>';
     } else {
-      // Solo nombres, sin cantidades (las cantidades se manejan en index)
       ingHtml = ingredientes.map(i => {
-        const cat = CATALOGO[i.id] || {nombre: i.id};
-        return `<li><span>${cat.nombre}</span></li>`;
+        const cat = CATALOGO[i.id] || {nombre: i.id, unidad: ''};
+        const cant = (i.cantidad !== undefined && i.cantidad !== null) ? i.cantidad : '—';
+        return `<li><span>${cat.nombre}</span><span class="cant">${cant}${cat.unidad || ''}</span></li>`;
       }).join('');
     }
 
@@ -316,6 +287,7 @@ function render(lote){
       <h2>Datos del lote</h2>
       <div class="detail-row"><span class="lbl">Fecha de elaboración</span><span class="val">${fmtDate(lote.fecha)}</span></div>
       <div class="detail-row"><span class="lbl">Consumo preferente antes de</span><span class="val">${consumoPreferente}</span></div>
+      ${recetaId ? `<div class="detail-row"><span class="lbl">Receta</span><span class="val">${recetaId}</span></div>` : ''}
     </div>
 
     <div class="card">
