@@ -440,6 +440,10 @@ const CATALOGO = [
 ];
 
 const RECETAS = [
+  // ⚠️ ADVERTENCIA: esta lista es la fuente maestra de recetas. También existen copias
+  // manuales (solo con los campos necesarios) en lote.html y estado-produccion.html.
+  // Si cambias ingredientes, ABV, IBU o días de fermentación aquí, actualiza esos
+  // archivos también o quedarán desincronizados.
   {
     id:'r-stout', nombre:'Coffee Stout', variante:'All Grain · 15 botellas',
     tiempoTotal:'4-5 semanas + macerado', bottleYield:15, volumenL:5.5,
@@ -1351,6 +1355,8 @@ function bindFermentadoresEvents(){
       ferm.estado = 'libre';
       delete ferm.recetaId;
       delete ferm.fechaInicio;
+      delete ferm.botellas;
+      delete ferm.loteId;
       await saveKey('fermentadores', state.fermentadores);
       renderContent();
     });
