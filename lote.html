@@ -105,14 +105,9 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
 .detail-row .lbl { color: var(--muted); }
 .detail-row .val { font-family:'Share Tech Mono', monospace; }
 
-.ing-list { list-style:none; font-size:0.92em; }
-.ing-list li { padding:5px 0; border-top:1px solid var(--line); display:flex; justify-content:space-between; }
-.ing-list li:first-child{ border-top:none; }
-.ing-list .cant { color:var(--muted); font-family:'Share Tech Mono',monospace; font-size:0.9em; }
-
 .alerta {
   background:#2a1f10; border:1px solid #5a3d10; border-radius:6px;
-  padding:12px 14px; font-size:0.88em; color:var(--copper-light); margin-top:12px;
+  padding:12px 14px; font-size:0.88em; color:var(--copper-light);
 }
 .alerta strong { color:#ffce9e; }
 
@@ -120,45 +115,6 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
   font-size:0.82em; color:var(--muted); line-height:1.5; text-align:center;
 }
 .legal strong{ color:var(--red); }
-.legal-icons {
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  gap:14px;
-  flex-wrap:wrap;
-  margin:12px 0 10px;
-}
-.legal-icon {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:4px;
-  min-width:72px;
-  max-width:100px;
-}
-.legal-icon .ico {
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:2px solid var(--red);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-family:'Chakra Petch',sans-serif;
-  font-weight:700;
-  font-size:0.72em;
-  color:var(--red);
-  background:#2a1515;
-  line-height:1;
-  text-align:center;
-}
-.legal-icon .ico svg { width:22px; height:22px; fill:none; stroke:var(--red); stroke-width:2; }
-.legal-icon span {
-  font-size:0.68em;
-  color:var(--muted);
-  line-height:1.25;
-  text-align:center;
-}
 
 .empty, .loading {
   text-align:center; color:var(--muted); padding:60px 10px; font-size:0.95em;
@@ -206,7 +162,7 @@ const RECETAS = {
                         {id:'cold-brew',cantidad:450},{id:'azucar',cantidad:20},
                       ]},
   'r-belgian':     { nombre:'Belgian Blonde Albahaca-Romero', abvEstimado:'5.2–5.6%', ibu:'22–28',
-                      descripcion:'Cerveza artesanal de carácter único, elaborada con una suave base de malta Pale Ale y trigo, enriquecida con avena para una textura sedosa. Su perfil aromático incorpora sutiles notas a miel y caramelo, equilibradas con infusiones frescas de albahaca y romero que aportan un toque herbal y refrescante. Puede presentar un ligero velo natural propio del trigo y la avena, al no estar filtrada.',
+                      descripcion:'Cerveza artesanal de carácter único, elaborada con una suave base de malta Pale Ale y trigo, enriquecida con avena para una textura sedosa. Su perfil aromático incorpora sutiles notas a miel y caramelo, equilibradas a la perfección con infusiones frescas de albahaca y romero que aportan un toque herbal, fresco y refrescante',
                       ingredientes:[
                         {id:'pale-ale',cantidad:900},{id:'wheat',cantidad:200},{id:'aromatic',cantidad:100},
                         {id:'honey-malt',cantidad:80},{id:'crystal-10',cantidad:50},{id:'avena',cantidad:50},
@@ -214,7 +170,7 @@ const RECETAS = {
                         {id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
                       ]},
   'r-honey-wheat': { nombre:'Honey Wheat', abvEstimado:'5.0–5.3%', ibu:'15–18',
-                      descripcion:'Cerveza de trigo ligera y refrescante, elaborada con malta Pale Ale, trigo, Honey malt y avena. La miel se incorpora al final del hervido para conservar su aroma delicado, dando un perfil suave, ligeramente dulce y muy bebible. De aspecto naturalmente turbio, característico de las cervezas de trigo sin filtrar. Ideal para días cálidos, con carbonatación media-alta y un toque frutal sutil de la levadura S-33.',
+                      descripcion:'Cerveza de trigo ligera y refrescante, elaborada con malta Pale Ale, trigo, Honey malt y avena. La miel se incorpora al final del hervido para conservar su aroma delicado, dando un perfil suave, ligeramente dulce y muy bebible. Ideal para días cálidos, con carbonatación media-alta y un toque frutal sutil de la levadura S-33.',
                       ingredientes:[
                         {id:'pale-ale',cantidad:700},{id:'wheat',cantidad:500},{id:'honey-malt',cantidad:80},
                         {id:'avena',cantidad:50},{id:'crystal-10',cantidad:30},{id:'northern-brewer',cantidad:6},
@@ -255,29 +211,18 @@ function calcABV(ogStr, fgStr){
   return Math.round((og - fg) * 131.25 * 10) / 10;
 }
 function parseFecha(val){
-  if(val === null || val === undefined || val === '') return null;
-  // Ya es Date
+  if(!val) return null;
   if(val instanceof Date) return isNaN(val.getTime()) ? null : val;
-  const s = String(val).trim();
-  // ISO yyyy-mm-dd
-  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if(m){
-    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  if(typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)){
+    const d = new Date(val.slice(0,10) + 'T00:00:00');
     return isNaN(d.getTime()) ? null : d;
   }
-  // dd/mm/yyyy o dd-mm-yyyy
-  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-  if(m){
-    const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+  if(typeof val === 'number' || (typeof val === 'string' && /^\d+$/.test(val))){
+    const n = Number(val);
+    const d = new Date(n > 1e12 ? n : n * 1000);
     return isNaN(d.getTime()) ? null : d;
   }
-  // Timestamp numérico
-  if(/^\d{10,13}$/.test(s)){
-    const n = Number(s);
-    const d = new Date(n < 1e12 ? n * 1000 : n);
-    return isNaN(d.getTime()) ? null : d;
-  }
-  const d = new Date(s);
+  const d = new Date(val);
   return isNaN(d.getTime()) ? null : d;
 }
 function fmtDate(val){
@@ -285,7 +230,7 @@ function fmtDate(val){
   if(!d) return '—';
   return d.toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
 }
-function addDaysDate(val, days){
+function addDays(val, days){
   const d = parseFecha(val);
   if(!d) return null;
   const out = new Date(d.getTime());
@@ -324,52 +269,23 @@ function render(lote){
   const abvTexto = abvMedido !== null
     ? (abvMedido + '% vol.')
     : ((receta && receta.abvEstimado) ? receta.abvEstimado : '—');
-  const etapa = (lote.etapa || '').toLowerCase();
-  const etapaAvanzada = ['reposo', 'carbonatando', 'listo', 'entregado', 'embotellado'].some(e => etapa.includes(e));
-  let abvNota = '';
-  if (abvMedido === null && receta && receta.abvEstimado) {
-    abvNota = etapaAvanzada
-      ? '<div class="abv-note">ABV estimado según el estilo de la receta.</div>'
-      : '<div class="abv-note">Valor estimado del estilo (sin lectura final de densidades en este lote).</div>';
-  }
+  const abvNota = abvMedido !== null
+    ? ''
+    : '<div class="abv-note">Valor estimado del estilo.</div>';
 
-  let ingHtml = '';
   let alertaHtml = '';
-  let recetaWarning = '';
-
-  if (!receta) {
-    recetaWarning = `
-      <div class="alerta">
-        <strong>Receta no encontrada.</strong><br>
-        ID de receta recibido: <code>${lote.recetaId || '(vacío)'}</code><br>
-        Nombre/estilo del lote: <code>${(lote.estilo || lote.nombre || '(vacío)')}</code><br>
-        Revisa que el lote en Firebase tenga un <code>recetaId</code> válido
-        (r-stout, r-belgian, r-honey-wheat o r-dry-stout) o un nombre que coincida con alguna receta.
-      </div>`;
-    ingHtml = '<li style="color:var(--muted)">No hay ingredientes disponibles para esta receta.</li>';
-  } else {
-    const ingredientes = receta.ingredientes || [];
-    if (ingredientes.length === 0) {
-      ingHtml = '<li style="color:var(--muted)">Esta receta no tiene ingredientes registrados.</li>';
-    } else {
-      ingHtml = ingredientes.map(i => {
-        const cat = CATALOGO[i.id] || {nombre: i.id, unidad: ''};
-        const cant = (i.cantidad !== undefined && i.cantidad !== null) ? i.cantidad : '—';
-        return `<li><span>${cat.nombre}</span><span class="cant">${cant}${cat.unidad || ''}</span></li>`;
-      }).join('');
-    }
-
+  if (receta) {
     const glutenFuentes = [...new Set(
       (receta.ingredientes || [])
         .map(i => (CATALOGO[i.id] || {}).gluten)
         .filter(Boolean)
     )];
-    alertaHtml = glutenFuentes.length
-      ? `<div class="alerta"><strong>Contiene gluten:</strong> ${glutenFuentes.join(', ')}. Elaborada en un espacio que también procesa otros cereales.</div>`
-      : '';
+    if (glutenFuentes.length) {
+      alertaHtml = `<div class="alerta"><strong>Contiene gluten:</strong> ${glutenFuentes.join(', ')}. Elaborada en un espacio que también procesa otros cereales.</div>`;
+    }
   }
 
-  const consumoPreferente = fmtDate(addDaysDate(lote.fecha || lote.fechaEmbotellado, 180));
+  const consumoPreferente = fmtDate(addDays(lote.fecha, 180));
   const nombreCerveza = (receta && receta.nombre) || lote.estilo || lote.nombre || '—';
   const ibuTexto = (receta && receta.ibu) || lote.ibu || '—';
   const descripcionHtml = (receta && receta.descripcion)
@@ -398,36 +314,43 @@ function render(lote){
       <h2>Datos del lote</h2>
       <div class="detail-row"><span class="lbl">Fecha de elaboración</span><span class="val">${fmtDate(lote.fecha)}</span></div>
       <div class="detail-row"><span class="lbl">Consumo preferente antes de</span><span class="val">${consumoPreferente}</span></div>
-      ${recetaId ? `<div class="detail-row"><span class="lbl">Receta</span><span class="val">${recetaId}</span></div>` : ''}
     </div>
 
-    ${recetaWarning ? `<div class="card">${recetaWarning}</div>` : ''}
     ${alertaHtml ? `<div class="card">${alertaHtml}</div>` : ''}
 
     <div class="card">
       <p class="legal">
-        <strong>Contiene alcohol.</strong> El abuso en el consumo de este producto es nocivo para la salud.
+        <strong>Contiene alcohol.</strong> Prohibida su venta a menores de 18 años.<br>
+        El abuso en el consumo de este producto es nocivo para la salud.
       </p>
-      <div class="legal-icons" aria-label="Advertencias">
-        <div class="legal-icon">
-          <div class="ico">18+</div>
-          <span>Prohibida la venta a menores de 18 años</span>
-        </div>
-        <div class="legal-icon">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14c1.5 2 6.5 2 8 0"/><circle cx="9" cy="10" r="1" fill="var(--red)" stroke="none"/><circle cx="15" cy="10" r="1" fill="var(--red)" stroke="none"/><line x1="5" y1="5" x2="19" y2="19"/></svg>
-          </div>
-          <span>No consumir durante el embarazo</span>
-        </div>
-        <div class="legal-icon">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7 15h10l-1.5-5h-7z"/><circle cx="9" cy="16.5" r="1.2" fill="var(--red)" stroke="none"/><circle cx="15" cy="16.5" r="1.2" fill="var(--red)" stroke="none"/><line x1="5" y1="5" x2="19" y2="19"/></svg>
-          </div>
-          <span>No conducir bajo sus efectos</span>
-        </div>
-      </div>
     </div>
   `;
+}
+
+async function buscarLote(loteId){
+  // Intento eficiente: filtrar por campo id en el servidor
+  try {
+    const q = await db.ref('bitacora/lotes-bitacora')
+      .orderByChild('id')
+      .equalTo(loteId)
+      .limitToFirst(1)
+      .once('value');
+    const val = q.val();
+    if (val) {
+      const first = Array.isArray(val) ? val.find(Boolean) : Object.values(val)[0];
+      if (first) return first;
+    }
+  } catch (e) {
+    // Si falta índice o la consulta falla, se usa el fallback
+    console.warn('Consulta filtrada no disponible, usando fallback:', e && e.message);
+  }
+
+  // Fallback: descargar lista y buscar en cliente (compatibilidad con datos antiguos)
+  const snap = await db.ref('bitacora/lotes-bitacora').once('value');
+  const raw = snap.val();
+  if (raw == null) return null;
+  const lista = Array.isArray(raw) ? raw : Object.values(raw);
+  return lista.find(l => l && String(l.id) === String(loteId)) || null;
 }
 
 firebase.auth().signInAnonymously()
@@ -436,57 +359,33 @@ firebase.auth().signInAnonymously()
     if (!loteId) {
       document.getElementById('content').innerHTML = `
         <div class="card">
-          <div class="empty">Código QR incompleto.<br>Falta el identificador del lote (<code>?id=...</code>).</div>
+          <div class="empty">Código QR incompleto.<br>Escanea de nuevo el código de la botella o contacta a la cervecería.</div>
         </div>`;
       return;
     }
 
     try {
-      const snap = await db.ref('bitacora/lotes-bitacora').once('value');
-      const raw = snap.val();
-
-      if (raw === null || raw === undefined) {
-        document.getElementById('content').innerHTML = `
-          <div class="card">
-            <div class="empty">
-              No hay lotes registrados en la base de datos.<br>
-              Ruta: <code>bitacora/lotes-bitacora</code>
-            </div>
-          </div>`;
-        return;
-      }
-
-      const lista = Array.isArray(raw) ? raw : Object.values(raw);
-      const lote = lista.find(l => l && String(l.id) === String(loteId));
+      const lote = await buscarLote(loteId);
 
       if (!lote) {
-        const idsDisponibles = lista
-          .filter(l => l && l.id)
-          .map(l => l.id)
-          .slice(0, 8)
-          .join(', ');
         document.getElementById('content').innerHTML = `
           <div class="card">
             <div class="empty">
-              No encontramos el lote <strong>${loteId}</strong>.<br><br>
-              ${idsDisponibles
-                ? `Algunos lotes existentes: ${idsDisponibles}${lista.length > 8 ? '…' : ''}`
-                : 'No se encontraron lotes con campo <code>id</code>.'}
+              No encontramos información para este lote.<br>
+              Verifica el código QR o contacta a la cervecería.
             </div>
           </div>`;
-        console.warn('Lote no encontrado:', loteId, 'Total lotes:', lista.length);
         return;
       }
 
-      console.log('Lote cargado:', lote);
       render(lote);
     } catch (err) {
       console.error('Error al leer lotes:', err);
       document.getElementById('content').innerHTML = `
         <div class="card">
           <div class="empty">
-            Error al consultar la base de datos.<br>
-            ${err && err.message ? err.message : 'Intenta de nuevo más tarde.'}
+            No se pudo cargar la información del lote.<br>
+            Intenta de nuevo más tarde o contacta a la cervecería.
           </div>
         </div>`;
     }
@@ -496,8 +395,8 @@ firebase.auth().signInAnonymously()
     document.getElementById('content').innerHTML = `
       <div class="card">
         <div class="empty">
-          No se pudo iniciar sesión para consultar los datos.<br>
-          ${err && err.message ? err.message : ''}
+          No se pudo cargar la información del lote.<br>
+          Intenta de nuevo más tarde.
         </div>
       </div>`;
   });
