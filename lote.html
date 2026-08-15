@@ -215,15 +215,43 @@ function calcABV(ogStr, fgStr){
   if(og < 0.99 || og > 1.2 || fg < 0.99 || fg > 1.2 || fg > og) return null;
   return Math.round((og - fg) * 131.25 * 10) / 10;
 }
-function fmtDate(iso){
-  if(!iso) return '—';
-  const d = new Date(iso + 'T00:00:00');
+function parseFecha(val){
+  if(val === null || val === undefined || val === '') return null;
+  // Ya es Date
+  if(val instanceof Date) return isNaN(val.getTime()) ? null : val;
+  const s = String(val).trim();
+  // ISO yyyy-mm-dd
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m){
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return isNaN(d.getTime()) ? null : d;
+  }
+  // dd/mm/yyyy o dd-mm-yyyy
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(m){
+    const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+    return isNaN(d.getTime()) ? null : d;
+  }
+  // Timestamp numérico
+  if(/^\d{10,13}$/.test(s)){
+    const n = Number(s);
+    const d = new Date(n < 1e12 ? n * 1000 : n);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+function fmtDate(val){
+  const d = parseFecha(val);
+  if(!d) return '—';
   return d.toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
 }
-function addDaysISO(iso, days){
-  const d = new Date(iso + 'T00:00:00');
-  d.setDate(d.getDate() + days);
-  return d;
+function addDaysDate(val, days){
+  const d = parseFecha(val);
+  if(!d) return null;
+  const out = new Date(d.getTime());
+  out.setDate(out.getDate() + days);
+  return out;
 }
 
 function getParam(name){
@@ -257,9 +285,14 @@ function render(lote){
   const abvTexto = abvMedido !== null
     ? (abvMedido + '% vol.')
     : ((receta && receta.abvEstimado) ? receta.abvEstimado : '—');
-  const abvNota = abvMedido !== null
-    ? ''
-    : '<div class="abv-note">Valor estimado del estilo — aún no se registró la lectura final del lote.</div>';
+  const etapa = (lote.etapa || '').toLowerCase();
+  const etapaAvanzada = ['reposo', 'carbonatando', 'listo', 'entregado', 'embotellado'].some(e => etapa.includes(e));
+  let abvNota = '';
+  if (abvMedido === null && receta && receta.abvEstimado) {
+    abvNota = etapaAvanzada
+      ? '<div class="abv-note">ABV estimado según el estilo de la receta.</div>'
+      : '<div class="abv-note">Valor estimado del estilo (sin lectura final de densidades en este lote).</div>';
+  }
 
   let ingHtml = '';
   let alertaHtml = '';
@@ -297,7 +330,7 @@ function render(lote){
       : '';
   }
 
-  const consumoPreferente = lote.fecha ? fmtDate(addDaysISO(lote.fecha, 180)) : '—';
+  const consumoPreferente = fmtDate(addDaysDate(lote.fecha || lote.fechaEmbotellado, 180));
   const nombreCerveza = (receta && receta.nombre) || lote.estilo || lote.nombre || '—';
   const ibuTexto = (receta && receta.ibu) || lote.ibu || '—';
   const descripcionHtml = (receta && receta.descripcion)
@@ -329,12 +362,8 @@ function render(lote){
       ${recetaId ? `<div class="detail-row"><span class="lbl">Receta</span><span class="val">${recetaId}</span></div>` : ''}
     </div>
 
-    <div class="card">
-      <h2>Ingredientes</h2>
-      ${recetaWarning}
-      <ul class="ing-list">${ingHtml}</ul>
-      ${alertaHtml}
-    </div>
+    ${recetaWarning ? `<div class="card">${recetaWarning}</div>` : ''}
+    ${alertaHtml ? `<div class="card">${alertaHtml}</div>` : ''}
 
     <div class="card">
       <p class="legal">
