@@ -443,6 +443,7 @@ const RECETAS = [
   {
     id:'r-stout', nombre:'Coffee Stout', variante:'All Grain · 15 botellas',
     tiempoTotal:'4-5 semanas + macerado', bottleYield:15, volumenL:5.5,
+    aguaMashL:10.25, dunkSpargeL:1.25,
     descripcion:'Coffee Stout con Pale Ale, Crystal, Light Chocolate, Roasted Barley, Northern Brewer y S-33. Cold brew de café al final de fermentación.',
     fermentandoDays:8, fermenterDays:12,
     params:{ og:'1.052–1.058', fg:'1.014–1.018', abv:'5.0–5.5%', ibu:'32–38', mash:'66–67°C', ferm:'18–21°C' },
@@ -457,10 +458,10 @@ const RECETAS = [
       {id:'azucar',          cantidad:20},
     ],
     procedimiento:[
-      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L de agua a 72–74 °C (strike).', why:'Al añadir granos baja a la temperatura de macerado.'},
+      {paso:'Agua de mash', detalle:'Calienta {{AGUA_MASH}} de agua a 72–74 °C (strike).', why:'Al añadir granos baja a la temperatura de macerado.'},
       {paso:'Macerado', detalle:'Añade todos los granos. Mantén 66–67 °C durante 60 min. pH objetivo 5,2–5,5.', why:'Temperatura que da cuerpo medio-alto típico de stout.'},
       {paso:'Mash-out', detalle:'Sube a 75–76 °C durante 10 min.', why:'Detiene enzimas y facilita el drenado.'},
-      {paso:'Drenado', detalle:'Escurre la bolsa. Opcional: dunk sparge 1–1,5 L a 75–78 °C.', why:'Recupera azúcares y sube un poco la eficiencia.'},
+      {paso:'Drenado', detalle:'Escurre la bolsa. Opcional: dunk sparge {{DUNK_SPARGE}} a 75–78 °C.', why:'Recupera azúcares y sube un poco la eficiencia.'},
       {paso:'Hervido 60 min', detalle:'A los 60 min añade 12 g Northern Brewer. Últimos 10–15 min: Whirlfloc si tienes.', why:'Isomeriza amargor limpio y elimina DMS.'},
       {paso:'Enfriado', detalle:'Baja a 18–20 °C lo más rápido posible.', why:'Evita contaminación y forma cold break.'},
       {paso:'Fermentación', detalle:'Siembra S-33. Fermenta a 18–21 °C. Primaria ~5–8 días.', why:'S-33 da cuerpo y fruta moderada; rango ideal de la levadura.'},
@@ -471,6 +472,7 @@ const RECETAS = [
   {
     id:'r-belgian', nombre:'Belgian Blonde Albahaca-Romero', variante:'All Grain · 15 botellas',
     tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
+    aguaMashL:10.25, dunkSpargeL:1.25,
     descripcion:'Belgian Blonde con notas frescas de albahaca y romero. Pale Ale + Wheat + Aromatic + Honey malt + Crystal 10 + avena. Northern Brewer y S-33.',
     fermentandoDays:7, fermenterDays:11,
     params:{ og:'1.050–1.055', fg:'1.010–1.014', abv:'5.2–5.6%', ibu:'22–28', mash:'66–67°C', ferm:'18–21°C' },
@@ -488,10 +490,10 @@ const RECETAS = [
       {id:'azucar',          cantidad:23},
     ],
     procedimiento:[
-      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L a 72–73 °C.', why:'Strike para llegar a 66–67 °C al mash-in.'},
+      {paso:'Agua de mash', detalle:'Calienta {{AGUA_MASH}} a 72–73 °C.', why:'Strike para llegar a 66–67 °C al mash-in.'},
       {paso:'Macerado', detalle:'Añade todos los granos (avena incluida, sin hervir aparte). 66–67 °C × 60 min. pH 5,2–5,5.', why:'Cuerpo medio belga; trigo y avena mejoran espuma.'},
       {paso:'Mash-out', detalle:'75–76 °C durante 10 min.', why:'Facilita drenado del mosto viscoso con trigo/avena.'},
-      {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional 1–1,5 L a 75–78 °C.', why:'Mejora eficiencia en lote pequeño.'},
+      {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional {{DUNK_SPARGE}} a 75–78 °C.', why:'Mejora eficiencia en lote pequeño.'},
       {paso:'Hervido 60 min', detalle:'Min 60: 9 g Northern Brewer. Últimos 5 min: mitad de albahaca + todo el romero. Flameout: resto de albahaca.', why:'Amargor limpio; hierbas al final conservan aroma fresco.'},
       {paso:'Enfriado', detalle:'Baja a 18–20 °C rápidamente.', why:'Protege el mosto y permite sembrar levadura pronto.'},
       {paso:'Fermentación', detalle:'Siembra S-33 a 18–21 °C. Primaria 5–8 días.', why:'Ésteres frutales moderados típicos belgas.'},
@@ -502,6 +504,7 @@ const RECETAS = [
   {
     id:'r-honey-wheat', nombre:'Honey Wheat', variante:'All Grain · 15 botellas',
     tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
+    aguaMashL:10.25, dunkSpargeL:1.25,
     descripcion:'Trigo ligero y refrescante con notas de miel. Pale Ale + Wheat + Honey malt + avena + miel al final del hervido. Northern Brewer y S-33.',
     fermentandoDays:7, fermenterDays:11,
     params:{ og:'1.048–1.052', fg:'1.010–1.014', abv:'5.0–5.3%', ibu:'15–18', mash:'66–67°C', ferm:'18–20°C' },
@@ -517,10 +520,10 @@ const RECETAS = [
       {id:'azucar',          cantidad:23},
     ],
     procedimiento:[
-      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L a 72–73 °C.', why:'Strike temperature para mash a 66–67 °C.'},
+      {paso:'Agua de mash', detalle:'Calienta {{AGUA_MASH}} a 72–73 °C.', why:'Strike temperature para mash a 66–67 °C.'},
       {paso:'Macerado', detalle:'Añade granos (avena sin hervir aparte). 66–67 °C × 60 min. pH 5,2–5,5.', why:'Cuerpo agradable sin pesadez; trigo aporta espuma.'},
       {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Detiene enzimas y mejora drenado.'},
-      {paso:'Drenado', detalle:'Escurre. Dunk sparge opcional 1–1,5 L a 75–78 °C.', why:'Recupera extracto en BIAB pequeño.'},
+      {paso:'Drenado', detalle:'Escurre. Dunk sparge opcional {{DUNK_SPARGE}} a 75–78 °C.', why:'Recupera extracto en BIAB pequeño.'},
       {paso:'Hervido 60 min', detalle:'Min 60: 6 g Northern Brewer. Flameout o últimos 5 min: apaga fuego y añade 175 g miel disuelta en mosto caliente.', why:'Miel al final conserva aroma; hervirla mucho lo reduce.'},
       {paso:'Enfriado', detalle:'Baja a 18–20 °C lo antes posible.', why:'Evita contaminación y off-flavors.'},
       {paso:'Fermentación', detalle:'Siembra S-33 a 18–20 °C. Primaria 5–8 días. FG ≈1.010–1.014.', why:'Rango limpio para wheat con toque frutal suave.'},
@@ -530,6 +533,7 @@ const RECETAS = [
   {
     id:'r-dry-stout', nombre:'Dry Stout', variante:'All Grain · 15 botellas',
     tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
+    aguaMashL:10.25,
     descripcion:'Stout seca estilo irlandés. Pale Ale + Roasted Barley + Light Chocolate + Crystal + avena. Amargor limpio con Northern Brewer y S-33.',
     fermentandoDays:7, fermenterDays:11,
     params:{ og:'1.042–1.048', fg:'1.010–1.014', abv:'4.2–4.6%', ibu:'30–36', mash:'66–67°C', ferm:'18–20°C' },
@@ -544,7 +548,7 @@ const RECETAS = [
       {id:'azucar',          cantidad:19},
     ],
     procedimiento:[
-      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L a 72–73 °C.', why:'Strike para mash a 66–67 °C.'},
+      {paso:'Agua de mash', detalle:'Calienta {{AGUA_MASH}} a 72–73 °C.', why:'Strike para mash a 66–67 °C.'},
       {paso:'Macerado', detalle:'Añade todos los granos. 66–67 °C × 60 min (o 65 °C si la quieres más seca). pH 5,2–5,5.', why:'Equilibrio fermentables/cuerpo; roasted barley da el carácter dry.'},
       {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Facilita el drenado.'},
       {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional.', why:'Mejora eficiencia.'},
@@ -716,6 +720,14 @@ function getVolumenL(recipeId){
   return (receta.volumenL || 5.5) * getScaleFactor(recipeId);
 }
 
+/** Formatea un volumen de agua base ya escalado por el factor de la receta */
+function fmtLitrosEscalado(baseL, factor){
+  if(baseL === undefined || baseL === null) return '';
+  const val = baseL * factor;
+  const clean = (Math.round(val * 100) / 100).toString();
+  return factor !== 1 ? `${clean} L (base ${baseL} L)` : `${clean} L`;
+}
+
 /** Cantidad escalada de un ingrediente (g/ml redondeados; levadura mínimo 1) */
 function scaleCantidad(recipeId, ing){
   const factor = getScaleFactor(recipeId);
@@ -825,15 +837,20 @@ function renderRecetas(){
       const baseTxt = factor !== 1 && base ? ` <span class="muted">(base ${base.cantidad})</span>` : '';
       return `<li><span>${cat.nombre}${cat.fresco?' <span class="badge fresh">FRESCO</span>':''}${baseTxt}</span><span>${i.cantidad}${cat.unidad}</span></li>`;
     }).join('');
-    const procHtml = (r.procedimiento || []).map((s, idx)=>`
+    const procHtml = (r.procedimiento || []).map((s, idx)=>{
+      let detalle = s.detalle
+        .replace('{{AGUA_MASH}}', fmtLitrosEscalado(r.aguaMashL, factor))
+        .replace('{{DUNK_SPARGE}}', fmtLitrosEscalado(r.dunkSpargeL, factor));
+      return `
       <li>
         <span class="proc-num">${idx+1}.</span>
         <div>
-          <strong>${s.paso}:</strong> ${s.detalle}
+          <strong>${s.paso}:</strong> ${detalle}
           ${s.why ? `<span class="proc-why">→ ${s.why}</span>` : ''}
         </div>
       </li>
-    `).join('');
+    `;
+    }).join('');
     return `
       <div class="receta-card">
         <h3>${r.nombre}</h3>
