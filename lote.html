@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cerveza Locundus — Información del lote</title>
+<meta property="og:title" content="Cerveza Locundus — Información del lote">
+<meta property="og:description" content="Trazabilidad del lote · Cerveza artesanal Locundus por Tierra Grande">
+<meta name="theme-color" content="#FF6200">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -27,40 +30,58 @@ body {
   background: linear-gradient(160deg, #1a1a1a, #0e0e0e);
   font-family: 'Rajdhani', sans-serif;
   color: var(--ink);
-  padding: 24px 16px 40px;
+  padding: 20px 14px 36px;
 }
 .wrap { max-width: 480px; margin: 0 auto; }
-header { text-align: center; margin-bottom: 22px; }
+
+header { text-align: center; margin-bottom: 18px; }
+header .brand {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.78em;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
 header h1 {
   font-family: 'Chakra Petch', sans-serif;
-  font-size: 1.5em;
+  font-size: 1.45em;
   color: var(--copper);
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
-header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
+header p { color: var(--muted); font-size: 0.88em; letter-spacing: 1px; }
 
 .card {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 18px 20px;
-  margin-bottom: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
 }
 .card h2 {
   font-family: 'Chakra Petch', sans-serif;
-  font-size: 0.85em;
+  font-size: 0.78em;
   color: var(--muted);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+
 .estilo-nombre {
   font-family: 'Chakra Petch', sans-serif;
-  font-size: 1.4em;
-  font-weight: 600;
+  font-size: 1.55em;
+  font-weight: 700;
   color: var(--copper-light);
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.folio-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 4px;
 }
 .folio {
@@ -68,63 +89,192 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
   color: var(--muted);
   font-size: 0.85em;
 }
+.badge {
+  display: inline-block;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.badge-carbonatando { background: #1a2e1a; color: var(--green); border-color: #2a4a2a; }
+.badge-fermentacion { background: #2a2410; color: #e8c04a; border-color: #4a3d18; }
+.badge-listo { background: #1a2a1f; color: #5ddea0; border-color: #2a4a38; }
+.badge-agotado { background: #2a1a1a; color: #c08080; border-color: #4a2a2a; }
+.badge-default { background: #252525; color: var(--copper-light); border-color: var(--line); }
+
 .descripcion {
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid var(--line);
-  font-size: 0.92em;
+  font-size: 0.9em;
   line-height: 1.5;
   color: var(--ink);
 }
 .descripcion strong {
   display: block;
   font-family: 'Chakra Petch', sans-serif;
-  font-size: 0.85em;
+  font-size: 0.78em;
   color: var(--muted);
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
-.abv-row { display:flex; gap:12px; margin-top: 4px; }
+
+.abv-row { display: flex; gap: 8px; margin-top: 2px; }
 .abv-box {
-  flex:1; text-align:center; background:#252525; border:1px solid var(--line);
-  border-radius:6px; padding:14px 8px;
+  flex: 1;
+  text-align: center;
+  background: #252525;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 6px;
 }
 .abv-box .num {
-  display:block; font-family:'Chakra Petch',sans-serif; font-size:1.6em;
-  color: var(--copper); font-weight:700;
+  display: block;
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.45em;
+  color: var(--copper);
+  font-weight: 700;
 }
-.abv-box .lbl { font-size:0.72em; color:var(--muted); margin-top:2px; letter-spacing:0.5px; text-transform:uppercase; }
-.abv-note { font-size:0.78em; color:var(--muted); margin-top:8px; font-style:italic; }
+.abv-box .lbl {
+  font-size: 0.7em;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.abv-note { font-size: 0.76em; color: var(--muted); margin-top: 8px; font-style: italic; }
 
 .detail-row {
-  display:flex; justify-content:space-between; padding:8px 0;
-  border-top:1px solid var(--line); font-size:0.95em;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.92em;
 }
-.detail-row:first-child{ border-top:none; }
-.detail-row .lbl { color: var(--muted); }
-.detail-row .val { font-family:'Share Tech Mono', monospace; }
+.detail-row:first-child { border-top: none; }
+.detail-row .lbl { color: var(--muted); flex-shrink: 0; }
+.detail-row .val { font-family: 'Share Tech Mono', monospace; text-align: right; }
+
+.historial {
+  font-size: 0.88em;
+  color: var(--ink);
+  line-height: 1.55;
+  margin-top: 2px;
+}
+.historial span { color: var(--muted); }
+
+.tip-box {
+  background: #252525;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 6px;
+  font-size: 0.9em;
+  line-height: 1.45;
+}
+.tip-box .tip-lbl {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.72em;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.tip-box + .tip-box { margin-top: 8px; }
 
 .alerta {
-  background:#2a1f10; border:1px solid #5a3d10; border-radius:6px;
-  padding:12px 14px; font-size:0.88em; color:var(--copper-light);
+  background: #2a1f10;
+  border: 1px solid #5a3d10;
+  border-radius: 6px;
+  padding: 11px 13px;
+  font-size: 0.86em;
+  color: var(--copper-light);
 }
-.alerta strong { color:#ffce9e; }
+.alerta strong { color: #ffce9e; }
+
+.share-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.share-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #252525;
+  color: var(--ink);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9em;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.share-btn:hover, .share-btn:focus {
+  border-color: var(--copper);
+  background: #2a2a2a;
+  outline: none;
+}
+.share-btn.copied {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.catalog-link {
+  display: block;
+  text-align: center;
+  margin-top: 4px;
+  padding: 10px;
+  font-size: 0.9em;
+  color: var(--copper-light);
+  text-decoration: none;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+}
+.catalog-link:hover { border-color: var(--copper); color: var(--copper); }
 
 .legal {
-  font-size:0.82em; color:var(--muted); line-height:1.5; text-align:center;
+  font-size: 0.8em;
+  color: var(--muted);
+  line-height: 1.5;
+  text-align: center;
 }
-.legal strong{ color:var(--red); }
+.legal strong { color: var(--red); }
 
 .empty, .loading {
-  text-align:center; color:var(--muted); padding:60px 10px; font-size:0.95em;
+  text-align: center;
+  color: var(--muted);
+  padding: 48px 10px;
+  font-size: 0.95em;
 }
-.footer { text-align:center; margin-top:24px; font-size:0.8em; color:#555; }
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.78em;
+  color: #555;
+  line-height: 1.5;
+}
+.footer a { color: var(--muted); text-decoration: none; }
+.footer a:hover { color: var(--copper-light); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
+    <div class="brand">Tierra Grande · Nano Brewery</div>
     <h1>🍺 Cerveza Locundus</h1>
     <p>Información del lote</p>
   </header>
@@ -132,8 +282,9 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
   <div id="content"><div class="loading">Cargando información…</div></div>
 
   <div class="footer">
-    Elaborado para Locundus por Tierra Grande · Chiconcuac, Edo. Méx. · nano brewery +52 473 174 6210<br>
-    <span id="lastMod"></span>
+    Elaborado para Locundus por Tierra Grande · Chiconcuac, Edo. Méx.<br>
+    <a href="tel:+524731746210">+52 473 174 6210</a>
+    <br><span id="lastMod"></span>
   </div>
 <script>document.getElementById("lastMod").textContent = "Última modificación: " + document.lastModified;</script>
 </div>
@@ -154,35 +305,59 @@ const db = firebase.database();
 
 // Datos de referencia (sin costos ni info interna) — deben coincidir con las recetas del panel admin.
 const RECETAS = {
-  'r-stout':       { nombre:'Coffee Stout',                   abvEstimado:'5.0–5.5%', ibu:'32–38',
-                      descripcion:'Cerveza artesanal de cuerpo medio-alto, elaborada con malta Pale Ale, Crystal, Light Chocolate y Roasted Barley. Su perfil tostado y de chocolate se enriquece con cold brew de café añadido al final de la fermentación, aportando aroma fresco a café sin amargor excesivo. Equilibrada con lúpulo Northern Brewer y levadura S-33.',
-                      ingredientes:[
-                        {id:'pale-ale',cantidad:1000},{id:'crystal',cantidad:150},{id:'light-chocolate',cantidad:120},
-                        {id:'roasted-barley',cantidad:130},{id:'northern-brewer',cantidad:12},{id:'s-33',cantidad:1},
-                        {id:'cold-brew',cantidad:450},{id:'azucar',cantidad:20},
-                      ]},
-  'r-belgian':     { nombre:'Belgian Blonde Albahaca-Romero', abvEstimado:'5.2–5.6%', ibu:'22–28',
-                      descripcion:'Cerveza artesanal de carácter único, elaborada con una suave base de malta Pale Ale y trigo, enriquecida con avena para una textura sedosa. Su perfil aromático incorpora sutiles notas a miel y caramelo, equilibradas a la perfección con infusiones frescas de albahaca y romero que aportan un toque herbal, fresco y refrescante',
-                      ingredientes:[
-                        {id:'pale-ale',cantidad:900},{id:'wheat',cantidad:200},{id:'aromatic',cantidad:100},
-                        {id:'honey-malt',cantidad:80},{id:'crystal-10',cantidad:50},{id:'avena',cantidad:50},
-                        {id:'northern-brewer',cantidad:9},{id:'albahaca',cantidad:10},{id:'romero',cantidad:4},
-                        {id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
-                      ]},
-  'r-honey-wheat': { nombre:'Honey Wheat', abvEstimado:'5.0–5.3%', ibu:'15–18',
-                      descripcion:'Cerveza de trigo ligera y refrescante, elaborada con malta Pale Ale, trigo, Honey malt y avena. La miel se incorpora al final del hervido para conservar su aroma delicado, dando un perfil suave, ligeramente dulce y muy bebible. Ideal para días cálidos, con carbonatación media-alta y un toque frutal sutil de la levadura S-33.',
-                      ingredientes:[
-                        {id:'pale-ale',cantidad:700},{id:'wheat',cantidad:500},{id:'honey-malt',cantidad:80},
-                        {id:'avena',cantidad:50},{id:'crystal-10',cantidad:30},{id:'northern-brewer',cantidad:6},
-                        {id:'miel',cantidad:175},{id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
-                      ]},
-  'r-dry-stout':   { nombre:'Dry Stout', abvEstimado:'4.2–4.6%', ibu:'30–36',
-                      descripcion:'Stout seca estilo irlandés, elaborada con malta Pale Ale, Roasted Barley, Light Chocolate, Crystal y avena. Ofrece un carácter tostado limpio y seco, con amargor equilibrado del lúpulo Northern Brewer. Cuerpo medio-bajo, final seco y refrescante, perfecta para quien busca una stout clásica sin excesiva dulzura.',
-                      ingredientes:[
-                        {id:'pale-ale',cantidad:950},{id:'roasted-barley',cantidad:120},{id:'light-chocolate',cantidad:60},
-                        {id:'crystal',cantidad:50},{id:'avena',cantidad:40},{id:'northern-brewer',cantidad:12},
-                        {id:'s-33',cantidad:1},{id:'azucar',cantidad:19},
-                      ]},
+  'r-stout': {
+    nombre: 'Coffee Stout',
+    abvEstimado: '5.0–5.5%',
+    ibu: '32–38',
+    tempServicio: '8–12 °C',
+    maridaje: 'Postres de chocolate, quesos maduros, carne asada.',
+    descripcion: 'Cerveza artesanal de cuerpo medio-alto, elaborada con malta Pale Ale, Crystal, Light Chocolate y Roasted Barley. Su perfil tostado y de chocolate se enriquece con cold brew de café añadido al final de la fermentación, aportando aroma fresco a café sin amargor excesivo. Equilibrada con lúpulo Northern Brewer y levadura S-33.',
+    ingredientes: [
+      {id:'pale-ale',cantidad:1000},{id:'crystal',cantidad:150},{id:'light-chocolate',cantidad:120},
+      {id:'roasted-barley',cantidad:130},{id:'northern-brewer',cantidad:12},{id:'s-33',cantidad:1},
+      {id:'cold-brew',cantidad:450},{id:'azucar',cantidad:20},
+    ]
+  },
+  'r-belgian': {
+    nombre: 'Belgian Blonde Albahaca-Romero',
+    abvEstimado: '5.2–5.6%',
+    ibu: '22–28',
+    tempServicio: '6–10 °C',
+    maridaje: 'Ensaladas frescas, pollo a las hierbas, quesos suaves.',
+    descripcion: 'Cerveza artesanal de carácter único, elaborada con una suave base de malta Pale Ale y trigo, enriquecida con avena para una textura sedosa. Su perfil aromático incorpora sutiles notas a miel y caramelo, equilibradas a la perfección con infusiones frescas de albahaca y romero que aportan un toque herbal, fresco y refrescante.',
+    ingredientes: [
+      {id:'pale-ale',cantidad:900},{id:'wheat',cantidad:200},{id:'aromatic',cantidad:100},
+      {id:'honey-malt',cantidad:80},{id:'crystal-10',cantidad:50},{id:'avena',cantidad:50},
+      {id:'northern-brewer',cantidad:9},{id:'albahaca',cantidad:10},{id:'romero',cantidad:4},
+      {id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
+    ]
+  },
+  'r-honey-wheat': {
+    nombre: 'Honey Wheat',
+    abvEstimado: '5.0–5.3%',
+    ibu: '15–18',
+    tempServicio: '4–8 °C',
+    maridaje: 'Ensaladas, mariscos ligeros, quesos frescos, tardes cálidas.',
+    descripcion: 'Cerveza de trigo ligera y refrescante, elaborada con malta Pale Ale, trigo, Honey malt y avena. La miel se incorpora al final del hervido para conservar su aroma delicado, dando un perfil suave, ligeramente dulce y muy bebible. Ideal para días cálidos, con carbonatación media-alta y un toque frutal sutil de la levadura S-33.',
+    ingredientes: [
+      {id:'pale-ale',cantidad:700},{id:'wheat',cantidad:500},{id:'honey-malt',cantidad:80},
+      {id:'avena',cantidad:50},{id:'crystal-10',cantidad:30},{id:'northern-brewer',cantidad:6},
+      {id:'miel',cantidad:175},{id:'s-33',cantidad:1},{id:'azucar',cantidad:23},
+    ]
+  },
+  'r-dry-stout': {
+    nombre: 'Dry Stout',
+    abvEstimado: '4.2–4.6%',
+    ibu: '30–36',
+    tempServicio: '8–12 °C',
+    maridaje: 'Ostras, carnes a la parrilla, chocolate amargo, pub food.',
+    descripcion: 'Stout seca estilo irlandés, elaborada con malta Pale Ale, Roasted Barley, Light Chocolate, Crystal y avena. Ofrece un carácter tostado limpio y seco, con amargor equilibrado del lúpulo Northern Brewer. Cuerpo medio-bajo, final seco y refrescante, perfecta para quien busca una stout clásica sin excesiva dulzura.',
+    ingredientes: [
+      {id:'pale-ale',cantidad:950},{id:'roasted-barley',cantidad:120},{id:'light-chocolate',cantidad:60},
+      {id:'crystal',cantidad:50},{id:'avena',cantidad:40},{id:'northern-brewer',cantidad:12},
+      {id:'s-33',cantidad:1},{id:'azucar',cantidad:19},
+    ]
+  },
 };
 
 const CATALOGO = {
@@ -204,12 +379,24 @@ const CATALOGO = {
   'romero':{nombre:'Romero fresco', unidad:' g'},
 };
 
+const ESTADOS = {
+  fermentacion: { label: 'En fermentación', cls: 'badge-fermentacion' },
+  fermentando:  { label: 'En fermentación', cls: 'badge-fermentacion' },
+  carbonatando: { label: 'Carbonatando',    cls: 'badge-carbonatando' },
+  carbonatacion:{ label: 'Carbonatando',    cls: 'badge-carbonatando' },
+  listo:        { label: 'Listo',           cls: 'badge-listo' },
+  disponible:   { label: 'Listo',           cls: 'badge-listo' },
+  embotellado:  { label: 'Listo',           cls: 'badge-listo' },
+  agotado:      { label: 'Agotado',         cls: 'badge-agotado' },
+};
+
 function calcABV(ogStr, fgStr){
   const og = parseFloat(ogStr), fg = parseFloat(fgStr);
   if(!og || !fg || isNaN(og) || isNaN(fg)) return null;
   if(og < 0.99 || og > 1.2 || fg < 0.99 || fg > 1.2 || fg > og) return null;
   return Math.round((og - fg) * 131.25 * 10) / 10;
 }
+
 function parseFecha(val){
   if(!val) return null;
   if(val instanceof Date) return isNaN(val.getTime()) ? null : val;
@@ -225,11 +412,13 @@ function parseFecha(val){
   const d = new Date(val);
   return isNaN(d.getTime()) ? null : d;
 }
+
 function fmtDate(val){
   const d = parseFecha(val);
   if(!d) return '—';
   return d.toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
 }
+
 function addDays(val, days){
   const d = parseFecha(val);
   if(!d) return null;
@@ -242,6 +431,14 @@ function getParam(name){
   return new URLSearchParams(window.location.search).get(name);
 }
 
+function normalizarEstado(raw){
+  if(!raw) return null;
+  const key = String(raw).toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '');
+  return ESTADOS[key] || { label: String(raw), cls: 'badge-default' };
+}
+
 function render(lote){
   const content = document.getElementById('content');
   if(!lote){
@@ -249,7 +446,6 @@ function render(lote){
     return;
   }
 
-  // Intentar por recetaId; si falta, buscar por nombre/estilo del lote
   let recetaId = lote.recetaId || null;
   let receta = (recetaId && RECETAS[recetaId]) ? RECETAS[recetaId] : null;
 
@@ -292,11 +488,52 @@ function render(lote){
     ? `<div class="descripcion"><strong>Descripción</strong>${receta.descripcion}</div>`
     : '';
 
+  // Estado del lote (Firebase: estado / status / fase)
+  const estadoInfo = normalizarEstado(lote.estado || lote.status || lote.fase);
+  const badgeHtml = estadoInfo
+    ? `<span class="badge ${estadoInfo.cls}">${estadoInfo.label}</span>`
+    : '';
+
+  // Temperatura y maridaje (lote > receta)
+  const tempServicio = lote.tempServicio || lote.temperatura || (receta && receta.tempServicio) || null;
+  const maridaje = lote.maridaje || (receta && receta.maridaje) || null;
+  let tipsHtml = '';
+  if (tempServicio || maridaje) {
+    tipsHtml = '<div class="card"><h2>Cómo disfrutarla</h2>';
+    if (tempServicio) {
+      tipsHtml += `<div class="tip-box"><div class="tip-lbl">Temperatura de servicio</div>${tempServicio}</div>`;
+    }
+    if (maridaje) {
+      tipsHtml += `<div class="tip-box"><div class="tip-lbl">Maridaje</div>${maridaje}</div>`;
+    }
+    tipsHtml += '</div>';
+  }
+
+  // Historial breve de trazabilidad
+  const histParts = [];
+  if (lote.fecha) histParts.push(`<span>Elaborado</span> ${fmtDate(lote.fecha)}`);
+  if (lote.fechaCarbonatacion || lote.carbonatacion) {
+    histParts.push(`<span>Carbonatado</span> ${fmtDate(lote.fechaCarbonatacion || lote.carbonatacion)}`);
+  }
+  if (lote.fechaEmbotellado || lote.embotellado) {
+    histParts.push(`<span>Embotellado</span> ${fmtDate(lote.fechaEmbotellado || lote.embotellado)}`);
+  }
+  const historialHtml = histParts.length
+    ? `<div class="card"><h2>Trazabilidad</h2><div class="historial">${histParts.join(' · ')}</div></div>`
+    : '';
+
+  const shareUrl = window.location.href;
+  const shareText = encodeURIComponent(`${nombreCerveza} — Lote ${lote.id || ''} · Cerveza Locundus`);
+  const waUrl = `https://wa.me/?text=${shareText}%20${encodeURIComponent(shareUrl)}`;
+
   content.innerHTML = `
     <div class="card">
       <h2>Cerveza</h2>
       <div class="estilo-nombre">${nombreCerveza}</div>
-      <div class="folio">Lote ${lote.id || '—'}</div>
+      <div class="folio-row">
+        <span class="folio">Lote ${lote.id || '—'}</span>
+        ${badgeHtml}
+      </div>
       ${descripcionHtml}
     </div>
 
@@ -316,19 +553,64 @@ function render(lote){
       <div class="detail-row"><span class="lbl">Consumo preferente antes de</span><span class="val">${consumoPreferente}</span></div>
     </div>
 
+    ${historialHtml}
+    ${tipsHtml}
     ${alertaHtml ? `<div class="card">${alertaHtml}</div>` : ''}
 
     <div class="card">
+      <h2>Compartir</h2>
+      <div class="share-row">
+        <a class="share-btn" href="${waUrl}" target="_blank" rel="noopener">WhatsApp</a>
+        <button type="button" class="share-btn" id="btnCopiar">Copiar enlace</button>
+      </div>
+    </div>
+
+    <a class="catalog-link" href="https://wa.me/524731746210?text=${encodeURIComponent('Hola, me interesa conocer más cervezas de Locundus')}">Ver otras cervezas · WhatsApp</a>
+
+    <div class="card" style="margin-top:12px">
       <p class="legal">
         <strong>Contiene alcohol.</strong> Prohibida su venta a menores de 18 años.<br>
         El abuso en el consumo de este producto es nocivo para la salud.
       </p>
     </div>
   `;
+
+  // Actualizar título / OG para compartir
+  document.title = `${nombreCerveza} · Lote ${lote.id || ''} — Locundus`;
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.setAttribute('content', document.title);
+
+  const btn = document.getElementById('btnCopiar');
+  if (btn) {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copiar enlace';
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch (e) {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = shareUrl;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copiar enlace';
+          btn.classList.remove('copied');
+        }, 2000);
+      }
+    });
+  }
 }
 
 async function buscarLote(loteId){
-  // Intento eficiente: filtrar por campo id en el servidor
   try {
     const q = await db.ref('bitacora/lotes-bitacora')
       .orderByChild('id')
@@ -341,11 +623,9 @@ async function buscarLote(loteId){
       if (first) return first;
     }
   } catch (e) {
-    // Si falta índice o la consulta falla, se usa el fallback
     console.warn('Consulta filtrada no disponible, usando fallback:', e && e.message);
   }
 
-  // Fallback: descargar lista y buscar en cliente (compatibilidad con datos antiguos)
   const snap = await db.ref('bitacora/lotes-bitacora').once('value');
   const raw = snap.val();
   if (raw == null) return null;
@@ -366,7 +646,6 @@ firebase.auth().signInAnonymously()
 
     try {
       const lote = await buscarLote(loteId);
-
       if (!lote) {
         document.getElementById('content').innerHTML = `
           <div class="card">
@@ -377,7 +656,6 @@ firebase.auth().signInAnonymously()
           </div>`;
         return;
       }
-
       render(lote);
     } catch (err) {
       console.error('Error al leer lotes:', err);
