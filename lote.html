@@ -120,6 +120,45 @@ header p { color: var(--muted); font-size: 0.9em; letter-spacing: 1px; }
   font-size:0.82em; color:var(--muted); line-height:1.5; text-align:center;
 }
 .legal strong{ color:var(--red); }
+.legal-icons {
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  gap:14px;
+  flex-wrap:wrap;
+  margin:12px 0 10px;
+}
+.legal-icon {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  min-width:72px;
+  max-width:100px;
+}
+.legal-icon .ico {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:2px solid var(--red);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Chakra Petch',sans-serif;
+  font-weight:700;
+  font-size:0.72em;
+  color:var(--red);
+  background:#2a1515;
+  line-height:1;
+  text-align:center;
+}
+.legal-icon .ico svg { width:22px; height:22px; fill:none; stroke:var(--red); stroke-width:2; }
+.legal-icon span {
+  font-size:0.68em;
+  color:var(--muted);
+  line-height:1.25;
+  text-align:center;
+}
 
 .empty, .loading {
   text-align:center; color:var(--muted); padding:60px 10px; font-size:0.95em;
@@ -367,9 +406,26 @@ function render(lote){
 
     <div class="card">
       <p class="legal">
-        <strong>Contiene alcohol.</strong> Prohibida su venta a menores de 18 años.<br>
-        El abuso en el consumo de este producto es nocivo para la salud.
+        <strong>Contiene alcohol.</strong> El abuso en el consumo de este producto es nocivo para la salud.
       </p>
+      <div class="legal-icons" aria-label="Advertencias">
+        <div class="legal-icon">
+          <div class="ico">18+</div>
+          <span>Prohibida la venta a menores de 18 años</span>
+        </div>
+        <div class="legal-icon">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14c1.5 2 6.5 2 8 0"/><circle cx="9" cy="10" r="1" fill="var(--red)" stroke="none"/><circle cx="15" cy="10" r="1" fill="var(--red)" stroke="none"/><line x1="5" y1="5" x2="19" y2="19"/></svg>
+          </div>
+          <span>No consumir durante el embarazo</span>
+        </div>
+        <div class="legal-icon">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7 15h10l-1.5-5h-7z"/><circle cx="9" cy="16.5" r="1.2" fill="var(--red)" stroke="none"/><circle cx="15" cy="16.5" r="1.2" fill="var(--red)" stroke="none"/><line x1="5" y1="5" x2="19" y2="19"/></svg>
+          </div>
+          <span>No conducir bajo sus efectos</span>
+        </div>
+      </div>
     </div>
   `;
 }
