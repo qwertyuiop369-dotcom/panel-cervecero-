@@ -21,6 +21,7 @@
   --green:#3ecf4a;
   --green-dark:#2a9e36;
   --line:#404040;
+  --blue:#4aa3ff;
 }
 *{box-sizing:border-box;}
 body{
@@ -48,18 +49,33 @@ header .sub{
   font-size:0.9em;
   letter-spacing:1px;
 }
+.section-title{
+  font-family:'Chakra Petch',sans-serif;
+  font-size:0.85em;
+  color:var(--muted);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin:8px 0 12px;
+  padding-left:2px;
+}
 .card{
   background:var(--card);
   border:1px solid var(--line);
   border-radius:10px;
-  padding:20px 22px;
-  margin-bottom:16px;
+  padding:18px 20px;
+  margin-bottom:14px;
   box-shadow:0 4px 16px rgba(0,0,0,0.35);
 }
 .card .receta{
   font-family:'Chakra Petch',sans-serif;
   font-weight:600;
   font-size:1.25em;
+  margin-bottom:8px;
+}
+.card .lote-id{
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.82em;
+  color:var(--muted);
   margin-bottom:10px;
 }
 .badge{
@@ -70,11 +86,12 @@ header .sub{
   text-transform:uppercase;
   padding:5px 12px;
   border-radius:20px;
-  margin-bottom:14px;
+  margin-bottom:12px;
 }
 .badge.fermentando{background:rgba(255,98,0,0.18);color:var(--copper-light);border:1px solid var(--copper);}
 .badge.reposo{background:rgba(62,207,74,0.15);color:var(--green);border:1px solid var(--green-dark);}
 .badge.listo{background:rgba(62,207,74,0.28);color:#eafff0;border:1px solid var(--green);}
+.badge.carbonatando{background:rgba(74,163,255,0.18);color:var(--blue);border:1px solid #2a6ab8;}
 .detail-row{
   display:flex;
   justify-content:space-between;
@@ -139,93 +156,180 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Solo datos necesarios para esta vista (sin costos ni inventario)
 const RECETAS = {
-  'r-stout':        { nombre:'Coffee Stout',                    fermentandoDays:8, fermenterDays:12, tiempoTotalDias:32 },
-  'r-belgian':      { nombre:'Belgian Blonde Albahaca-Romero',  fermentandoDays:7, fermenterDays:11, tiempoTotalDias:24 },
-  'r-honey-wheat':  { nombre:'Honey Wheat',                    fermentandoDays:7, fermenterDays:11, tiempoTotalDias:24 },
-  'r-dry-stout':    { nombre:'Dry Stout',                      fermentandoDays:7, fermenterDays:11, tiempoTotalDias:24 },
+  'r-stout':        { nombre:'Coffee Stout',                    fermentandoDays:8, fermenterDays:12, tiempoTotalDias:32, carbonatacionDias:14 },
+  'r-belgian':      { nombre:'Belgian Blonde Albahaca-Romero',  fermentandoDays:7, fermenterDays:11, tiempoTotalDias:24, carbonatacionDias:12 },
+  'r-honey-wheat':  { nombre:'Honey Wheat',                    fermentandoDays:7, fermenterDays:11, tiempoTotalDias:24, carbonatacionDias:12 },
+  'r-dry-stout':    { nombre:'Dry Stout',                      fermentandoDays:7, fermenterDays:11, tiempoTotalDias:24, carbonatacionDias:14 },
 };
 
-function daysBetween(iso){
-  if(!iso) return 0;
-  const start = new Date(iso + 'T00:00:00');
+function parseFecha(val){
+  if(!val) return null;
+  if(val instanceof Date) return isNaN(val.getTime()) ? null : val;
+  if(typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)){
+    const d = new Date(val.slice(0,10) + 'T00:00:00');
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if(typeof val === 'number' || (typeof val === 'string' && /^\d+$/.test(val))){
+    const n = Number(val);
+    const d = new Date(n > 1e12 ? n : n * 1000);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function daysBetween(val){
+  const start = parseFecha(val);
+  if(!start) return 0;
   const now = new Date();
   const nowMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return Math.floor((nowMid - start) / 86400000);
+  const startMid = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  return Math.max(0, Math.floor((nowMid - startMid) / 86400000));
 }
-function addDaysISO(iso, days){
-  if(!iso) return null;
-  const d = new Date(iso + 'T00:00:00');
-  d.setDate(d.getDate() + days);
-  return d;
+
+function addDays(val, days){
+  const d = parseFecha(val);
+  if(!d) return null;
+  const out = new Date(d.getTime());
+  out.setDate(out.getDate() + days);
+  return out;
 }
-function fmtDate(d){
-  if(!d) return '—';
+
+function fmtDate(val){
+  const d = val instanceof Date ? val : parseFecha(val);
+  if(!d || isNaN(d.getTime())) return '—';
   return d.toLocaleDateString('es-MX', {day:'2-digit', month:'long', year:'numeric'});
 }
 
-function render(fermentadores){
+function nombreReceta(recetaId, fallback){
+  if(recetaId && RECETAS[recetaId]) return RECETAS[recetaId].nombre;
+  return fallback || '—';
+}
+
+function esCarbonatando(estado){
+  if(!estado) return false;
+  const s = String(estado).toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return s.includes('carbonat') || s === 'condicionando' || s === 'bottle conditioning';
+}
+
+function cantidadTxt(botellas){
+  const n = botellas != null && botellas !== '' ? Number(botellas) : null;
+  if(!n || isNaN(n)) return '—';
+  const litros = n * 0.355;
+  return `${n} botella${n === 1 ? '' : 's'} · ≈ ${litros.toFixed(1)} L`;
+}
+
+function toList(raw){
+  if(raw == null) return [];
+  return Array.isArray(raw) ? raw.filter(Boolean) : Object.values(raw).filter(Boolean);
+}
+
+function cardFermentador(f){
+  const receta = RECETAS[f.recetaId];
+  if(!receta) return '';
+  const dias = daysBetween(f.fechaInicio);
+
+  let etapa, claseEtapa;
+  if(dias < receta.fermentandoDays){
+    etapa = 'Fermentando';
+    claseEtapa = 'fermentando';
+  } else if(dias < receta.fermenterDays){
+    etapa = 'En reposo';
+    claseEtapa = 'reposo';
+  } else {
+    etapa = 'Listo para embotellar';
+    claseEtapa = 'listo';
+  }
+
+  const fechaEntrega = addDays(f.fechaInicio, receta.tiempoTotalDias);
+
+  return `
+    <div class="card">
+      <div class="receta">${receta.nombre}</div>
+      <span class="badge ${claseEtapa}">${etapa}</span>
+      <div class="detail-row">
+        <span class="lbl">Cantidad en elaboración</span>
+        <span class="val">${cantidadTxt(f.botellas)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Elaboración iniciada</span>
+        <span class="val">${fmtDate(f.fechaInicio)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Días de proceso</span>
+        <span class="val">${dias} día${dias === 1 ? '' : 's'}</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Fecha estimada de entrega</span>
+        <span class="val">${fmtDate(fechaEntrega)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function cardCarbonatando(lote){
+  const nombre = nombreReceta(lote.recetaId, lote.estilo || lote.nombre);
+  const inicioCarb =
+    lote.fechaCarbonatacion || lote.carbonatacion ||
+    lote.fechaEmbotellado || lote.embotellado ||
+    lote.fecha;
+  const dias = daysBetween(inicioCarb);
+  const receta = lote.recetaId && RECETAS[lote.recetaId] ? RECETAS[lote.recetaId] : null;
+  const diasCarb = (receta && receta.carbonatacionDias) || 14;
+  const listoAprox = addDays(inicioCarb, diasCarb);
+  const botellas = lote.botellas != null ? lote.botellas : (lote.cantidad != null ? lote.cantidad : null);
+
+  return `
+    <div class="card">
+      <div class="receta">${nombre}</div>
+      ${lote.id ? `<div class="lote-id">Lote ${lote.id}</div>` : ''}
+      <span class="badge carbonatando">Carbonatando</span>
+      <div class="detail-row">
+        <span class="lbl">Cantidad</span>
+        <span class="val">${cantidadTxt(botellas)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Inicio carbonatación</span>
+        <span class="val">${fmtDate(inicioCarb)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Días carbonatando</span>
+        <span class="val">${dias} día${dias === 1 ? '' : 's'}</span>
+      </div>
+      <div class="detail-row">
+        <span class="lbl">Listo estimado</span>
+        <span class="val">${fmtDate(listoAprox)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderAll(fermentadores, lotes){
   const content = document.getElementById('content');
-  const lista = Array.isArray(fermentadores)
-    ? fermentadores
-    : (fermentadores ? Object.values(fermentadores) : []);
 
-  const ocupados = lista.filter(f => f && f.estado === 'ocupado' && f.recetaId);
+  const ocupados = toList(fermentadores).filter(f => f && f.estado === 'ocupado' && f.recetaId);
+  const carbonatando = toList(lotes).filter(l => l && esCarbonatando(l.estado || l.status || l.fase));
 
-  if(ocupados.length === 0){
-    content.innerHTML = '<div class="empty">No hay lotes en producción en este momento.<br>El siguiente lote se anunciará aquí en cuanto arranque.</div>';
+  if(ocupados.length === 0 && carbonatando.length === 0){
+    content.innerHTML = '<div class="empty">No hay lotes en producción ni en carbonatación en este momento.<br>El siguiente lote se anunciará aquí en cuanto arranque.</div>';
     return;
   }
 
-  content.innerHTML = ocupados.map(f => {
-    const receta = RECETAS[f.recetaId];
-    if(!receta) return '';
-    const dias = daysBetween(f.fechaInicio);
+  let html = '';
 
-    let etapa, claseEtapa;
-    if(dias < receta.fermentandoDays){
-      etapa = 'Fermentando';
-      claseEtapa = 'fermentando';
-    } else if(dias < receta.fermenterDays){
-      etapa = 'En reposo';
-      claseEtapa = 'reposo';
-    } else {
-      etapa = 'Listo para embotellar';
-      claseEtapa = 'listo';
-    }
+  if(ocupados.length){
+    html += `<div class="section-title">En fermentador (${ocupados.length})</div>`;
+    html += ocupados.map(cardFermentador).join('');
+  }
 
-    const fechaEntrega = addDaysISO(f.fechaInicio, receta.tiempoTotalDias);
+  if(carbonatando.length){
+    html += `<div class="section-title">Carbonatando (${carbonatando.length})</div>`;
+    html += carbonatando.map(cardCarbonatando).join('');
+  }
 
-    const botellas = f.botellas ? Number(f.botellas) : null;
-    const litros = botellas ? (botellas * 0.355) : null;
-    const cantidadTxt = botellas
-      ? `${botellas} botella${botellas === 1 ? '' : 's'} · ≈ ${litros.toFixed(1)} L`
-      : '—';
-
-    return `
-      <div class="card">
-        <div class="receta">${receta.nombre}</div>
-        <span class="badge ${claseEtapa}">${etapa}</span>
-        <div class="detail-row">
-          <span class="lbl">Cantidad en elaboración</span>
-          <span class="val">${cantidadTxt}</span>
-        </div>
-        <div class="detail-row">
-          <span class="lbl">Elaboración iniciada</span>
-          <span class="val">${fmtDate(new Date(f.fechaInicio + 'T00:00:00'))}</span>
-        </div>
-        <div class="detail-row">
-          <span class="lbl">Días de proceso</span>
-          <span class="val">${dias} día${dias === 1 ? '' : 's'}</span>
-        </div>
-        <div class="detail-row">
-          <span class="lbl">Fecha estimada de entrega</span>
-          <span class="val">${fmtDate(fechaEntrega)}</span>
-        </div>
-      </div>
-    `;
-  }).join('');
+  content.innerHTML = html;
 }
 
 function showError(msg, detail){
@@ -236,26 +340,47 @@ function showError(msg, detail){
     </div>`;
 }
 
+let cacheFermentadores = null;
+let cacheLotes = null;
+let fermentadoresReady = false;
+let lotesReady = false;
+
+function tryRender(){
+  if(!fermentadoresReady || !lotesReady) return;
+  try {
+    renderAll(cacheFermentadores, cacheLotes);
+    document.getElementById('updated').textContent =
+      'Actualizado: ' + new Date().toLocaleString('es-MX');
+  } catch (e) {
+    console.error(e);
+    showError('Error al procesar los datos.', e.message);
+  }
+}
+
 function empezarLectura(){
   db.ref('bitacora/fermentadores').on('value', snap => {
-    try {
-      render(snap.val());
-      document.getElementById('updated').textContent =
-        'Actualizado: ' + new Date().toLocaleString('es-MX');
-    } catch (e) {
-      console.error(e);
-      showError('Error al procesar los datos.', e.message);
-    }
+    cacheFermentadores = snap.val();
+    fermentadoresReady = true;
+    tryRender();
   }, err => {
-    console.error(err);
-    showError(
-      'Error de permisos o de conexión.',
-      (err && err.message) ? err.message : 'Revisa las reglas de Firebase Realtime Database.'
-    );
+    console.error('fermentadores:', err);
+    fermentadoresReady = true;
+    cacheFermentadores = null;
+    tryRender();
+  });
+
+  db.ref('bitacora/lotes-bitacora').on('value', snap => {
+    cacheLotes = snap.val();
+    lotesReady = true;
+    tryRender();
+  }, err => {
+    console.error('lotes-bitacora:', err);
+    lotesReady = true;
+    cacheLotes = null;
+    tryRender();
   });
 }
 
-// Las reglas de Firebase exigen auth != null, así que iniciamos sesión anónima primero.
 firebase.auth().signInAnonymously()
   .then(empezarLectura)
   .catch(err => {
