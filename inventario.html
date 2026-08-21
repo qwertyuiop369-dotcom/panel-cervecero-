@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cerveza Locundus — Inventario</title>
+<meta name="theme-color" content="#FF6200">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg1: #1a1a1a;
+  --bg2: #0e0e0e;
+  --card: #1f1f1f;
+  --card2: #252525;
+  --copper: #FF6200;
+  --copper-light: #FF8533;
+  --ink: #E8E8E8;
+  --muted: #8a8a8a;
+  --green: #3ecf4a;
+  --red: #E6392B;
+  --amber: #e8c04a;
+  --line: #333;
+  --blue: #4aa3ff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--bg1), var(--bg2));
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--ink);
+  padding: 20px 14px 48px;
+}
+.wrap { max-width: 720px; margin: 0 auto; }
+
+header { text-align: center; margin-bottom: 20px; }
+header .brand {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.75em;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+header h1 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.55em;
+  color: var(--copper);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+header p { color: var(--muted); font-size: 0.9em; margin-top: 2px; }
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.summary-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.summary-box .num {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--copper);
+  display: block;
+}
+.summary-box .lbl {
+  font-size: 0.72em;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.chip {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.75em;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card2);
+  color: var(--muted);
+  cursor: pointer;
+}
+.chip.active {
+  border-color: var(--copper);
+  color: var(--copper-light);
+  background: rgba(255,98,0,0.12);
+}
+
+.alert-bar {
+  background: #2a1f10;
+  border: 1px solid #5a3d10;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 0.88em;
+  color: var(--copper-light);
+}
+.alert-bar.danger {
+  background: #2a1515;
+  border-color: #5a2a2a;
+  color: #ffb4b4;
+}
+.alert-bar strong { color: #ffce9e; }
+
+.section-title {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 0.8em;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 6px 0 10px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.card.low-stock { border-color: #5a3d10; }
+.card.expiring { border-color: #5a2a2a; }
+.card.agotado { opacity: 0.55; }
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.card .nombre {
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 600;
+  font-size: 1.2em;
+  color: var(--copper-light);
+  line-height: 1.25;
+}
+.card .lote-id {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82em;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72em;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge-ok { background: rgba(62,207,74,0.15); color: var(--green); border: 1px solid #2a4a2a; }
+.badge-low { background: rgba(232,192,74,0.15); color: var(--amber); border: 1px solid #4a3d18; }
+.badge-out { background: rgba(230,57,43,0.15); color: #ff8a80; border: 1px solid #5a2a2a; }
+.badge-res { background: rgba(74,163,255,0.15); color: var(--blue); border: 1px solid #2a6ab8; }
+
+.stock-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+.stock-box {
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.stock-box .n {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.25em;
+  font-weight: 700;
+  color: var(--ink);
+  display: block;
+}
+.stock-box .n.green { color: var(--green); }
+.stock-box .n.amber { color: var(--amber); }
+.stock-box .n.red { color: #ff8a80; }
+.stock-box .t {
+  font-size: 0.68em;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.9em;
+}
+.detail-row .lbl { color: var(--muted); }
+.detail-row .val { font-family: 'Share Tech Mono', monospace; text-align: right; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--card2);
+  color: var(--ink);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+}
+.btn:hover { border-color: var(--copper); }
+.btn-primary {
+  background: rgba(255,98,0,0.15);
+  border-color: var(--copper);
+  color: var(--copper-light);
+}
+.btn-danger {
+  background: rgba(230,57,43,0.1);
+  border-color: #5a2a2a;
+  color: #ff8a80;
+}
+
+.modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px 18px 16px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+.modal h3 {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 1.05em;
+  color: var(--copper-light);
+  margin-bottom: 4px;
+}
+.modal .sub { font-size: 0.85em; color: var(--muted); margin-bottom: 14px; }
+.modal label {
+  display: block;
+  font-size: 0.8em;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.modal input, .modal select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #181818;
+  color: var(--ink);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95em;
+}
+.modal input:focus, .modal select:focus {
+  outline: none;
+  border-color: var(--copper);
+}
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.modal-actions .btn { flex: 1; }
+.msg {
+  font-size: 0.85em;
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+.msg.ok { color: var(--green); }
+.msg.err { color: #ff8a80; }
+
+.empty, .loading {
+  text-align: center;
+  color: var(--muted);
+  padding: 48px 16px;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.78em;
+  color: #555;
+  line-height: 1.5;
+}
+.updated {
+  text-align: center;
+  color: var(--muted);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75em;
+  margin-top: 16px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Tierra Grande · Nano Brewery</div>
+    <h1>🍺 Inventario</h1>
+    <p>Cerveza Locundus — stock listo para venta</p>
+  </header>
+
+  <div id="summary" class="summary" style="display:none">
+    <div class="summary-box"><span class="num" id="sumStock">0</span><span class="lbl">En stock</span></div>
+    <div class="summary-box"><span class="num" id="sumRes">0</span><span class="lbl">Reservadas</span></div>
+    <div class="summary-box"><span class="num" id="sumLotes">0</span><span class="lbl">Lotes</span></div>
+  </div>
+
+  <div class="filters" id="filters" style="display:none">
+    <button type="button" class="chip active" data-filter="todos">Todos</button>
+    <button type="button" class="chip" data-filter="disponible">Disponible</button>
+    <button type="button" class="chip" data-filter="bajo">Stock bajo</button>
+    <button type="button" class="chip" data-filter="por-vencer">Por vencer</button>
+    <button type="button" class="chip" data-filter="agotado">Agotado</button>
+  </div>
+
+  <div id="alerts"></div>
+  <div id="content"><div class="loading">Cargando inventario…</div></div>
+  <div class="updated" id="updated"></div>
+
+  <div class="footer">
+    Locundus · Tierra Grande · Chiconcuac, Edo. Méx.<br>
+    Solo personal autorizado · los movimientos quedan registrados
+  </div>
+</div>
+
+<!-- Modal salida / ajuste -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">Registrar salida</h3>
+    <div class="sub" id="modalSub"></div>
+    <label for="movTipo">Tipo</label>
+    <select id="movTipo">
+      <option value="salida">Salida / venta</option>
+      <option value="reserva">Reservar (pizzería)</option>
+      <option value="liberar">Liberar reserva</option>
+      <option value="ajuste">Ajuste de inventario</option>
+    </select>
+    <label for="movCant">Cantidad (botellas)</label>
+    <input type="number" id="movCant" min="1" step="1" value="1">
+    <label for="movDestino">Destino / nota</label>
+    <input type="text" id="movDestino" placeholder="Ej. Pizzería Locundus, evento…">
+    <div class="modal-actions">
+      <button type="button" class="btn" id="btnCancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnConfirm">Confirmar</button>
+    </div>
+    <div class="msg" id="modalMsg"></div>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA949Wrf0ErPiWYhGUx5Pk25M21dQZ7Dgs",
+  authDomain: "cervecera-tierra-grande.firebaseapp.com",
+  databaseURL: "https://cervecera-tierra-grande-default-rtdb.firebaseio.com",
+  projectId: "cervecera-tierra-grande",
+  storageBucket: "cervecera-tierra-grande.firebasestorage.app",
+  messagingSenderId: "243316014670",
+  appId: "1:243316014670:web:0545ce0b0cb81f7af54d1f",
+  measurementId: "G-8NDCKNGPB0"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const RECETAS = {
+  'r-stout':       { nombre: 'Coffee Stout' },
+  'r-belgian':     { nombre: 'Belgian Blonde Albahaca-Romero' },
+  'r-honey-wheat': { nombre: 'Honey Wheat' },
+  'r-dry-stout':   { nombre: 'Dry Stout' },
+};
+
+const STOCK_BAJO = 12;       // botellas
+const DIAS_POR_VENCER = 30;  // días antes de consumo preferente
+
+let itemsCache = [];
+let filtroActual = 'todos';
+let itemActivo = null; // { key, data }
+
+function parseFecha(val){
+  if(!val) return null;
+  if(val instanceof Date) return isNaN(val.getTime()) ? null : val;
+  if(typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)){
+    const d = new Date(val.slice(0,10) + 'T00:00:00');
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if(typeof val === 'number' || (typeof val === 'string' && /^\d+$/.test(val))){
+    const n = Number(val);
+    const d = new Date(n > 1e12 ? n : n * 1000);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function fmtDate(val){
+  const d = parseFecha(val);
+  if(!d) return '—';
+  return d.toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+function addDays(val, days){
+  const d = parseFecha(val);
+  if(!d) return null;
+  const out = new Date(d.getTime());
+  out.setDate(out.getDate() + days);
+  return out;
+}
+
+function diasHasta(val){
+  const d = parseFecha(val);
+  if(!d) return null;
+  const now = new Date();
+  const mid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  return Math.floor((target - mid) / 86400000);
+}
+
+function nombreEstilo(item){
+  if(item.nombre) return item.nombre;
+  if(item.recetaId && RECETAS[item.recetaId]) return RECETAS[item.recetaId].nombre;
+  return item.estilo || '—';
+}
+
+function num(v){
+  const n = Number(v);
+  return isNaN(n) ? 0 : n;
+}
+
+/** Normaliza un registro de inventario o de lotes-bitacora a un item de stock */
+function normalizarItem(raw, key, fuente){
+  if(!raw) return null;
+  const stock = num(raw.botellasStock != null ? raw.botellasStock : raw.stock);
+  const reservadas = num(raw.botellasReservadas != null ? raw.botellasReservadas : raw.reservadas);
+  const vendidas = num(raw.botellasVendidas != null ? raw.botellasVendidas : raw.vendidas);
+  const total = num(raw.botellasTotal != null ? raw.botellasTotal : raw.botellas) || (stock + reservadas + vendidas);
+
+  // Si viene de lotes y no está en inventario, solo incluir si está listo/disponible
+  if(fuente === 'lotes'){
+    const est = String(raw.estado || raw.status || '').toLowerCase();
+    const esStock = ['disponible','listo','embotellado','en stock','stock'].some(s => est.includes(s));
+    const tieneStock = stock > 0 || (raw.botellas != null && num(raw.botellas) > 0 && !est.includes('carbonat') && !est.includes('ferment'));
+    if(!esStock && !tieneStock && stock <= 0) return null;
+  }
+
+  const consumo = raw.consumoPreferente || raw.fechaConsumoPreferente ||
+    (raw.fechaEmbotellado || raw.embotellado || raw.fecha
+      ? (() => { const d = addDays(raw.fechaEmbotellado || raw.embotellado || raw.fecha, 180); return d ? d.toISOString().slice(0,10) : null; })()
+      : null);
+
+  const estadoRaw = String(raw.estado || '').toLowerCase();
+  let estado = 'disponible';
+  if(estadoRaw.includes('agot')) estado = 'agotado';
+  else if(stock <= 0 && reservadas <= 0) estado = 'agotado';
+  else if(reservadas > 0 && stock <= 0) estado = 'reservado';
+
+  return {
+    key,
+    fuente,
+    id: raw.id || key,
+    recetaId: raw.recetaId || null,
+    nombre: nombreEstilo(raw),
+    botellasStock: stock || (fuente === 'lotes' && num(raw.botellas) ? num(raw.botellas) : 0),
+    botellasReservadas: reservadas,
+    botellasVendidas: vendidas,
+    botellasTotal: total || stock + reservadas + vendidas,
+    fechaEmbotellado: raw.fechaEmbotellado || raw.embotellado || null,
+    fecha: raw.fecha || null,
+    consumoPreferente: consumo,
+    ubicacion: raw.ubicacion || raw.location || '—',
+    estado,
+    _raw: raw
+  };
+}
+
+function clasificar(item){
+  const dias = diasHasta(item.consumoPreferente);
+  const bajo = item.botellasStock > 0 && item.botellasStock <= STOCK_BAJO;
+  const porVencer = dias != null && dias >= 0 && dias <= DIAS_POR_VENCER;
+  const vencido = dias != null && dias < 0;
+  const agotado = item.estado === 'agotado' || (item.botellasStock <= 0 && item.botellasReservadas <= 0);
+  return { bajo, porVencer, vencido, agotado, dias };
+}
+
+function badgeHtml(item, flags){
+  if(flags.agotado) return '<span class="badge badge-out">Agotado</span>';
+  if(flags.bajo) return '<span class="badge badge-low">Stock bajo</span>';
+  if(item.botellasReservadas > 0 && item.botellasStock <= 0) return '<span class="badge badge-res">Reservado</span>';
+  return '<span class="badge badge-ok">Disponible</span>';
+}
+
+function cardHtml(item){
+  const flags = clasificar(item);
+  const cls = [
+    flags.agotado ? 'agotado' : '',
+    flags.bajo && !flags.agotado ? 'low-stock' : '',
+    (flags.porVencer || flags.vencido) && !flags.agotado ? 'expiring' : ''
+  ].filter(Boolean).join(' ');
+
+  const stockCls = flags.agotado ? 'red' : (flags.bajo ? 'amber' : 'green');
+  let consumoTxt = fmtDate(item.consumoPreferente);
+  if(flags.dias != null){
+    if(flags.vencido) consumoTxt += ` · vencido hace ${Math.abs(flags.dias)} d`;
+    else if(flags.porVencer) consumoTxt += ` · en ${flags.dias} d`;
+  }
+
+  const puedeMover = item.fuente === 'inventario' || item.key;
+
+  return `
+    <div class="card ${cls}" data-key="${item.key}" data-fuente="${item.fuente}">
+      <div class="card-head">
+        <div>
+          <div class="nombre">${item.nombre}</div>
+          <div class="lote-id">Lote ${item.id}</div>
+        </div>
+        ${badgeHtml(item, flags)}
+      </div>
+      <div class="stock-row">
+        <div class="stock-box"><span class="n ${stockCls}">${item.botellasStock}</span><span class="t">Stock</span></div>
+        <div class="stock-box"><span class="n">${item.botellasReservadas}</span><span class="t">Reservadas</span></div>
+        <div class="stock-box"><span class="n">${item.botellasVendidas}</span><span class="t">Vendidas</span></div>
+      </div>
+      <div class="detail-row"><span class="lbl">Embotellado</span><span class="val">${fmtDate(item.fechaEmbotellado || item.fecha)}</span></div>
+      <div class="detail-row"><span class="lbl">Consumo preferente</span><span class="val">${consumoTxt}</span></div>
+      <div class="detail-row"><span class="lbl">Ubicación</span><span class="val">${item.ubicacion}</span></div>
+      ${puedeMover ? `
+      <div class="actions">
+        <button type="button" class="btn btn-primary btn-mov" data-key="${item.key}" data-fuente="${item.fuente}">Movimiento</button>
+      </div>` : ''}
+    </div>
+  `;
+}
+
+function filtrar(items){
+  return items.filter(item => {
+    const f = clasificar(item);
+    switch(filtroActual){
+      case 'disponible': return !f.agotado && item.botellasStock > 0;
+      case 'bajo': return f.bajo && !f.agotado;
+      case 'por-vencer': return (f.porVencer || f.vencido) && !f.agotado;
+      case 'agotado': return f.agotado;
+      default: return true;
+    }
+  });
+}
+
+function render(){
+  const content = document.getElementById('content');
+  const alerts = document.getElementById('alerts');
+  const summary = document.getElementById('summary');
+  const filters = document.getElementById('filters');
+
+  if(!itemsCache.length){
+    summary.style.display = 'none';
+    filters.style.display = 'none';
+    alerts.innerHTML = '';
+    content.innerHTML = `<div class="empty">No hay lotes en inventario.<br>
+      Cuando un lote termine de carbonatar, regístralo en <code>bitacora/inventario</code>
+      o márcalo como disponible en lotes-bitacora.</div>`;
+    return;
+  }
+
+  summary.style.display = 'grid';
+  filters.style.display = 'flex';
+
+  const totalStock = itemsCache.reduce((s,i) => s + i.botellasStock, 0);
+  const totalRes = itemsCache.reduce((s,i) => s + i.botellasReservadas, 0);
+  const activos = itemsCache.filter(i => i.botellasStock > 0 || i.botellasReservadas > 0).length;
+  document.getElementById('sumStock').textContent = totalStock;
+  document.getElementById('sumRes').textContent = totalRes;
+  document.getElementById('sumLotes').textContent = activos;
+
+  const bajos = itemsCache.filter(i => clasificar(i).bajo && !clasificar(i).agotado);
+  const porVencer = itemsCache.filter(i => { const c = clasificar(i); return (c.porVencer || c.vencido) && !c.agotado; });
+  let alertHtml = '';
+  if(bajos.length){
+    alertHtml += `<div class="alert-bar"><strong>Stock bajo:</strong> ${bajos.map(i => `${i.nombre} (${i.botellasStock})`).join(' · ')}</div>`;
+  }
+  if(porVencer.length){
+    alertHtml += `<div class="alert-bar danger"><strong>Por vencer / vencidos:</strong> ${porVencer.map(i => i.nombre + ' · Lote ' + i.id).join(' · ')}</div>`;
+  }
+  alerts.innerHTML = alertHtml;
+
+  const lista = filtrar(itemsCache);
+  // Orden: disponibles primero, luego por consumo preferente cercano, luego por nombre
+  lista.sort((a,b) => {
+    const ca = clasificar(a), cb = clasificar(b);
+    if(ca.agotado !== cb.agotado) return ca.agotado ? 1 : -1;
+    const da = ca.dias != null ? ca.dias : 9999;
+    const db = cb.dias != null ? cb.dias : 9999;
+    if(da !== db) return da - db;
+    return a.nombre.localeCompare(b.nombre, 'es');
+  });
+
+  if(!lista.length){
+    content.innerHTML = '<div class="empty">No hay lotes con este filtro.</div>';
+    return;
+  }
+
+  content.innerHTML = `<div class="section-title">${lista.length} lote${lista.length === 1 ? '' : 's'}</div>` +
+    lista.map(cardHtml).join('');
+
+  content.querySelectorAll('.btn-mov').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-key');
+      const fuente = btn.getAttribute('data-fuente');
+      const item = itemsCache.find(i => i.key === key && i.fuente === fuente);
+      if(item) abrirModal(item);
+    });
+  });
+}
+
+function abrirModal(item){
+  itemActivo = item;
+  document.getElementById('modalTitle').textContent = 'Movimiento de inventario';
+  document.getElementById('modalSub').textContent = `${item.nombre} · Lote ${item.id} · Stock: ${item.botellasStock}`;
+  document.getElementById('movCant').value = '1';
+  document.getElementById('movDestino').value = '';
+  document.getElementById('movTipo').value = 'salida';
+  document.getElementById('modalMsg').textContent = '';
+  document.getElementById('modalMsg').className = 'msg';
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function cerrarModal(){
+  document.getElementById('modalBg').classList.remove('open');
+  itemActivo = null;
+}
+
+document.getElementById('btnCancel').addEventListener('click', cerrarModal);
+document.getElementById('modalBg').addEventListener('click', e => {
+  if(e.target.id === 'modalBg') cerrarModal();
+});
+
+document.getElementById('btnConfirm').addEventListener('click', async () => {
+  const msg = document.getElementById('modalMsg');
+  if(!itemActivo) return;
+
+  const tipo = document.getElementById('movTipo').value;
+  const cant = Math.floor(Number(document.getElementById('movCant').value));
+  const destino = (document.getElementById('movDestino').value || '').trim();
+
+  if(!cant || cant < 1){
+    msg.textContent = 'Indica una cantidad válida.';
+    msg.className = 'msg err';
+    return;
+  }
+
+  let stock = itemActivo.botellasStock;
+  let reservadas = itemActivo.botellasReservadas;
+  let vendidas = itemActivo.botellasVendidas;
+
+  if(tipo === 'salida'){
+    if(cant > stock){ msg.textContent = 'No hay suficiente stock.'; msg.className = 'msg err'; return; }
+    stock -= cant;
+    vendidas += cant;
+  } else if(tipo === 'reserva'){
+    if(cant > stock){ msg.textContent = 'No hay suficiente stock para reservar.'; msg.className = 'msg err'; return; }
+    stock -= cant;
+    reservadas += cant;
+  } else if(tipo === 'liberar'){
+    if(cant > reservadas){ msg.textContent = 'No hay tantas reservadas.'; msg.className = 'msg err'; return; }
+    reservadas -= cant;
+    stock += cant;
+  } else if(tipo === 'ajuste'){
+    // Ajuste: la cantidad es el nuevo stock absoluto si destino dice "set", si no resta/suma según signo implícito
+    // Aquí: cantidad = nuevo valor de stock
+    stock = cant;
+  }
+
+  const estado = (stock <= 0 && reservadas <= 0) ? 'agotado' : (stock <= 0 ? 'reservado' : 'disponible');
+  const pathKey = itemActivo.fuente === 'inventario' ? itemActivo.key : String(itemActivo.id);
+
+  const updates = {
+    botellasStock: stock,
+    botellasReservadas: reservadas,
+    botellasVendidas: vendidas,
+    estado,
+    actualizado: new Date().toISOString()
+  };
+  if(itemActivo.fuente === 'lotes'){
+    // Crear/actualizar nodo en inventario a partir del lote
+    updates.id = itemActivo.id;
+    updates.recetaId = itemActivo.recetaId;
+    updates.nombre = itemActivo.nombre;
+    updates.fechaEmbotellado = itemActivo.fechaEmbotellado || itemActivo.fecha || null;
+    updates.consumoPreferente = itemActivo.consumoPreferente || null;
+    updates.ubicacion = itemActivo.ubicacion !== '—' ? itemActivo.ubicacion : null;
+  }
+
+  const mov = {
+    loteId: itemActivo.id,
+    tipo,
+    cantidad: cant,
+    destino: destino || null,
+    fecha: new Date().toISOString(),
+    stockResultante: stock,
+    reservadasResultante: reservadas
+  };
+
+  msg.textContent = 'Guardando…';
+  msg.className = 'msg';
+
+  try {
+    const invRef = db.ref('bitacora/inventario/' + pathKey);
+    await invRef.update(updates);
+    await db.ref('bitacora/movimientos').push(mov);
+    msg.textContent = 'Movimiento registrado.';
+    msg.className = 'msg ok';
+    setTimeout(cerrarModal, 900);
+  } catch (err) {
+    console.error(err);
+    msg.textContent = 'No se pudo guardar. Revisa permisos de Firebase (escritura en bitacora/inventario y movimientos).';
+    msg.className = 'msg err';
+  }
+});
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    filtroActual = chip.getAttribute('data-filter');
+    render();
+  });
+});
+
+function mergeInventario(invRaw, lotesRaw){
+  const map = new Map();
+
+  // 1) Inventario oficial
+  const invList = invRaw == null ? [] :
+    (Array.isArray(invRaw)
+      ? invRaw.map((v,i) => ({ key: String(i), val: v }))
+      : Object.entries(invRaw).map(([k,v]) => ({ key: k, val: v })));
+
+  invList.forEach(({ key, val }) => {
+    const item = normalizarItem(val, key, 'inventario');
+    if(item) map.set(String(item.id), item);
+  });
+
+  // 2) Lotes listos que aún no están en inventario
+  const lotesList = lotesRaw == null ? [] :
+    (Array.isArray(lotesRaw)
+      ? lotesRaw.map((v,i) => ({ key: String(i), val: v }))
+      : Object.entries(lotesRaw).map(([k,v]) => ({ key: k, val: v })));
+
+  lotesList.forEach(({ key, val }) => {
+    if(!val || !val.id) return;
+    const id = String(val.id);
+    if(map.has(id)) return; // ya está en inventario
+    const item = normalizarItem(val, key, 'lotes');
+    if(item) map.set(id, item);
+  });
+
+  return Array.from(map.values());
+}
+
+let invReady = false, lotesReady = false;
+let cacheInv = null, cacheLotes = null;
+
+function tryBuild(){
+  if(!invReady || !lotesReady) return;
+  itemsCache = mergeInventario(cacheInv, cacheLotes);
+  render();
+  document.getElementById('updated').textContent =
+    'Actualizado: ' + new Date().toLocaleString('es-MX');
+}
+
+function empezarLectura(){
+  db.ref('bitacora/inventario').on('value', snap => {
+    cacheInv = snap.val();
+    invReady = true;
+    tryBuild();
+  }, err => {
+    console.warn('inventario:', err);
+    invReady = true;
+    cacheInv = null;
+    tryBuild();
+  });
+
+  db.ref('bitacora/lotes-bitacora').on('value', snap => {
+    cacheLotes = snap.val();
+    lotesReady = true;
+    tryBuild();
+  }, err => {
+    console.warn('lotes:', err);
+    lotesReady = true;
+    cacheLotes = null;
+    tryBuild();
+  });
+}
+
+firebase.auth().signInAnonymously()
+  .then(empezarLectura)
+  .catch(err => {
+    console.error(err);
+    document.getElementById('content').innerHTML =
+      '<div class="empty">No se pudo iniciar sesión para consultar el inventario.</div>';
+  });
+</script>
+</body>
+</html>
