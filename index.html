@@ -549,6 +549,9 @@ const CATALOGO = [
   {id:'cold-brew',      nombre:'Cold brew café',              unidad:'ml', fresco:true},
   {id:'albahaca',       nombre:'Albahaca fresca',             unidad:'g',  fresco:true},
   {id:'romero',         nombre:'Romero fresco',               unidad:'g',  fresco:true},
+  {id:'cloruro-calcio', nombre:'Cloruro de calcio (CaCl2)',   unidad:'g',  fresco:false},
+  {id:'yeso',           nombre:'Sulfato de calcio (yeso)',    unidad:'g',  fresco:false},
+  {id:'bicarbonato',    nombre:'Bicarbonato de sodio',        unidad:'g',  fresco:false},
 ];
 
 const RECETAS = [
@@ -640,26 +643,30 @@ const RECETAS = [
     ]
   },
   {
-    id:'r-dry-stout', nombre:'Dry Stout', variante:'All Grain · 15 botellas',
+    id:'r-dry-stout-bonafont', nombre:'Dry Stout', variante:'All Grain · 15 botellas',
     tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
-    descripcion:'Stout seca estilo irlandés. Pale Ale + Roasted Barley + Light Chocolate + Crystal + avena. Amargor limpio con Northern Brewer y S-33.',
+    descripcion:'Misma Dry Stout estilo irlandés, ajustada para agua embotellada Bonafont (muy baja en minerales). Se agregan sales de agua para dar cuerpo, realzar el amargor y balancear la acidez de la cebada tostada.',
     fermentandoDays:7, fermenterDays:11,
     params:{ og:'1.042–1.048', fg:'1.010–1.014', abv:'4.2–4.6%', ibu:'30–36', mash:'66–67°C', ferm:'18–20°C' },
     ingredientes:[
       {id:'pale-ale',        cantidad:950},
-      {id:'roasted-barley',  cantidad:120},
+      {id:'roasted-barley',  cantidad:130},
       {id:'light-chocolate', cantidad:60},
       {id:'crystal',         cantidad:50},
       {id:'avena',           cantidad:40},
       {id:'northern-brewer', cantidad:12},
       {id:'s-33',            cantidad:1},
       {id:'azucar',          cantidad:19},
+      {id:'cloruro-calcio',  cantidad:2},
+      {id:'yeso',            cantidad:1.5},
+      {id:'bicarbonato',     cantidad:1.5},
     ],
     procedimiento:[
-      {paso:'Agua de mash', detalle:'Calienta 10–10,5 L a 72–73 °C.', why:'Strike para mash a 66–67 °C.'},
-      {paso:'Macerado', detalle:'Añade todos los granos. 66–67 °C × 60 min (o 65 °C si la quieres más seca). pH 5,2–5,5.', why:'Equilibrio fermentables/cuerpo; roasted barley da el carácter dry.'},
+      {paso:'Tratamiento de agua', detalle:'Sobre ~10–10,5 L de agua Bonafont (mash + sparge), disuelve 2 g de cloruro de calcio, 1,5 g de sulfato de calcio (yeso) y 1,5 g de bicarbonato de sodio antes de calentar. Usa báscula de precisión (0,1 g).', why:'Bonafont es agua casi sin minerales; sin ajuste el mosto queda plano y la cebada tostada puede salir ácida. El bicarbonato sube la alcalinidad para balancear ese tostado.'},
+      {paso:'Agua de mash', detalle:'Calienta el agua ya tratada a 72–73 °C.', why:'Strike para llegar a 66–67 °C al mash-in.'},
+      {paso:'Macerado', detalle:'Añade todos los granos. 66–67 °C × 60 min (o 65 °C si la quieres más seca). pH objetivo 5,2–5,5.', why:'Equilibrio fermentables/cuerpo; roasted barley da el carácter dry.'},
       {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Facilita el drenado.'},
-      {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional.', why:'Mejora eficiencia.'},
+      {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional con agua Bonafont a 75–78 °C.', why:'Mejora eficiencia.'},
       {paso:'Hervido 60 min', detalle:'Min 60: 12 g Northern Brewer. Sin adiciones de aroma.', why:'Amargor limpio que equilibra el tostado, sin floral fuerte.'},
       {paso:'Enfriado', detalle:'Baja a 18–20 °C rápidamente.', why:'Cold break y seguridad microbiológica.'},
       {paso:'Fermentación', detalle:'Siembra S-33 a 18–20 °C. Primaria 5–8 días. FG ≈1.010–1.014.', why:'S-33 da algo más de cuerpo que Irish clásica, pero funciona.'},
