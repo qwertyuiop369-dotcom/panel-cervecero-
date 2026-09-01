@@ -543,6 +543,7 @@ const CATALOGO = [
   {id:'honey-malt',     nombre:'Honey malt',                  unidad:'g',  fresco:false},
   {id:'avena',          nombre:'Avena natural (hojuelas)',    unidad:'g',  fresco:false},
   {id:'northern-brewer',nombre:'Lúpulo Northern Brewer',      unidad:'g',  fresco:false},
+  {id:'ek-golding',     nombre:'Lúpulo East Kent Golding',    unidad:'g',  fresco:false},
   {id:'s-33',           nombre:'Levadura Fermentis S-33',     unidad:'u',  fresco:false},
   {id:'azucar',         nombre:'Azúcar cebado',               unidad:'g',  fresco:false},
   {id:'miel',           nombre:'Miel',                        unidad:'g',  fresco:true},
@@ -654,7 +655,8 @@ const RECETAS = [
       {id:'light-chocolate', cantidad:60},
       {id:'crystal',         cantidad:50},
       {id:'avena',           cantidad:40},
-      {id:'northern-brewer', cantidad:12},
+      {id:'northern-brewer', cantidad:8},
+      {id:'ek-golding',      cantidad:8},
       {id:'s-33',            cantidad:1},
       {id:'azucar',          cantidad:19},
       {id:'cloruro-calcio',  cantidad:2},
@@ -667,7 +669,7 @@ const RECETAS = [
       {paso:'Macerado', detalle:'Añade todos los granos. 66–67 °C × 60 min (o 65 °C si la quieres más seca). pH objetivo 5,2–5,5.', why:'Equilibrio fermentables/cuerpo; roasted barley da el carácter dry.'},
       {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Facilita el drenado.'},
       {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional con agua Bonafont a 75–78 °C.', why:'Mejora eficiencia.'},
-      {paso:'Hervido 60 min', detalle:'Min 60: 12 g Northern Brewer. Sin adiciones de aroma.', why:'Amargor limpio que equilibra el tostado, sin floral fuerte.'},
+      {paso:'Hervido 60 min', detalle:'Min 60: 8 g Northern Brewer + 8 g East Kent Golding. Sin adiciones de aroma.', why:'El EKG complementa al Northern Brewer con un amargor más suave y notas terrosas/herbales tradicionales inglesas, sin cambiar el perfil dry stout.'},
       {paso:'Enfriado', detalle:'Baja a 18–20 °C rápidamente.', why:'Cold break y seguridad microbiológica.'},
       {paso:'Fermentación', detalle:'Siembra S-33 a 18–20 °C. Primaria 5–8 días. FG ≈1.010–1.014.', why:'S-33 da algo más de cuerpo que Irish clásica, pero funciona.'},
       {paso:'Embotellado', detalle:'Priming 18–20 g azúcar (~2,0–2,2 vol).', why:'Stouts se carbonatan menos que wheat o belgas.'},
@@ -691,7 +693,7 @@ const ETAPAS_LOTE = [
 ];
 
 let state = {
-  config: { ollaW:1800, precioElec:0, horasProceso:2.5, litrosAgua:12, precioAgua:0 },
+  config: { ollaW:1500, precioElec:0, horasProceso:3.0, litrosAgua:12, precioAgua:0 },
   inventario: {},
   // escalas[recipeId] = número de botellas deseadas (base = bottleYield de la receta)
   escalas: {},
@@ -1210,6 +1212,7 @@ async function registrarCocimiento(recipeId, fecha){
     estilo: receta.nombre,
     recetaId: recipeId,
     fecha: fechaInicio,
+    fechaEnvasado: '',
     botellas: botellas,
     fermentadorId: fermentadorLibre.id,
     og: (receta.params && receta.params.og) ? receta.params.og.split('–')[0].trim() : '',
@@ -1272,7 +1275,7 @@ function renderBitacora(){
           <div class="lote-top" data-toggle-lote="${l.id}">
             <div>
               <div class="lote-title">${escapeHTML(l.nombre || 'Lote')}</div>
-              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}${calcABV(l.og,l.fg)!==null?` · ${fmtABV(l.og,l.fg)} ABV`:''}</div>
+              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}${calcABV(l.og,l.fg)!==null?` · ${fmtABV(l.og,l.fg)} ABV`:''}${l.fechaEnvasado?` · Envasado ${fmtDateBit(l.fechaEnvasado)}`:''}</div>
             </div>
             <div class="stage-badge ${isDone?'stage-done':''}" style="background:${st.color}">
               <span class="airlock-dot"></span>${st.label}
@@ -1290,6 +1293,13 @@ function renderBitacora(){
                 <label>Fecha elaboración</label>
                 <input type="date" data-lote-field="fecha" data-lote-id="${l.id}" value="${l.fecha||hoy}" max="${hoy}">
               </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Fecha de envasado</label>
+                <input type="date" data-lote-field="fechaEnvasado" data-lote-id="${l.id}" value="${l.fechaEnvasado||''}" max="${hoy}">
+              </div>
+              <div class="field"></div>
             </div>
             <div class="field-row field-row-3">
               <div class="field">
@@ -1369,7 +1379,7 @@ function bindBitacoraEvents(){
     const og = document.getElementById('nl-og').value.trim();
     state.lotes.unshift({
       id: 'l' + Date.now(),
-      nombre, estilo, fecha, botellas,
+      nombre, estilo, fecha, fechaEnvasado:'', botellas,
       og, fg:'', notas:'', etapa:'elaboracion',
       recetaId: null, fermentadorId: null,
     });
@@ -1401,7 +1411,7 @@ function bindBitacoraEvents(){
         if(display) display.textContent = fmtABV(lote.og, lote.fg);
       }
       await saveKey('lotes-bitacora', state.lotes);
-      if(field === 'etapa' || field === 'fecha') renderContent();
+      if(field === 'etapa' || field === 'fecha' || field === 'fechaEnvasado') renderContent();
     });
   });
 
