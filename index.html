@@ -542,9 +542,11 @@ const CATALOGO = [
   {id:'aromatic',       nombre:'Aromatic malt (Aroma)',       unidad:'g',  fresco:false},
   {id:'honey-malt',     nombre:'Honey malt',                  unidad:'g',  fresco:false},
   {id:'avena',          nombre:'Avena natural (hojuelas)',    unidad:'g',  fresco:false},
+  {id:'cebada-hojueleada', nombre:'Cebada hojueleada (flaked barley)', unidad:'g', fresco:false},
   {id:'northern-brewer',nombre:'Lúpulo Northern Brewer',      unidad:'g',  fresco:false},
   {id:'ek-golding',     nombre:'Lúpulo East Kent Golding',    unidad:'g',  fresco:false},
   {id:'s-33',           nombre:'Levadura Fermentis S-33',     unidad:'u',  fresco:false},
+  {id:'s-04',           nombre:'Levadura Fermentis Safale S-04', unidad:'u', fresco:false},
   {id:'azucar',         nombre:'Azúcar cebado',               unidad:'g',  fresco:false},
   {id:'miel',           nombre:'Miel',                        unidad:'g',  fresco:true},
   {id:'cold-brew',      nombre:'Cold brew café',              unidad:'ml', fresco:true},
@@ -644,35 +646,30 @@ const RECETAS = [
     ]
   },
   {
-    id:'r-dry-stout-bonafont', nombre:'Dry Stout', variante:'All Grain · 15 botellas',
-    tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
-    descripcion:'Misma Dry Stout estilo irlandés, ajustada para agua embotellada Bonafont (muy baja en minerales). Se agregan sales de agua para dar cuerpo, realzar el amargor y balancear la acidez de la cebada tostada.',
+    id:'r-dry-stout-bonafont', nombre:'Dry Stout', variante:'All Grain · 19 L (53 botellas)',
+    tiempoTotal:'3-4 semanas + macerado', bottleYield:53, volumenL:19,
+    descripcion:'Dry Stout estilo Guinness, 19 L finales, con agua embotellada Bonafont. Grist clásico (pale + flaked barley + roasted barley), amargor limpio con Northern Brewer y levadura Safale S-04.',
     fermentandoDays:7, fermenterDays:11,
-    params:{ og:'1.042–1.048', fg:'1.010–1.014', abv:'4.2–4.6%', ibu:'30–36', mash:'66–67°C', ferm:'18–20°C' },
+    params:{ og:'1.042', fg:'1.010', abv:'~4.2%', ibu:'35', mash:'67°C', ferm:'18–20°C' },
     ingredientes:[
-      {id:'pale-ale',        cantidad:950},
-      {id:'roasted-barley',  cantidad:130},
-      {id:'light-chocolate', cantidad:60},
-      {id:'crystal',         cantidad:50},
-      {id:'avena',           cantidad:40},
-      {id:'northern-brewer', cantidad:8},
-      {id:'ek-golding',      cantidad:8},
-      {id:'s-33',            cantidad:1},
-      {id:'azucar',          cantidad:19},
-      {id:'cloruro-calcio',  cantidad:2},
-      {id:'yeso',            cantidad:1.5},
-      {id:'bicarbonato',     cantidad:1.5},
+      {id:'pale-ale',            cantidad:4000},
+      {id:'cebada-hojueleada',   cantidad:500},
+      {id:'roasted-barley',      cantidad:500},
+      {id:'northern-brewer',     cantidad:25},
+      {id:'s-04',                cantidad:1},
+      {id:'azucar',              cantidad:85},
+      {id:'cloruro-calcio',      cantidad:5},
+      {id:'yeso',                cantidad:3},
+      {id:'bicarbonato',         cantidad:3},
     ],
     procedimiento:[
-      {paso:'Tratamiento de agua', detalle:'Sobre ~10–10,5 L de agua Bonafont (mash + sparge), disuelve 2 g de cloruro de calcio, 1,5 g de sulfato de calcio (yeso) y 1,5 g de bicarbonato de sodio antes de calentar. Usa báscula de precisión (0,1 g).', why:'Bonafont es agua casi sin minerales; sin ajuste el mosto queda plano y la cebada tostada puede salir ácida. El bicarbonato sube la alcalinidad para balancear ese tostado.'},
-      {paso:'Agua de mash', detalle:'Calienta el agua ya tratada a 72–73 °C.', why:'Strike para llegar a 66–67 °C al mash-in.'},
-      {paso:'Macerado', detalle:'Añade todos los granos. 66–67 °C × 60 min (o 65 °C si la quieres más seca). pH objetivo 5,2–5,5.', why:'Equilibrio fermentables/cuerpo; roasted barley da el carácter dry.'},
-      {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Facilita el drenado.'},
-      {paso:'Drenado', detalle:'Escurre bien. Dunk sparge opcional con agua Bonafont a 75–78 °C.', why:'Mejora eficiencia.'},
-      {paso:'Hervido 60 min', detalle:'Min 60: 8 g Northern Brewer + 8 g East Kent Golding. Sin adiciones de aroma.', why:'El EKG complementa al Northern Brewer con un amargor más suave y notas terrosas/herbales tradicionales inglesas, sin cambiar el perfil dry stout.'},
-      {paso:'Enfriado', detalle:'Baja a 18–20 °C rápidamente.', why:'Cold break y seguridad microbiológica.'},
-      {paso:'Fermentación', detalle:'Siembra S-33 a 18–20 °C. Primaria 5–8 días. FG ≈1.010–1.014.', why:'S-33 da algo más de cuerpo que Irish clásica, pero funciona.'},
-      {paso:'Embotellado', detalle:'Priming 18–20 g azúcar (~2,0–2,2 vol).', why:'Stouts se carbonatan menos que wheat o belgas.'},
+      {paso:'Tratamiento de agua', detalle:'Sobre el agua Bonafont total (~23 L, mash + sparge), disuelve 5 g de cloruro de calcio, 3 g de sulfato de calcio (yeso) y 3 g de bicarbonato de sodio antes de calentar.', why:'Bonafont es agua muy baja en minerales; sin ajuste el mosto queda plano y la cebada tostada puede salir ácida. El bicarbonato balancea esa acidez.'},
+      {paso:'Maceración', detalle:'Infusión simple a 67 °C por 60 min, con toda el agua ya tratada.', why:'Temperatura estándar para buen cuerpo y fermentabilidad en dry stout.'},
+      {paso:'Lavado / Sparge', detalle:'Hasta completar ~23 L de mosto pre-hervor.', why:'Compensa la evaporación durante el hervor de 60 min.'},
+      {paso:'Hervor 60 min', detalle:'Añade los 25 g de Northern Brewer al inicio del hervor (min 60).', why:'Solo amargor, sin adiciones de aroma — perfil clásico limpio de dry stout.'},
+      {paso:'Enfriado', detalle:'Baja a 18–20 °C, trasvasa y oxigena bien el mosto.', why:'Prepara el mosto para una fermentación sana.'},
+      {paso:'Fermentación primaria', detalle:'Siembra Safale S-04. 10–14 días a 18–20 °C hasta estabilizar densidad.', why:'S-04 es limpia y de rápida floculación, típica en ales inglesas/irlandesas.'},
+      {paso:'Envasado', detalle:'Prioriza carbonatación baja (~2,0–2,2 vol CO₂). Si embotellas, usa ~85 g de azúcar de cebado para los 19 L (≈4,5 g/L).', why:'Es característico del estilo — poca carbonatación resalta el cuerpo cremoso.'},
     ]
   },
 ];
@@ -1213,6 +1210,7 @@ async function registrarCocimiento(recipeId, fecha){
     recetaId: recipeId,
     fecha: fechaInicio,
     fechaEnvasado: '',
+    botellasReales: null,
     botellas: botellas,
     fermentadorId: fermentadorLibre.id,
     og: (receta.params && receta.params.og) ? receta.params.og.split('–')[0].trim() : '',
@@ -1275,7 +1273,7 @@ function renderBitacora(){
           <div class="lote-top" data-toggle-lote="${l.id}">
             <div>
               <div class="lote-title">${escapeHTML(l.nombre || 'Lote')}</div>
-              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}${calcABV(l.og,l.fg)!==null?` · ${fmtABV(l.og,l.fg)} ABV`:''}${l.fechaEnvasado?` · Envasado ${fmtDateBit(l.fechaEnvasado)}`:''}</div>
+              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellasReales?` · ${l.botellasReales} bot. reales (proy. ${l.botellas||0})`:(l.botellas?` · ${l.botellas} bot. proy.`:'')}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}${calcABV(l.og,l.fg)!==null?` · ${fmtABV(l.og,l.fg)} ABV`:''}${l.fechaEnvasado?` · Envasado ${fmtDateBit(l.fechaEnvasado)}`:''}</div>
             </div>
             <div class="stage-badge ${isDone?'stage-done':''}" style="background:${st.color}">
               <span class="airlock-dot"></span>${st.label}
@@ -1313,6 +1311,20 @@ function renderBitacora(){
               <div class="field">
                 <label>ABV (calculado)</label>
                 <div class="abv-display" data-abv-display="${l.id}">${fmtABV(l.og, l.fg)}</div>
+              </div>
+            </div>
+            <div class="field-row field-row-3">
+              <div class="field">
+                <label>Botellas proyectadas</label>
+                <input type="number" min="0" step="1" value="${l.botellas||0}" data-lote-field="botellas" data-lote-id="${l.id}">
+              </div>
+              <div class="field">
+                <label>Botellas reales (al envasar)</label>
+                <input type="number" min="0" step="1" value="${l.botellasReales!==undefined&&l.botellasReales!==null?l.botellasReales:''}" placeholder="ej. 13" data-lote-field="botellasReales" data-lote-id="${l.id}">
+              </div>
+              <div class="field">
+                <label>Rendimiento</label>
+                <div class="abv-display">${(l.botellas && l.botellasReales) ? Math.round((l.botellasReales/l.botellas)*100)+'%' : '—'}</div>
               </div>
             </div>
             <div class="field" style="margin-bottom:10px;">
@@ -1379,7 +1391,7 @@ function bindBitacoraEvents(){
     const og = document.getElementById('nl-og').value.trim();
     state.lotes.unshift({
       id: 'l' + Date.now(),
-      nombre, estilo, fecha, fechaEnvasado:'', botellas,
+      nombre, estilo, fecha, fechaEnvasado:'', botellasReales:null, botellas,
       og, fg:'', notas:'', etapa:'elaboracion',
       recetaId: null, fermentadorId: null,
     });
@@ -1403,7 +1415,11 @@ function bindBitacoraEvents(){
       const field = inp.dataset.loteField;
       const lote = state.lotes.find(x=>x.id===id);
       if(!lote) return;
-      lote[field] = inp.value;
+      if(field === 'botellas' || field === 'botellasReales'){
+        lote[field] = inp.value === '' ? (field==='botellasReales' ? null : 0) : parseInt(inp.value, 10) || 0;
+      } else {
+        lote[field] = inp.value;
+      }
       if(field === 'og' || field === 'fg'){
         const abv = calcABV(lote.og, lote.fg);
         lote.abv = abv === null ? '' : String(abv);
@@ -1411,7 +1427,7 @@ function bindBitacoraEvents(){
         if(display) display.textContent = fmtABV(lote.og, lote.fg);
       }
       await saveKey('lotes-bitacora', state.lotes);
-      if(field === 'etapa' || field === 'fecha' || field === 'fechaEnvasado') renderContent();
+      if(field === 'etapa' || field === 'fecha' || field === 'fechaEnvasado' || field === 'botellas' || field === 'botellasReales') renderContent();
     });
   });
 
@@ -1679,7 +1695,7 @@ function calcGananciaNeta(){
     const costo = calcCostoLote(l.recetaId);
     const botellasBase = getBotellas(l.recetaId);
     const costoBotella = botellasBase > 0 ? costo.total / botellasBase : 0;
-    costoProduccion += costoBotella * (l.botellas || 0);
+    costoProduccion += costoBotella * ((l.botellasReales!=null ? l.botellasReales : l.botellas) || 0);
   });
   return {
     ingresos,
