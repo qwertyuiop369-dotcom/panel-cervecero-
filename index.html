@@ -288,6 +288,29 @@ button.btn.danger{background:var(--red);color:#fff;}
 .enlace-ext:hover{border-color:var(--copper);color:var(--copper-light);background:#2a2a2a;}
 .enlace-ext .ico{font-size:1.1em;}
 
+.tecnico-box{
+  border:1px dashed var(--line);
+  border-radius:6px;
+  margin-bottom:14px;
+  overflow:hidden;
+  background:rgba(255,98,0,0.03);
+}
+.tecnico-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  cursor:pointer;
+  font-family:'Chakra Petch',sans-serif;
+  font-size:0.85em;
+  color:var(--copper-light);
+  letter-spacing:0.3px;
+}
+.tecnico-head:hover{background:rgba(255,98,0,0.06);}
+.tecnico-caret{color:var(--muted);}
+.tecnico-body{padding:0 14px 14px;}
+.lote-body .tecnico-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+
 .grid-ferm{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
 .ferm-card{
   background:var(--card-soft);
@@ -732,7 +755,9 @@ let state = {
   entregas: [],
   entregasCliente: 'Pizzería Locondus',
   lotes: [], // bitácora de lotes
+  loteTecnico: {}, // datos técnicos privados por lote, keyed por lote.id — NO se expone en lote.html/cliente.html
   openLoteId: null,
+  openTecnicoId: null,
   currentTab: 'recetas',
 };
 
@@ -794,6 +819,7 @@ async function init(){
   state.entregas = await loadKey('entregas', []);
   state.entregasCliente = await loadKey('entregas-cliente', state.entregasCliente);
   state.lotes = await loadKey('lotes-bitacora', []);
+  state.loteTecnico = await loadKey('lotes-tecnico', {});
   renderTabs();
   renderContent();
 }
@@ -1287,6 +1313,52 @@ function escapeHTML(str){
   return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// ===== Parámetros técnicos privados por lote =====
+// Estos datos se guardan en 'bitacora/lotes-tecnico', una clave distinta a
+// 'bitacora/lotes-bitacora' (que sí lee lote.html públicamente). Mientras tus
+// reglas de Firebase no den lectura pública a 'lotes-tecnico', esta
+// información no es visible en las páginas públicas del sitio.
+const TECNICO_FIELDS = [
+  {key:'macTemp', label:'Temp. macerado (°C)', placeholder:'66', type:'text'},
+  {key:'macTiempo', label:'Tiempo macerado (min)', placeholder:'60', type:'text'},
+  {key:'volPreHervor', label:'Vol. pre-hervor (L)', placeholder:'14', type:'text'},
+  {key:'volPostHervor', label:'Vol. post-hervor (L)', placeholder:'12', type:'text'},
+  {key:'hervorTiempo', label:'Tiempo de hervor (min)', placeholder:'60', type:'text'},
+  {key:'phMosto', label:'pH del mosto', placeholder:'5.3', type:'text'},
+  {key:'phFinal', label:'pH cerveza terminada', placeholder:'4.4', type:'text'},
+  {key:'tempFermReal', label:'Temp. fermentación real (°C)', placeholder:'19', type:'text'},
+  {key:'levaduraCepa', label:'Levadura / tasa de siembra', placeholder:'S-33, 1 sobre / 20 L', type:'text'},
+  {key:'diasFerm', label:'Días en fermentador', placeholder:'7', type:'text'},
+  {key:'volCO2', label:'Carbonatación (vol. CO2 objetivo)', placeholder:'2.2', type:'text'},
+  {key:'calificacion', label:'Calificación personal (1-5)', placeholder:'4', type:'text'},
+];
+
+function renderTecnicoLote(loteId){
+  const datos = state.loteTecnico[loteId] || {};
+  const campos = TECNICO_FIELDS.map(f=>`
+    <div class="field">
+      <label>${f.label}</label>
+      <input type="text" data-tec-field="${f.key}" data-tec-lote="${loteId}" value="${escapeHTML(datos[f.key]||'')}" placeholder="${f.placeholder}">
+    </div>
+  `).join('');
+  return `
+    <div class="tecnico-box">
+      <div class="tecnico-head" data-toggle-tecnico="${loteId}">
+        <span>🔒 Parámetros técnicos (uso interno)</span>
+        <span class="tecnico-caret">${state.openTecnicoId===loteId?'▲':'▼'}</span>
+      </div>
+      <div class="tecnico-body" style="display:${state.openTecnicoId===loteId?'block':'none'};">
+        <p class="muted" style="font-size:0.78em;margin:0 0 10px;">Solo para afinar tus recetas. No aparece en la etiqueta ni en la página pública del lote.</p>
+        <div class="field-row field-row-3 tecnico-grid">${campos}</div>
+        <div class="field">
+          <label>Ajustes para el próximo lote / notas técnicas</label>
+          <textarea data-tec-field="notasTecnicas" data-tec-lote="${loteId}" placeholder="Ej: bajar temp. de mash 1°C, subir amargor, siembra en frío...">${escapeHTML(datos.notasTecnicas||'')}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderBitacora(){
   const hoy = todayISO();
   const recetaOpts = RECETAS.map(r=>`<option value="${r.nombre}">${r.nombre}</option>`).join('');
@@ -1342,6 +1414,7 @@ function renderBitacora(){
               <label>Notas</label>
               <textarea data-lote-field="notas" data-lote-id="${l.id}" placeholder="Sabor, aroma, temperatura, ideas para el próximo lote...">${escapeHTML(l.notas||'')}</textarea>
             </div>
+            ${renderTecnicoLote(l.id)}
             <div class="field" style="margin-bottom:10px;">
               <label>Código QR para la etiqueta (info al consumidor)</label>
               <div class="qr-box">
@@ -1419,6 +1492,24 @@ function bindBitacoraEvents(){
     });
   });
 
+  document.querySelectorAll('[data-toggle-tecnico]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.toggleTecnico;
+      state.openTecnicoId = state.openTecnicoId === id ? null : id;
+      renderContent();
+    });
+  });
+
+  document.querySelectorAll('[data-tec-field]').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const id = inp.dataset.tecLote;
+      const field = inp.dataset.tecField;
+      if(!state.loteTecnico[id]) state.loteTecnico[id] = {};
+      state.loteTecnico[id][field] = inp.value;
+      await saveKey('lotes-tecnico', state.loteTecnico);
+    });
+  });
+
   document.querySelectorAll('[data-lote-field]').forEach(inp=>{
     const evt = inp.tagName === 'TEXTAREA' || inp.tagName === 'SELECT' ? 'change' : 'change';
     inp.addEventListener(evt, async ()=>{
@@ -1443,7 +1534,10 @@ function bindBitacoraEvents(){
       const id = btn.dataset.delLote;
       state.lotes = state.lotes.filter(x=>x.id!==id);
       if(state.openLoteId === id) state.openLoteId = null;
+      if(state.openTecnicoId === id) state.openTecnicoId = null;
+      if(state.loteTecnico[id]) delete state.loteTecnico[id];
       await saveKey('lotes-bitacora', state.lotes);
+      await saveKey('lotes-tecnico', state.loteTecnico);
       renderContent();
     });
   });
