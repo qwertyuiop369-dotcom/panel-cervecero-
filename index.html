@@ -1394,6 +1394,7 @@ async function registrarCocimiento(recipeId, fecha){
     etapa: 'fermentando',
     fechaEmbotellado: '',
     botellasFinales: '',
+    botellasCliente: '',
   });
   fermentadorLibre.loteId = loteId;
   await saveKey('lotes-bitacora', state.lotes);
@@ -1591,6 +1592,21 @@ function renderBitacora(){
               </div>
             </div>
             <p class="muted" style="font-size:0.78em;margin:-4px 0 10px;">Eficiencia = botellas finales ÷ botellas esperadas (${l.botellas||0}, calculadas al registrar el lote) × 100.</p>
+            <div class="field-row">
+              <div class="field">
+                <label>Botellas para Locundus (venta pública)</label>
+                <input type="number" min="0" data-lote-field="botellasCliente" data-lote-id="${l.id}" value="${l.botellasCliente!==undefined&&l.botellasCliente!==null?l.botellasCliente:''}" placeholder="ej. 24">
+              </div>
+              <div class="field">
+                <label>Otras botellas (consumo propio / otra venta)</label>
+                <div class="abv-display">${(()=>{
+                  const fin = getBotellasReales(l);
+                  const cli = (l.botellasCliente!==undefined && l.botellasCliente!==null && l.botellasCliente!=='') ? Number(l.botellasCliente) : null;
+                  return cli===null ? '—' : Math.max(0, fin - cli);
+                })()}</div>
+              </div>
+            </div>
+            <p class="muted" style="font-size:0.78em;margin:-4px 0 10px;">Este es el número que se muestra en estado-produccion.html (la página pública). Déjalo vacío para mostrar el total de botellas finales del lote.</p>
             ${renderCostoEnvasadoLote(l)}
             <div class="field" style="margin-bottom:10px;">
               <label>Notas</label>
@@ -1666,7 +1682,7 @@ function bindBitacoraEvents(){
       nombre, estilo, fecha, botellas,
       og, fg:'', notas:'', etapa:'elaboracion',
       recetaId: null, fermentadorId: null,
-      fechaEmbotellado:'', botellasFinales:'',
+      fechaEmbotellado:'', botellasFinales:'', botellasCliente:'',
     });
     await saveKey('lotes-bitacora', state.lotes);
     form.classList.remove('show');
@@ -1714,7 +1730,7 @@ function bindBitacoraEvents(){
         if(display) display.textContent = fmtABV(lote.og, lote.fg);
       }
       await saveKey('lotes-bitacora', state.lotes);
-      if(field === 'etapa' || field === 'fecha' || field === 'botellasFinales') renderContent();
+      if(field === 'etapa' || field === 'fecha' || field === 'botellasFinales' || field === 'botellasCliente') renderContent();
     });
   });
 
