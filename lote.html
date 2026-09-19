@@ -550,6 +550,7 @@ function render(lote){
     <div class="card">
       <h2>Datos del lote</h2>
       <div class="detail-row"><span class="lbl">Fecha de elaboración</span><span class="val">${fmtDate(lote.fecha)}</span></div>
+      ${(lote.fechaEmbotellado || lote.embotellado) ? `<div class="detail-row"><span class="lbl">Fecha de envasado</span><span class="val">${fmtDate(lote.fechaEmbotellado || lote.embotellado)}</span></div>` : ''}
       <div class="detail-row"><span class="lbl">Consumo preferente antes de</span><span class="val">${consumoPreferente}</span></div>
     </div>
 

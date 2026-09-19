@@ -782,7 +782,11 @@ const ETAPAS_LOTE = [
 ];
 
 let state = {
-  config: { ollaW:1800, precioElec:0, horasProceso:2.5, litrosAgua:12, precioAgua:0 },
+  config: {
+    ollaW:1800, precioElec:0, horasProceso:2.5, litrosAgua:12, precioAgua:0,
+    // Costos de envasado, editables desde la pestaña Recetas
+    precioBotella:14, precioEtiqueta:6, precioTapa:2.5, manoObraLote:500,
+  },
   inventario: {},
   // escalas[recipeId] = número de botellas deseadas (base = bottleYield de la receta)
   escalas: {},
@@ -839,7 +843,9 @@ async function saveKey(key, value) {
 }
 
 async function init(){
-  state.config = await loadKey('config-costos', state.config);
+  // Merge para no perder los campos nuevos si en Firebase ya había un
+  // config-costos guardado con menos claves que las que usa esta versión.
+  state.config = Object.assign({}, state.config, await loadKey('config-costos', {}));
   state.inventario = await loadKey('inventario-unico', {});
   CATALOGO.forEach(c=>{
     if(!state.inventario[c.id]) state.inventario[c.id] = {stock:0, precio:0};
@@ -1029,6 +1035,42 @@ function calcCostoLote(recipeId){
   return { ing, elec, agua, total: ing + elec + agua };
 }
 
+// ===== Costos de envasado =====
+// Precio por unidad de botella, etiqueta y tapa, más mano de obra fija por
+// cada lote que se envasa (independiente del número de botellas). Los 4
+// valores se editan en la pestaña Recetas y se guardan en state.config.
+function costoEnvasadoUnitario(){
+  const c = state.config;
+  return (c.precioBotella||0) + (c.precioEtiqueta||0) + (c.precioTapa||0);
+}
+function calcCostoEnvasado(botellas){
+  const n = Number(botellas) || 0;
+  const unit = costoEnvasadoUnitario();
+  const material = unit * n;
+  const manoObra = state.config.manoObraLote || 0;
+  return { unit, material, manoObra, total: material + manoObra };
+}
+
+// Botellas realmente usadas para costear un lote: las finales si ya se
+// envasó, o si no, las planeadas/esperadas al crear el lote.
+function getBotellasReales(lote){
+  if(lote.botellasFinales !== undefined && lote.botellasFinales !== null && lote.botellasFinales !== ''){
+    const n = Number(lote.botellasFinales);
+    if(!isNaN(n)) return n;
+  }
+  return lote.botellas || 0;
+}
+
+// Eficiencia de envasado: botellas finales vs. botellas esperadas (teóricas)
+// calculadas al crear el lote. Devuelve null si falta algún dato.
+function calcEficienciaEnvasado(lote){
+  const esperadas = lote.botellas || 0;
+  const finales = (lote.botellasFinales !== undefined && lote.botellasFinales !== null && lote.botellasFinales !== '')
+    ? Number(lote.botellasFinales) : null;
+  if(esperadas <= 0 || finales === null || isNaN(finales)) return null;
+  return Math.round((finales / esperadas) * 1000) / 10;
+}
+
 function renderTabs(){
   const tabs = [
     {id:'recetas', label:'Recetas'},
@@ -1050,7 +1092,7 @@ function renderTabs(){
 
 function renderContent(){
   const el = document.getElementById('content');
-  if(state.currentTab === 'recetas') { el.innerHTML = renderRecetas(); bindEscalaEvents(); }
+  if(state.currentTab === 'recetas') { el.innerHTML = renderRecetas(); bindEscalaEvents(); bindRecetasEvents(); }
   else if(state.currentTab === 'inventario') { el.innerHTML = renderInventario(); bindInventarioEvents(); bindEscalaEvents(); }
   else if(state.currentTab === 'fermentadores') { el.innerHTML = renderFermentadores(); bindFermentadoresEvents(); }
   else if(state.currentTab === 'bitacora') { el.innerHTML = renderBitacora(); bindBitacoraEvents(); }
@@ -1070,6 +1112,25 @@ function bindEscalaEvents(){
   });
 }
 
+// Enlaza cualquier input #cfg-<clave> presente en el DOM a state.config,
+// guardando en Firebase y volviendo a pintar. Se usa tanto en Recetas
+// (precios de envasado) como en Inventario (potencia, agua, etc.).
+function bindCostConfigFields(ids){
+  ids.forEach(id=>{
+    const elx = document.getElementById('cfg-'+id);
+    if(elx){
+      elx.addEventListener('change', async ()=>{
+        state.config[id] = parseFloat(elx.value) || 0;
+        await saveKey('config-costos', state.config);
+        renderContent();
+      });
+    }
+  });
+}
+function bindRecetasEvents(){
+  bindCostConfigFields(['precioBotella','precioEtiqueta','precioTapa','manoObraLote']);
+}
+
 function renderRecetas(){
   const cards = RECETAS.map(r=>{
     const lotes = calcLotesPosibles(r.id);
@@ -1078,6 +1139,9 @@ function renderRecetas(){
     const botellas = getBotellas(r.id);
     const vol = getVolumenL(r.id);
     const factor = getScaleFactor(r.id);
+    const env = calcCostoEnvasado(botellas);
+    const costoTotalConEnvasado = costo.total + env.total;
+    const costoBotellaConEnvasado = botellas > 0 ? costoTotalConEnvasado / botellas : 0;
     const scaled = getScaledIngredients(r.id);
     const ingHtml = scaled.map(i=>{
       const cat = getCatalogo(i.id);
@@ -1112,7 +1176,7 @@ function renderRecetas(){
           </div>
           <div class="muted" style="align-self:center;font-size:0.8em;">Base: ${r.bottleYield} bot. · ${r.volumenL} L<br>Vol. actual ≈ ${vol.toFixed(1)} L</div>
         </div>
-        <div class="receta-desc">${r.descripcion}<br><span class="muted">⏱ ${r.tiempoTotal} · Costo lote escalado ${fmtMoney(costo.total)}</span></div>
+        <div class="receta-desc">${r.descripcion}<br><span class="muted">⏱ ${r.tiempoTotal} · Ingredientes/agua/luz ${fmtMoney(costo.total)} + envasado ${fmtMoney(env.total)} = <strong>${fmtMoney(costoTotalConEnvasado)}</strong> (${fmtMoney(costoBotellaConEnvasado)}/bot.)</span></div>
         <div class="params">
           <span>OG ${p.og||'—'}</span>
           <span>FG ${p.fg||'—'}</span>
@@ -1129,6 +1193,16 @@ function renderRecetas(){
     `;
   }).join('');
   return `<div class="card"><h2>Recetas de referencia</h2><p class="muted">Cambia el número de <strong>botellas</strong> y se recalculan ingredientes <em>y cantidades de agua del procedimiento</em> (base 15 bot. / 5,5 L). Temperaturas, tiempos y pH no cambian. Inventario y costos usan las cantidades escaladas.</p></div>
+          <div class="card">
+            <h3 style="margin-top:0;">Costos de envasado</h3>
+            <p class="muted">Se suman al costo de ingredientes/agua/luz para dar el costo total y por botella de cada receta. La mano de obra es un monto fijo por lote, sin importar cuántas botellas salgan.</p>
+            <div class="config-grid">
+              <div class="config-field"><label>Precio botella ($/u)</label><input type="number" step="0.01" min="0" id="cfg-precioBotella" value="${state.config.precioBotella}"></div>
+              <div class="config-field"><label>Precio etiqueta ($/u)</label><input type="number" step="0.01" min="0" id="cfg-precioEtiqueta" value="${state.config.precioEtiqueta}"></div>
+              <div class="config-field"><label>Precio tapa ($/u)</label><input type="number" step="0.01" min="0" id="cfg-precioTapa" value="${state.config.precioTapa}"></div>
+              <div class="config-field"><label>Mano de obra ($/lote)</label><input type="number" step="1" min="0" id="cfg-manoObraLote" value="${state.config.manoObraLote}"></div>
+            </div>
+          </div>
           <div class="grid-recetas">${cards}</div>`;
 }
 
@@ -1239,17 +1313,7 @@ function renderInventario(){
 }
 
 function bindInventarioEvents(){
-  const cfgIds = ['ollaW','precioElec','horasProceso','litrosAgua','precioAgua'];
-  cfgIds.forEach(id=>{
-    const elx = document.getElementById('cfg-'+id);
-    if(elx){
-      elx.addEventListener('change', async ()=>{
-        state.config[id] = parseFloat(elx.value) || 0;
-        await saveKey('config-costos', state.config);
-        renderContent();
-      });
-    }
-  });
+  bindCostConfigFields(['ollaW','precioElec','horasProceso','litrosAgua','precioAgua']);
 
   document.querySelectorAll('.inv-input').forEach(inp=>{
     inp.addEventListener('change', async ()=>{
@@ -1310,6 +1374,8 @@ async function registrarCocimiento(recipeId, fecha){
     fg: '',
     notas: '',
     etapa: 'fermentando',
+    fechaEmbotellado: '',
+    botellasFinales: '',
   });
   fermentadorLibre.loteId = loteId;
   await saveKey('lotes-bitacora', state.lotes);
@@ -1394,9 +1460,56 @@ function renderTecnicoLote(loteId){
   `;
 }
 
+function fmtEficiencia(lote){
+  const ef = calcEficienciaEnvasado(lote);
+  return ef === null ? '—' : `${ef}%`;
+}
+
+function renderCostoEnvasadoLote(lote){
+  const botellas = getBotellasReales(lote);
+  const env = calcCostoEnvasado(botellas);
+  let costoIng = null;
+  if(lote.recetaId && getReceta(lote.recetaId)){
+    const costo = calcCostoLote(lote.recetaId);
+    const botellasBase = getBotellas(lote.recetaId);
+    costoIng = botellasBase > 0 ? (costo.total / botellasBase) * botellas : 0;
+  }
+  const totalLote = (costoIng || 0) + env.total;
+  const costoBotellaFinal = botellas > 0 ? totalLote / botellas : 0;
+  return `
+    <div class="tecnico-box" style="background:rgba(62,207,74,0.04);">
+      <div class="tecnico-head" style="cursor:default;">
+        <span>💰 Costo de este lote (${botellas} bot.)</span>
+      </div>
+      <div class="tecnico-body" style="display:block;">
+        <div class="desglose">
+          Envasado: ${botellas} bot. × ${fmtMoney(env.unit)} (botella ${fmtMoney(state.config.precioBotella)} + etiqueta ${fmtMoney(state.config.precioEtiqueta)} + tapa ${fmtMoney(state.config.precioTapa)}) = ${fmtMoney(env.material)}<br>
+          Mano de obra del lote: ${fmtMoney(env.manoObra)}<br>
+          ${costoIng !== null ? `Ingredientes/agua/luz (prorrateado): ${fmtMoney(costoIng)}<br>` : `<span class="muted">Sin receta asociada: no se incluye costo de ingredientes.</span><br>`}
+        </div>
+        <div class="stats-row" style="margin:10px 0 2px;">
+          <div class="stat-box"><span class="num">${fmtMoney(totalLote)}</span><span class="lbl">Costo total del lote</span></div>
+          <div class="stat-box"><span class="num">${fmtMoney(costoBotellaFinal)}</span><span class="lbl">Costo por botella</span></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Eficiencia de envasado agregada: promedio entre los lotes que ya tienen
+// botellas finales capturadas, más el total de botellas esperadas vs. reales.
+function calcEficienciaGlobal(){
+  const conDatos = state.lotes.filter(l=>calcEficienciaEnvasado(l) !== null);
+  const esperadas = conDatos.reduce((s,l)=>s + (l.botellas||0), 0);
+  const finales = conDatos.reduce((s,l)=>s + (Number(l.botellasFinales)||0), 0);
+  const promedio = esperadas > 0 ? Math.round((finales/esperadas)*1000)/10 : null;
+  return { lotesConDatos: conDatos.length, esperadas, finales, promedio };
+}
+
 function renderBitacora(){
   const hoy = todayISO();
   const recetaOpts = RECETAS.map(r=>`<option value="${r.nombre}">${r.nombre}</option>`).join('');
+  const efGlobal = calcEficienciaGlobal();
 
   let listHtml;
   if(state.lotes.length === 0){
@@ -1412,7 +1525,7 @@ function renderBitacora(){
           <div class="lote-top" data-toggle-lote="${l.id}">
             <div>
               <div class="lote-title">${escapeHTML(l.nombre || 'Lote')}</div>
-              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}${calcABV(l.og,l.fg)!==null?` · ${fmtABV(l.og,l.fg)} ABV`:''}</div>
+              <div class="lote-meta">${escapeHTML(l.estilo||'')} · ${fmtDateBit(l.fecha)}${dias!==null?` · día ${dias}`:''}${l.botellas?` · ${l.botellas} bot.`:''}${l.fermentadorId?` · Ferm. ${l.fermentadorId}`:''}${calcABV(l.og,l.fg)!==null?` · ${fmtABV(l.og,l.fg)} ABV`:''}${calcEficienciaEnvasado(l)!==null?` · Ef. envasado ${fmtEficiencia(l)}`:''}</div>
             </div>
             <div class="stage-badge ${isDone?'stage-done':''}" style="background:${st.color}">
               <span class="airlock-dot"></span>${st.label}
@@ -1445,6 +1558,22 @@ function renderBitacora(){
                 <div class="abv-display" data-abv-display="${l.id}">${fmtABV(l.og, l.fg)}</div>
               </div>
             </div>
+            <div class="field-row field-row-3">
+              <div class="field">
+                <label>Fecha de envasado</label>
+                <input type="date" data-lote-field="fechaEmbotellado" data-lote-id="${l.id}" value="${l.fechaEmbotellado||''}" max="${hoy}">
+              </div>
+              <div class="field">
+                <label>Botellas finales (envasadas)</label>
+                <input type="number" min="0" data-lote-field="botellasFinales" data-lote-id="${l.id}" value="${l.botellasFinales!==undefined&&l.botellasFinales!==null?l.botellasFinales:''}" placeholder="${l.botellas||''}">
+              </div>
+              <div class="field">
+                <label>Eficiencia de envasado</label>
+                <div class="abv-display" data-eficiencia-display="${l.id}">${fmtEficiencia(l)}</div>
+              </div>
+            </div>
+            <p class="muted" style="font-size:0.78em;margin:-4px 0 10px;">Eficiencia = botellas finales ÷ botellas esperadas (${l.botellas||0}, calculadas al registrar el lote) × 100.</p>
+            ${renderCostoEnvasadoLote(l)}
             <div class="field" style="margin-bottom:10px;">
               <label>Notas</label>
               <textarea data-lote-field="notas" data-lote-id="${l.id}" placeholder="Sabor, aroma, temperatura, ideas para el próximo lote...">${escapeHTML(l.notas||'')}</textarea>
@@ -1473,6 +1602,12 @@ function renderBitacora(){
     <div class="card">
       <h2>Bitácora de lotes</h2>
       <p class="muted">Historial de cada cocimiento: densidades, etapa y notas. Al registrar un cocimiento en Inventario se crea un lote aquí automáticamente.</p>
+      <div class="stats-row" style="margin:14px 0 4px;">
+        <div class="stat-box"><span class="num">${efGlobal.promedio!==null ? efGlobal.promedio+'%' : '—'}</span><span class="lbl">Eficiencia de envasado promedio</span></div>
+        <div class="stat-box"><span class="num">${efGlobal.finales}</span><span class="lbl">Botellas finales (envasadas)</span></div>
+        <div class="stat-box"><span class="num">${efGlobal.esperadas}</span><span class="lbl">Botellas esperadas</span></div>
+      </div>
+      <p class="muted" style="font-size:0.8em;">${efGlobal.lotesConDatos} de ${state.lotes.length} lote(s) tienen botellas finales capturadas. Captura ese dato en cada lote para que entre al promedio.</p>
       <button class="btn" id="btn-toggle-nuevo-lote">+ Registrar lote manual</button>
     </div>
     <div class="card new-lote-form" id="nuevo-lote-form">
@@ -1513,6 +1648,7 @@ function bindBitacoraEvents(){
       nombre, estilo, fecha, botellas,
       og, fg:'', notas:'', etapa:'elaboracion',
       recetaId: null, fermentadorId: null,
+      fechaEmbotellado:'', botellasFinales:'',
     });
     await saveKey('lotes-bitacora', state.lotes);
     form.classList.remove('show');
@@ -1560,7 +1696,7 @@ function bindBitacoraEvents(){
         if(display) display.textContent = fmtABV(lote.og, lote.fg);
       }
       await saveKey('lotes-bitacora', state.lotes);
-      if(field === 'etapa' || field === 'fecha') renderContent();
+      if(field === 'etapa' || field === 'fecha' || field === 'botellasFinales') renderContent();
     });
   });
 
@@ -1823,19 +1959,24 @@ function imprimirRecibo(entrega){
 function calcGananciaNeta(){
   const ingresos = state.entregas.reduce((s,e)=>s + (e.precio||0), 0);
   let costoProduccion = 0;
+  let costoEnvasadoTotal = 0;
   let lotesSinCosto = 0;
   state.lotes.forEach(l=>{
+    const botellasReales = getBotellasReales(l);
+    costoEnvasadoTotal += calcCostoEnvasado(botellasReales).total;
     if(!l.recetaId){ lotesSinCosto++; return; }
     const receta = getReceta(l.recetaId);
     if(!receta){ lotesSinCosto++; return; }
     const costo = calcCostoLote(l.recetaId);
     const botellasBase = getBotellas(l.recetaId);
     const costoBotella = botellasBase > 0 ? costo.total / botellasBase : 0;
-    costoProduccion += costoBotella * (l.botellas || 0);
+    costoProduccion += costoBotella * botellasReales;
   });
+  costoProduccion += costoEnvasadoTotal;
   return {
     ingresos,
     costoProduccion,
+    costoEnvasadoTotal,
     neta: ingresos - costoProduccion,
     lotesSinCosto,
   };
@@ -1874,7 +2015,7 @@ function renderEntregas(){
         <div class="stat-box"><span class="num">${fmtMoney(totalPendiente)}</span><span class="lbl">Pendiente de cobro</span></div>
         <div class="stat-box"><span class="num">${fmtMoney(ganancia.neta)}</span><span class="lbl">Ganancia neta estimada</span></div>
       </div>
-      <p class="muted" style="font-size:0.82em;">Ganancia = ingresos de todas las entregas (${fmtMoney(ganancia.ingresos)}) − costo de producción de los lotes en Bitácora a precios actuales (${fmtMoney(ganancia.costoProduccion)}).${ganancia.lotesSinCosto ? ` ${ganancia.lotesSinCosto} lote(s) sin receta asociada no se incluyeron en el costo.` : ''} Es una estimación, no contabilidad exacta.</p>
+      <p class="muted" style="font-size:0.82em;">Ganancia = ingresos de todas las entregas (${fmtMoney(ganancia.ingresos)}) − costo de producción de los lotes en Bitácora (${fmtMoney(ganancia.costoProduccion)}, incluye envasado: ${fmtMoney(ganancia.costoEnvasadoTotal)} en botella+etiqueta+tapa a $${costoEnvasadoUnitario().toFixed(2)}/bot. y ${fmtMoney(state.config.manoObraLote)} de mano de obra por lote).${ganancia.lotesSinCosto ? ` ${ganancia.lotesSinCosto} lote(s) sin receta asociada solo incluyen costo de envasado, no de ingredientes.` : ''} Es una estimación, no contabilidad exacta.</p>
 
       <h3>Nueva entrega</h3>
       <div class="entregas-form">
