@@ -238,6 +238,33 @@ nav.tabs button.active{
 .ing-name{font-weight:600;}
 .ing-aporta{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.85em;}
 
+.venta-row{
+  display:grid;
+  grid-template-columns:1.6fr 0.8fr 0.8fr 0.8fr auto;
+  gap:10px;
+  align-items:center;
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+  font-size:0.85em;
+}
+.venta-row:last-child{border-bottom:none;}
+.venta-row input[type=number]{
+  width:100%;
+  padding:6px 8px;
+  border-radius:3px;
+  border:1px solid var(--line);
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.95em;
+  background:var(--panel);
+  color:var(--ink);
+}
+.venta-row .btn{margin-top:0;padding:8px 12px;font-size:0.78em;}
+@media (max-width:600px){
+  .venta-row{grid-template-columns:1fr 1fr;}
+  .venta-row > *:nth-child(1){grid-column:1/3;}
+  .venta-row > button{grid-column:1/3;}
+}
+
 .config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:6px;}
 .config-field label{display:block;font-size:0.75em;color:var(--muted);margin-bottom:4px;font-family:'Share Tech Mono',monospace;}
 .config-field input, .config-field select{
@@ -265,6 +292,8 @@ button.btn{
   text-transform:uppercase;
 }
 button.btn:hover{background:var(--copper-light);}
+button.btn.btn-danger{background:#a83232;color:#fff;}
+button.btn.btn-danger:hover{background:#c23f3f;}
 button.btn:disabled{background:#444;color:#777;cursor:not-allowed;}
 button.btn.secondary{background:transparent;border:1.5px solid var(--copper);color:var(--copper);}
 button.btn.danger{background:var(--red);color:#fff;}
@@ -805,6 +834,10 @@ let state = {
     precioBotella:14, precioEtiqueta:6, precioTapa:2.5, manoObraLote:500,
   },
   inventario: {},
+  // Espejo de bitacora/inventario (stock de botellas ya envasadas, el que usan
+  // inventario.html / estado-produccion.html). Se muestra aquí solo para poder
+  // corregir o borrar registros viejos/obsoletos sin entrar a la consola de Firebase.
+  inventarioVenta: {},
   // escalas[recipeId] = número de botellas deseadas (base = bottleYield de la receta)
   escalas: {},
   fermentadores: [ {id:1,estado:'libre'}, {id:2,estado:'libre'}, {id:3,estado:'libre'} ],
@@ -865,6 +898,7 @@ async function init(){
   // config-costos guardado con menos claves que las que usa esta versión.
   state.config = Object.assign({}, state.config, await loadKey('config-costos', {}));
   state.inventario = await loadKey('inventario-unico', {});
+  state.inventarioVenta = await loadKey('inventario', {});
   CATALOGO.forEach(c=>{
     if(!state.inventario[c.id]) state.inventario[c.id] = {stock:0, precio:0};
   });
@@ -1292,6 +1326,41 @@ function renderInventario(){
     `;
   }).join('');
 
+  const ventaEntries = Object.entries(state.inventarioVenta || {});
+  const ventaRows = ventaEntries.map(([key, item])=>{
+    const it = item || {};
+    const nombre = it.nombre || it.nombreReceta || key;
+    return `
+      <div class="venta-row" data-venta-key="${key}">
+        <div>
+          <div class="ing-name">${nombre}</div>
+          <div class="muted" style="font-size:0.72em;">id: ${key}</div>
+        </div>
+        <div>
+          <label class="muted" style="font-size:0.7em;">Stock</label>
+          <input type="number" step="1" value="${it.stock!=null?it.stock:0}" data-venta="${key}" data-vfield="stock" class="venta-input">
+        </div>
+        <div>
+          <label class="muted" style="font-size:0.7em;">Reservadas</label>
+          <input type="number" step="1" value="${it.reservadas!=null?it.reservadas:0}" data-venta="${key}" data-vfield="reservadas" class="venta-input">
+        </div>
+        <div>
+          <label class="muted" style="font-size:0.7em;">Vendidas</label>
+          <input type="number" step="1" value="${it.vendidas!=null?it.vendidas:0}" data-venta="${key}" data-vfield="vendidas" class="venta-input">
+        </div>
+        <button class="btn btn-danger" data-venta-borrar="${key}" title="Borra este registro para que vuelva a calcularse automáticamente desde el lote (etapa/botellas para Locundus)">Restablecer</button>
+      </div>
+    `;
+  }).join('');
+
+  const ventaHtml = `
+    <div class="card">
+      <h2>Inventario de venta pública (bitacora/inventario)</h2>
+      <p class="muted">Estos son los registros que leen <strong>inventario.html</strong> y <strong>estado-produccion.html</strong>. Normalmente se generan solos a partir del lote (etapa + botellas para Locundus). Si ves un valor viejo o incorrecto (ej. "Agotado" cuando ya no debería), usa "Restablecer" para borrarlo: el dato se recalculará automáticamente desde la bitácora del lote.</p>
+      ${ventaEntries.length ? ventaRows : '<p class="muted">No hay registros manuales en bitacora/inventario. Todo se está calculando automáticamente desde los lotes.</p>'}
+    </div>
+  `;
+
   const stockBajo = getIngredientesStockBajo();
   const alertaHtml = stockBajo.length ? `
     <div class="card alerta-stock">
@@ -1327,6 +1396,8 @@ function renderInventario(){
       <p class="muted">Edita stock y precio unitario. Los cambios se guardan automáticamente.</p>
       ${ingRows}
     </div>
+
+    ${ventaHtml}
   `;
 }
 
@@ -1350,6 +1421,36 @@ function bindInventarioEvents(){
       const fechaInput = document.getElementById('fecha-reg-'+recipeId);
       const fecha = (fechaInput && fechaInput.value) ? fechaInput.value : todayISO();
       await registrarCocimiento(recipeId, fecha);
+    });
+  });
+
+  document.querySelectorAll('.venta-input').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const key = inp.dataset.venta;
+      const field = inp.dataset.vfield;
+      if(!state.inventarioVenta[key]) state.inventarioVenta[key] = {};
+      state.inventarioVenta[key][field] = parseFloat(inp.value) || 0;
+      try {
+        await db.ref('bitacora/inventario/' + key).update({ [field]: state.inventarioVenta[key][field] });
+      } catch(e) {
+        console.error('Error actualizando inventario de venta', e);
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-venta-borrar]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const key = btn.dataset.ventaBorrar;
+      const ok = confirm('¿Borrar este registro de bitacora/inventario/' + key + '? Volverá a calcularse automáticamente desde el lote.');
+      if(!ok) return;
+      try {
+        await db.ref('bitacora/inventario/' + key).remove();
+        delete state.inventarioVenta[key];
+        renderContent();
+      } catch(e) {
+        console.error('Error borrando registro de inventario de venta', e);
+        alert('No se pudo borrar el registro. Revisa la consola.');
+      }
     });
   });
 }
