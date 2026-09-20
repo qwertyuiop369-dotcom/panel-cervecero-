@@ -810,6 +810,37 @@ const RECETAS = [
       {paso:'Embotellado', detalle:'Priming 18–20 g azúcar (~2,0–2,2 vol).', why:'Stouts se carbonatan menos que wheat o belgas.'},
     ]
   },
+  {
+    id:'r-coffee-stout-viking', nombre:'Coffee Stout Viking', variante:'All Grain · 20 L mosto · ~55 botellas (dividido en 2 fermentadores)',
+    tiempoTotal:'4-5 semanas + macerado', bottleYield:55, volumenL:20,
+    descripcion:'Versión de lote grande de la Coffee Stout, pensada para el sistema Vevor DM-N30 (30 L, hasta 8.5 kg de malta). Usa las 4 maltas Viking del catálogo: Coffee Malt (equiv. Light Chocolate), Caramel Malt 100 (equiv. Crystal) y Caramel Malt 50 (equiv. Crystal 10) para el cuerpo/dulzor, y Red Malt (equiv. Aromatic) en dosis baja para profundidad maltosa. Roasted Barley se mantiene genérico (sin equivalente Viking en catálogo). El mosto de 20 L se reparte tras el hervor en dos fermentadores: bucket de 20 L (~16.7 L) y damajuana de 4 L (~3.3 L) — registra cada uno como un lote independiente en la Bitácora, ambos con este mismo recetaId.',
+    fermentandoDays:8, fermenterDays:12,
+    params:{ og:'1.052–1.058', fg:'1.014–1.018', abv:'5.0–5.5%', ibu:'32–38', mash:'66–67°C', ferm:'18–21°C' },
+    ingredientes:[
+      {id:'pale-ale',               cantidad:3600},
+      {id:'roasted-barley',         cantidad:470},
+      {id:'viking-coffee-malt',     cantidad:430},
+      {id:'viking-caramel-malt',    cantidad:320},
+      {id:'viking-caramel-malt-50', cantidad:150},
+      {id:'viking-red-malt',        cantidad:100},
+      {id:'northern-brewer', cantidad:44},
+      {id:'s-33',            cantidad:4},
+      {id:'cold-brew',       cantidad:1600},
+      {id:'azucar',          cantidad:73},
+    ],
+    procedimiento:[
+      {paso:'Agua', detalle:'En el DM-N30: ~15.2 L de agua de macerado (strike) + ~9.8 L de agua de lavado/sparge después de escurrir la canasta (~25 L de agua total).', why:'Ratio de macerado ~3 L/kg sobre 5.07 kg de grano, más el sparge necesario para llegar a ~25 L de pre-hervor y terminar en ~20 L tras pérdidas de hervor y trub.'},
+      {paso:'Macerado', detalle:'Añade todos los granos a la canasta. 66–67 °C × 60 min con recirculación de la bomba. pH objetivo 5,2–5,5.', why:'La recirculación del DM-N30 da claridad y consistencia de temperatura en un lote grande.'},
+      {paso:'Mash-out / drenado', detalle:'Sube a 75–76 °C × 10 min, luego levanta la canasta y deja escurrir bien antes del sparge.', why:'Detiene enzimas y mejora la recuperación de azúcares.'},
+      {paso:'Hervido 60 min', detalle:'A los 60 min agrega los 44 g de Northern Brewer. Últimos 10-15 min: Whirlfloc si tienes.', why:'Amargor limpio, isomerización completa.'},
+      {paso:'Enfriado', detalle:'Baja a 18–20 °C lo más rápido posible.', why:'Evita contaminación y forma buen cold break en un volumen grande.'},
+      {paso:'Reparto a fermentadores', detalle:'Vierte ~16.7 L en el bucket de 20 L y ~3.3 L en la damajuana de 4 L (deja headspace en ambos).', why:'Un solo fermentador de 20 L no deja espacio para el krausen de una stout; se reparte proporcional a la capacidad de cada vasija.'},
+      {paso:'Levadura', detalle:'Rehidrata los 4 sobres de S-33 juntos, luego reparte el líquido: 3 sobres equivalentes al bucket, 1 sobre equivalente a la damajuana.', why:'No se puede repartir un sobre seco a la mitad; se rehidratan juntos y se divide la mezcla ya lista.'},
+      {paso:'Fermentación', detalle:'18–21 °C. Primaria 5–8 días. Usa blow-off en el bucket los primeros días.', why:'Ambos fermentadores pueden terminar en fechas distintas por la diferencia de volumen.'},
+      {paso:'Café', detalle:'Cerca del FG de cada vasija: 1.34 L de cold brew al bucket, 0.26 L a la damajuana (repartido proporcional al 1.6 L total).', why:'Conserva aroma a café fresco sin cocinarlo, agregado por separado a cada fermentador.'},
+      {paso:'Embotellado', detalle:'Mide el volumen real de cada vasija antes de calcular el priming (~4 g de azúcar de cebado por litro final, no uses los 73 g totales de golpe).', why:'Las mermas de trasiego/sedimento son distintas entre el bucket y la damajuana.'},
+    ]
+  },
 ];
 
 const SABORES_ENTREGA = [
@@ -817,6 +848,7 @@ const SABORES_ENTREGA = [
   'Belgian Blonde Albahaca-Romero',
   'Honey Wheat',
   'Dry Stout',
+  'Coffee Stout Viking',
 ];
 
 const ETAPAS_LOTE = [
