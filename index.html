@@ -785,7 +785,7 @@ const RECETAS = [
   {
     id:'r-dry-stout-bonafont', nombre:'Dry Stout', variante:'All Grain · 15 botellas',
     tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
-    descripcion:'Misma Dry Stout estilo irlandés, ajustada para agua embotellada Bonafont (muy baja en minerales). Se agregan sales de agua para dar cuerpo, realzar el amargor y balancear la acidez de la cebada tostada. Maltas especiales de línea Viking Malt: Coffee Malt (equiv. Light Chocolate) y Caramel Malt (equiv. Crystal); Roasted Barley y Oat Flakes son el mismo producto genérico, solo con marca Viking.',
+    descripcion:'Dry Stout irlandesa — oscura, seca y con carácter. Notas intensas a café tostado y un toque de cacao se despliegan sobre un cuerpo suave y cremoso, gracias a la avena en su receta. Amargor firme y bien integrado que cierra en un final limpio y seco, ideal para acompañar postres de chocolate o disfrutar sola en una tarde fría.',
     fermentandoDays:7, fermenterDays:11,
     params:{ og:'1.042–1.048', fg:'1.010–1.014', abv:'4.2–4.6%', ibu:'30–36', mash:'66–67°C', ferm:'18–20°C' },
     ingredientes:[
@@ -816,7 +816,7 @@ const RECETAS = [
   {
     id:'r-coffee-stout-viking', nombre:'Coffee Stout Viking', variante:'All Grain · 20 L mosto · ~54 botellas (dividido en 2 fermentadores)',
     tiempoTotal:'4-5 semanas + macerado', bottleYield:54, volumenL:20,
-    descripcion:'Escalado 1.667× de una Coffee Stout ya elaborada y probada con muy buen resultado (lote original de 2.80 kg de grano). Carácter de café, chocolate y tostado seco: Pale Ale/Maris Otter como base (75%), Viking Coffee Malt (equiv. Light Chocolate) y Viking Caramel Malt 100 (equiv. Crystal) para cuerpo y dulzor, Roasted Barley para el tostado seco (sin equivalente Viking en catálogo), avena opcional para textura. Agua Bonafont tratada con sales. Levadura Safale S-04. El mosto de 20 L se reparte tras el hervor en dos fermentadores: bucket de 20 L (~16.7 L) y damajuana de 4 L (~3.3 L) — registra cada uno como un lote independiente en la Bitácora, ambos con este mismo recetaId. Equipo: olla Vevor 1800 W.',
+    descripcion:'Escalado 1.667× de una Coffee Stout ya elaborada y probada con muy buen resultado (lote original de 2.80 kg de grano). Carácter de café, chocolate y tostado seco: Pale Ale/Maris Otter como base (75%), Viking Coffee Malt (equiv. Light Chocolate) y Viking Caramel Malt 100 (equiv. Crystal) para cuerpo y dulzor, Roasted Barley para el tostado seco (sin equivalente Viking en catálogo), avena opcional para textura. Agua Bonafont tratada con sales. Levadura Safale S-04. El mosto de 20 L se reparte tras el hervor en dos fermentadores: bucket de 20 L (~16.7 L) y damajuana de 4 L (~3.3 L) — registra cada uno como un lote independiente en la Bitácora, ambos con este mismo recetaId. Equipo: olla Vevor 1800 W. ⚠️ Nota de eficiencia real: el primer lote de 20 L con grano premolido de tienda dio solo ~44-50% de eficiencia de macerado (OG real 1.030 en vez de 1.055-1.060). El grain bill de esta receta asume 65-75% de eficiencia (molienda propia/fina). Si vuelves a usar grano premolido, sube el grain bill total ~30-40% para compensar, o mejor, muele el grano tú mismo.',
     fermentandoDays:7, fermenterDays:10,
     params:{ og:'1.055–1.060', fg:'1.014–1.018', abv:'5.3–5.8%', ibu:'28–32', mash:'66–67°C', ferm:'15–20°C', color:'35–42 SRM' },
     ingredientes:[
@@ -836,6 +836,7 @@ const RECETAS = [
       {id:'azucar',           cantidad:115},
     ],
     procedimiento:[
+      {paso:'Molienda', detalle:'Muele el grano tú mismo (o pide molienda fina, no la premolida genérica de tienda) — busca que la cáscara se rompa pero se mantenga en trozos grandes, con el interior del grano hecho polvo grueso.', why:'El primer lote de 20 L con grano premolido de tienda dio solo ~44-50% de eficiencia (OG real 1.030 en vez de 1.055-1.060) — la molienda gruesa deja azúcar sin extraer. Es el paso más importante para que el OG salga en rango.'},
       {paso:'Tratamiento de agua', detalle:'Sobre el agua total (~25-26 L), disuelve 8.5 g de cloruro de calcio, 6-6.5 g de bicarbonato de sodio y, si los usas, 2.5 g de yeso y 1.7 g de sal de Epsom, antes de calentar.', why:'Agua Bonafont es casi sin minerales; estas sales dan cuerpo, realzan el amargor y balancean la acidez del tostado — igual que en el lote original que ya funcionó bien.'},
       {paso:'Agua de macerado', detalle:'14 L de agua tratada a 72-73 °C (strike).', why:'Para llegar a 66-67 °C de macerado con el grain bill de 4.67 kg.'},
       {paso:'Macerado', detalle:'Añade todos los granos, avena incluida. 66-67 °C × 60 min.', why:'Mismo perfil de macerado que el lote pequeño que ya dio buen resultado — no cambiar.'},
