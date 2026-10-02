@@ -1756,14 +1756,25 @@ function renderBitacora(){
             </div>
             ${renderTecnicoLote(l.id)}
             <div class="field" style="margin-bottom:10px;">
-              <label>Código QR para la etiqueta (info al consumidor)</label>
+              <label>Código QR para Locundus (botellas de cliente)</label>
               <div class="qr-box">
                 <canvas data-qr-canvas="${l.id}" style="display:none;"></canvas>
                 <div class="qr-actions">
-                  <button class="btn secondary" data-gen-qr="${l.id}">Generar QR</button>
-                  <a class="btn secondary" data-download-qr="${l.id}" style="display:none;" download="qr-lote-${l.id}.png">Descargar PNG</a>
+                  <button class="btn secondary" data-gen-qr="${l.id}" data-qr-marca="locundus">Generar QR</button>
+                  <a class="btn secondary" data-download-qr="${l.id}" style="display:none;" download="qr-lote-${l.id}-locundus.png">Descargar PNG</a>
                 </div>
                 <p class="muted" style="font-size:0.78em;margin-top:6px;">Enlaza a: ${SITIO_BASE}/lote.html?id=${l.id}</p>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:10px;">
+              <label>Código QR marca propia (Tierra Grande)</label>
+              <div class="qr-box">
+                <canvas data-qr-canvas="${l.id}-propia" style="display:none;"></canvas>
+                <div class="qr-actions">
+                  <button class="btn secondary" data-gen-qr="${l.id}" data-qr-marca="propia">Generar QR</button>
+                  <a class="btn secondary" data-download-qr="${l.id}-propia" style="display:none;" download="qr-lote-${l.id}-propia.png">Descargar PNG</a>
+                </div>
+                <p class="muted" style="font-size:0.78em;margin-top:6px;">Enlaza a: ${SITIO_BASE}/lote.html?id=${l.id}&marca=propia</p>
               </div>
             </div>
             <div class="lote-actions">
@@ -1892,9 +1903,13 @@ function bindBitacoraEvents(){
   document.querySelectorAll('[data-gen-qr]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const id = btn.dataset.genQr;
-      const canvas = document.querySelector(`[data-qr-canvas="${id}"]`);
-      const link = document.querySelector(`[data-download-qr="${id}"]`);
-      const url = `${SITIO_BASE}/lote.html?id=${id}`;
+      const marca = btn.dataset.qrMarca || 'locundus';
+      const canvasKey = marca === 'propia' ? `${id}-propia` : id;
+      const canvas = document.querySelector(`[data-qr-canvas="${canvasKey}"]`);
+      const link = document.querySelector(`[data-download-qr="${canvasKey}"]`);
+      const url = marca === 'propia'
+        ? `${SITIO_BASE}/lote.html?id=${id}&marca=propia`
+        : `${SITIO_BASE}/lote.html?id=${id}`;
       QRCode.toCanvas(canvas, url, { width: 220, margin: 2 }, (err)=>{
         if(err){ console.error(err); alert('No se pudo generar el QR.'); return; }
         canvas.style.display = 'inline-block';
