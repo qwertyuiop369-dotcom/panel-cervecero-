@@ -674,6 +674,9 @@ const CATALOGO = [
   {id:'northern-brewer',nombre:'Lúpulo Northern Brewer',      unidad:'g',  fresco:false},
   {id:'s-33',           nombre:'Levadura Fermentis S-33',     unidad:'u',  fresco:false},
   {id:'s-04',           nombre:'Levadura Fermentis S-04',     unidad:'u',  fresco:false},
+  {id:'fermoale-ay3',   nombre:'Levadura FermoAle AY3 (AEB, sobre 11,5 g)', unidad:'u', fresco:false},
+  {id:'flaked-barley',  nombre:'Cebada en hojuelas (flaked barley)', unidad:'g', fresco:false},
+  {id:'us-golding',     nombre:'Lúpulo US Golding (6.6% AA)', unidad:'g', fresco:false},
   {id:'lupulo-aroma',   nombre:'Lúpulo de aroma (Fuggle/EKG/Willamette)', unidad:'g', fresco:false},
   {id:'sal-epsom',      nombre:'Sulfato de magnesio (sal de Epsom)', unidad:'g', fresco:false},
   {id:'azucar',         nombre:'Azúcar cebado (priming)',     unidad:'g',  fresco:false},
@@ -783,34 +786,32 @@ const RECETAS = [
     ]
   },
   {
-    id:'r-dry-stout-bonafont', nombre:'Dry Stout', variante:'All Grain · 15 botellas',
-    tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
-    descripcion:'Dry Stout irlandesa — oscura, seca y con carácter. Notas intensas a café tostado y un toque de cacao se despliegan sobre un cuerpo suave y cremoso, gracias a la avena en su receta. Amargor firme y bien integrado que cierra en un final limpio y seco, ideal para acompañar postres de chocolate o disfrutar sola en una tarde fría.',
-    fermentandoDays:7, fermenterDays:11,
-    params:{ og:'1.042–1.048', fg:'1.010–1.014', abv:'4.2–4.6%', ibu:'30–36', mash:'66–67°C', ferm:'18–20°C' },
+    id:'r-dry-stout-irlandesa', nombre:'Dry Stout Irlandesa', variante:'All Grain · 20 L mosto · ~54 botellas',
+    tiempoTotal:'3-4 semanas + macerado', bottleYield:54, volumenL:20,
+    descripcion:'Dry Stout irlandesa estilo Guinness: oscura, seca y cremosa, con notas a café tostado. Base de malta pálida (70%), cebada en hojuelas (20%) para el cuerpo cremoso y cebada tostada sin maltear (10%) para el tostado seco. Lúpulo US Golding 6.6% AA y levadura seca FermoAle AY3 (perfil neutro, atenuación alta). Agua Bonafont tratada con sales. Lote de 20 L; escala con el número de botellas.',
+    fermentandoDays:7, fermenterDays:14,
+    params:{ og:'1.040–1.042', fg:'1.008–1.010', abv:'4.1–4.3%', ibu:'35–40', mash:'67°C', ferm:'18–19°C' },
     ingredientes:[
-      {id:'pale-ale',            cantidad:950},
-      {id:'roasted-barley',      cantidad:130},
-      {id:'viking-coffee-malt',  cantidad:60},
-      {id:'viking-caramel-malt', cantidad:50},
-      {id:'avena',               cantidad:40},
-      {id:'northern-brewer', cantidad:12},
-      {id:'s-33',            cantidad:1},
-      {id:'azucar',          cantidad:19},
-      {id:'cloruro-calcio',  cantidad:2},
-      {id:'yeso',            cantidad:1.5},
-      {id:'bicarbonato',     cantidad:1.5},
+      {id:'pale-ale',        cantidad:2700},
+      {id:'flaked-barley',   cantidad:750},
+      {id:'roasted-barley',  cantidad:400},
+      {id:'us-golding',      cantidad:38},
+      {id:'fermoale-ay3',    cantidad:1},
+      {id:'azucar',          cantidad:80},
+      {id:'cloruro-calcio',  cantidad:6},
+      {id:'yeso',            cantidad:4},
+      {id:'bicarbonato',     cantidad:4},
     ],
     procedimiento:[
-      {paso:'Tratamiento de agua', detalle:'Sobre ~8,2–8,3 L de agua Bonafont (mash + sparge), disuelve 2 g de cloruro de calcio, 1,5 g de sulfato de calcio (yeso) y 1,5 g de bicarbonato de sodio antes de calentar. Usa báscula de precisión (0,1 g).', why:'Bonafont es agua casi sin minerales; sin ajuste el mosto queda plano y la cebada tostada puede salir ácida. El bicarbonato sube la alcalinidad para balancear ese tostado. Volumen total recalculado para la Vevor DM-N30 (30 L, 1800 W), calibrado con los resultados reales del lote de 20 L (~0,8 L/kg de grano absorbidos + ~1,8 L/h de evaporación).'},
-      {paso:'Agua de mash', detalle:'Separa y calienta ~4,5 L del agua ya tratada a 72–73 °C.', why:'Strike para llegar a 66–67 °C al mash-in.'},
-      {paso:'Macerado', detalle:'Añade todos los granos. 66–67 °C × 60 min (o 65 °C si la quieres más seca). pH objetivo 5,2–5,5.', why:'Equilibrio fermentables/cuerpo; roasted barley da el carácter dry.'},
-      {paso:'Mash-out', detalle:'75–76 °C × 10 min.', why:'Facilita el drenado.'},
-      {paso:'Drenado / Lavado', detalle:'Escurre bien. Lava con los ~3,7 L de agua Bonafont tratada restante a 75–78 °C.', why:'Ya no es opcional: completa el volumen de pre-hervor con el mismo criterio del lote de 20 L.'},
-      {paso:'Hervido 60 min', detalle:'Min 60: 12 g Northern Brewer. Sin adiciones de aroma.', why:'Amargor limpio que equilibra el tostado, sin floral fuerte.'},
-      {paso:'Enfriado', detalle:'Baja a 18–20 °C rápidamente.', why:'Cold break y seguridad microbiológica.'},
-      {paso:'Fermentación', detalle:'Siembra S-33 a 18–20 °C. Primaria 5–8 días. FG ≈1.010–1.014.', why:'S-33 da algo más de cuerpo que Irish clásica, pero funciona.'},
-      {paso:'Embotellado', detalle:'Priming 18–20 g azúcar (~2,0–2,2 vol).', why:'Stouts se carbonatan menos que wheat o belgas.'},
+      {paso:'Tratamiento de agua', detalle:'Sobre ~23,5 L de agua Bonafont (mash + lavado), disuelve 6 g de cloruro de calcio, 4 g de sulfato de calcio (yeso) y 4 g de bicarbonato de sodio antes de calentar. Usa báscula de precisión (0,1 g).', why:'Bonafont es agua casi sin minerales; sin ajuste la cebada tostada sale ácida y áspera. Resultado aproximado: ~110 ppm de calcio, ~120 ppm de cloruro, ~95 ppm de sulfato y ~125 ppm de bicarbonato, perfil que redondea el cuerpo y balancea el tostado. Escalado de la Dry Stout anterior.'},
+      {paso:'Agua de mash', detalle:'Separa 11,5 L del agua ya tratada y caliéntalos a 72 °C (strike).', why:'Al añadir los granos baja a 67 °C, temperatura que deja cuerpo cremoso en una stout.'},
+      {paso:'Macerado', detalle:'Añade la malta pálida, la cebada en hojuelas y la cebada tostada. Mantén 67 °C durante 60 min.', why:'Si baja de 1.008 en la fermentación, mantén el macerado en 67–68 °C para conservar cuerpo. Si se atasca, agrega 100–150 g de cáscara de arroz.'},
+      {paso:'Lavado', detalle:'Recircula hasta que el mosto salga claro y lava los granos con los 12 L restantes de agua tratada a 76 °C. Junta unos 24 L de mosto.', why:'Completa el volumen de pre-hervor para llegar a ~20 L finales.'},
+      {paso:'Hervido 60 min', detalle:'Hierve 60 min en total. Al inicio añade 38 g de US Golding (6.6% AA). En los últimos 15 min añade 0,5 cucharadita de Whirlfloc o musgo irlandés. Opcional: 28 g a los 60 min y 10 g en los últimos 10 min para algo de aroma (baja el amargor a ~33 IBU).', why:'La fórmula es gramos = 250 ÷ % de alfa ácidos; con 6.6% AA salen ~38 g para 35–40 IBU. Revisa el % real de tu bolsa.'},
+      {paso:'Enfriado', detalle:'Enfría a 18–19 °C lo más rápido posible, trasvasa al fermentador dejando atrás el sedimento y oxigena bien. Densidad inicial objetivo 1.040–1.042.', why:'Cold break limpio y buena siembra de levadura.'},
+      {paso:'Levadura', detalle:'Rehidrata el sobre de 11,5 g de FermoAle AY3 en 100 ml de agua o mosto a 18–25 °C durante 20 min, remueve suave e inocula.', why:'Un sobre de 11,5 g alcanza para 20 L a esta densidad.'},
+      {paso:'Fermentación', detalle:'Fermenta a 18–19 °C. Revisa la densidad a los 7 días; cuando marque 1.008–1.010 y se mantenga estable 2 días seguidos, puedes envasar (~14 días en total).', why:'AY3 es una levadura neutra y de buena atenuación: deja la stout seca y deja que se note el tostado.'},
+      {paso:'Embotellado', detalle:'Disuelve 80 g de azúcar de maíz o dextrosa en un poco de agua hervida, mezcla con la cerveza al embotellar y deja reposar las botellas a 20–22 °C. Sirve bien fría, entre 6 y 8 °C.', why:'Carbonatación media-baja de stout (~2,0–2,2 vol). Recalcula el azúcar con el volumen real de cerveza limpia.'},
     ]
   },
   {
@@ -856,7 +857,7 @@ const SABORES_ENTREGA = [
   'Coffee Stout',
   'Belgian Blonde Albahaca-Romero',
   'Honey Wheat',
-  'Dry Stout',
+  'Dry Stout Irlandesa',
   'Coffee Stout Viking',
 ];
 
@@ -1032,7 +1033,7 @@ function getVolumenL(recipeId){
 function scaleCantidad(recipeId, ing){
   const factor = getScaleFactor(recipeId);
   const raw = ing.cantidad * factor;
-  if(ing.id === 's-33') return Math.max(1, Math.round(raw));
+  if(ing.id === 's-33' || ing.id === 'fermoale-ay3') return Math.max(1, Math.round(raw));
   if(raw < 10) return Math.round(raw * 10) / 10; // 1 decimal para cantidades pequeñas
   return Math.round(raw);
 }
