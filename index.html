@@ -696,34 +696,6 @@ const CATALOGO = [
 
 const RECETAS = [
   {
-    id:'r-stout', nombre:'Coffee Stout', variante:'All Grain · 15 botellas',
-    tiempoTotal:'4-5 semanas + macerado', bottleYield:15, volumenL:5.5,
-    descripcion:'Coffee Stout con Pale Ale, Crystal, Light Chocolate, Roasted Barley, Northern Brewer y S-33. Cold brew de café al final de fermentación.',
-    fermentandoDays:8, fermenterDays:12,
-    params:{ og:'1.052–1.058', fg:'1.014–1.018', abv:'5.0–5.5%', ibu:'32–38', mash:'66–67°C', ferm:'18–21°C' },
-    ingredientes:[
-      {id:'pale-ale',        cantidad:1000},
-      {id:'crystal',         cantidad:150},
-      {id:'light-chocolate', cantidad:120},
-      {id:'roasted-barley',  cantidad:130},
-      {id:'northern-brewer', cantidad:12},
-      {id:'s-33',            cantidad:1},
-      {id:'cold-brew',       cantidad:450},
-      {id:'azucar',          cantidad:20},
-    ],
-    procedimiento:[
-      {paso:'Agua de mash', detalle:'Calienta 4,6–4,8 L de agua a 72–74 °C (strike).', why:'Al añadir granos baja a la temperatura de macerado. Volumen recalculado para la Vevor DM-N30 (30 L, 1800 W): ~0,8 L/kg de grano absorbidos + ~1,8 L/h de evaporación en el hervor, calibrado con los resultados reales del lote de 20 L.'},
-      {paso:'Macerado', detalle:'Añade todos los granos. Mantén 66–67 °C durante 60 min. pH objetivo 5,2–5,5.', why:'Temperatura que da cuerpo medio-alto típico de stout.'},
-      {paso:'Mash-out', detalle:'Sube a 75–76 °C durante 10 min.', why:'Detiene enzimas y facilita el drenado.'},
-      {paso:'Drenado / Lavado', detalle:'Escurre la bolsa y lava con 3,7–3,9 L de agua a 75–78 °C.', why:'Con el volumen total ajustado a esta olla, el lavado ya no es opcional: completa el pre-hervor necesario para llegar a los 5,5 L finales.'},
-      {paso:'Hervido 60 min', detalle:'A los 60 min añade 12 g Northern Brewer. Últimos 10–15 min: Whirlfloc si tienes.', why:'Isomeriza amargor limpio y elimina DMS.'},
-      {paso:'Enfriado', detalle:'Baja a 18–20 °C lo más rápido posible.', why:'Evita contaminación y forma cold break.'},
-      {paso:'Fermentación', detalle:'Siembra S-33. Fermenta a 18–21 °C. Primaria ~5–8 días.', why:'S-33 da cuerpo y fruta moderada; rango ideal de la levadura.'},
-      {paso:'Café', detalle:'Días 4–6 (o cerca del FG) añade cold brew filtrado (450 ml).', why:'Conserva aroma a café fresco sin “cocinarlo”.'},
-      {paso:'Embotellado', detalle:'Cuando FG esté estable (≈1.014–1.018): 18–20 g azúcar de cebado en 5,3 L.', why:'Carbonatación media de stout (~2,0–2,2 vol).'},
-    ]
-  },
-  {
     id:'r-belgian', nombre:'Belgian Blonde Albahaca-Romero', variante:'All Grain · 15 botellas',
     tiempoTotal:'3-4 semanas + macerado', bottleYield:15, volumenL:5.5,
     descripcion:'Belgian Blonde con notas frescas de albahaca y romero. Pale Ale + Wheat + avena, con maltas especiales de línea Viking Malt: Red Malt (equiv. Aromatic) y Caramel Malt 50 (equiv. Crystal 10). Sin Honey Malt (se quitó para dejar un perfil más limpio y que resalten las hierbas; Red Malt ya aporta la profundidad maltosa). Northern Brewer y S-33. 250 g de azúcar de caña/Candi Sugar Clear al hervor suben el ABV a rango de estilo belga sin más cuerpo. Puede mostrar un ligero velo natural (trigo/avena, sin filtrar).',
@@ -854,7 +826,6 @@ const RECETAS = [
 ];
 
 const SABORES_ENTREGA = [
-  'Coffee Stout',
   'Belgian Blonde Albahaca-Romero',
   'Honey Wheat',
   'Dry Stout Irlandesa',
